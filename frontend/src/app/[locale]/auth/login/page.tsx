@@ -7,7 +7,7 @@ import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { LanguageDropdown } from '@/shared/ui/LanguageDropdown';
 
 import { useAuth } from '@/shared/lib/AuthContext';
-import { getUserFriendlyError, login } from '@/shared/lib/api';
+import { ApiError, getUserFriendlyError, login } from '@/shared/lib/api';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -42,7 +42,10 @@ export default function LoginPage() {
         router.push(`/${locale}/dashboard`);
       }
     } catch (requestError) {
-      setError(getUserFriendlyError(requestError, isPt));
+      const invalidCredentials = requestError instanceof ApiError && (requestError.status === 401 || requestError.status === 404);
+      setError(invalidCredentials
+        ? (isPt ? 'Email ou palavra-passe incorretos.' : 'Incorrect email or password.')
+        : getUserFriendlyError(requestError, isPt));
       setIsLoading(false);
     }
   };
