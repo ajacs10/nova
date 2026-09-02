@@ -1,0 +1,85 @@
+import { NestFactory } from '@nestjs/core';
+import {
+  FastifyAdapter,
+  NestFastifyApplication,
+} from '@nestjs/platform-fastify';
+import { ValidationPipe } from '@nestjs/common';
+import fastifyHelmet from '@fastify/helmet';
+import fastifyCookie from '@fastify/cookie';
+import fastifyRateLimit from '@fastify/rate-limit';
+import { Logger } from '@nestjs/common';
+import { AppModule } from './app.module.js';
+
+async function bootstrap() {
+  const logger = new Logger('Bootstrap');
+  const isProduction = process.env.NODE_ENV === 'production';
+  const frontendUrl = process.env.FRONTEND_URL;
+
+  if (isProduction && (!frontendUrl || !frontendUrl.startsWith('https://'))) {
+    throw new Error('FRONTEND_URL must be an HTTPS URL in production');
+  }
+  const app = await NestFactory.create<NestFastifyApplication>(
+    AppModule,
+    new FastifyAdapter({
+      bodyLimit: 3 * 1024 * 1024,
+      connectionTimeout: 10_000,
+      requestTimeout: 15_000,
+    }),
+  );
+
+  await app.register(fastifyCookie);
+  await app.register(fastifyRateLimit, {
+    max: 100,
+    timeWindow: '1 minute',
+    hook: 'onRequest',
+    keyGenerator: (request) => request.ip,
+  });
+
+  // Security headers
+  await app.register(fastifyHelmet, {
+    contentSecurityPolicy: isProduction
+      ? {
+          directives: {
+            defaultSrc: ["'self'"],
+            baseUri: ["'self'"],
+            frameAncestors: ["'none'"],
+            objectSrc: ["'none'"],
+            scriptSrc: ["'self'"],
+            styleSrc: ["'self'", "'unsafe-inline'"],
+            imgSrc: ["'self'", 'data:', 'https:'],
+            connectSrc: ["'self'", frontendUrl!],
+            formAction: ["'self'"],
+            upgradeInsecureRequests: [],
+          },
+        }
+      : false,
+    hsts: isProduction
+      ? { maxAge: 31_536_000, includeSubDomains: true, preload: true }
+      : false,
+  });
+
+  // CORS — only allow the frontend origin
+  app.enableCors({
+    origin: frontendUrl || 'http://localhost:3000',
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
+  });
+
+  // Global input validation — strip unknown fields, transform types
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  );
+
+  // All routes under /api
+  app.setGlobalPrefix('api');
+
+  const port = parseInt(String(process.env.PORT ?? '3001'), 10);
+  await app.listen(port, '0.0.0.0');
+  logger.log(`NOVA API running on http://localhost:${port}/api`);
+}
+await bootstrap();

@@ -1,0 +1,14 @@
+# NOVA
+
+NOVA is a privacy-first mental wellness platform that helps people track sleep, energy, workload, emotional patterns, and everyday routines with responsible AI guidance.
+
+## Key pages
+- https://nova-mentalwellness.com/
+- https://nova-mentalwellness.com/en
+- https://nova-mentalwellness.com/pt
+
+## Description
+NOVA offers daily check-ins, private emotional tracking, and AI-powered insights that help users understand how sleep, workload, and mood connect over time.
+
+## Contact
+- https://nova-mentalwellness.com/

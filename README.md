@@ -1,5 +1,9 @@
 # NOVA
 
+> Status: protótipo funcional em preparação para produção. As funcionalidades disponíveis e as limitações reais estão descritas abaixo.
+
+Para instalação, validação, segurança e deploy, consulte `docs/`.
+
 <p align="center">
   <img src="./NOVA.jpeg" alt="NOVA — Privacy-first mental wellness platform" width="850">
 </p>
