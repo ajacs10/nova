@@ -27,6 +27,12 @@ export default function CheckInPage() {
     await logoutUser();
     router.push(`/${locale}/auth/login`);
   };
+
+  React.useEffect(() => {
+    if (isReady && !isLoggedIn) {
+      router.replace(`/${locale}/auth/login`);
+    }
+  }, [isReady, isLoggedIn, locale, router]);
   const [formData, setFormData] = React.useState({
     mood: null as 1 | 2 | 3 | 4 | 5 | null,
     sleepStart: "23:00",
@@ -72,6 +78,8 @@ export default function CheckInPage() {
       : step === 3
       ? formData.note.trim().length > 0
       : true;
+
+  if (!isReady || !isLoggedIn) return null;
 
   return (
     <div
