@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Patch, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { IsEmail, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthService } from './auth.service.js';
@@ -56,10 +56,8 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  async register(@Body() registerDto: RegisterDto, @Req() request: FastifyRequest, @Res({ passthrough: true }) reply: FastifyReply) {
-    const result = await this.authService.register(registerDto, request);
-    this.authService.setSessionCookie(reply, result.sessionToken);
-    return { user: result.user };
+  async register(@Body() registerDto: RegisterDto, @Req() request: FastifyRequest) {
+    return this.authService.register(registerDto, request);
   }
 
   @Post('login')
@@ -67,6 +65,12 @@ export class AuthController {
     const result = await this.authService.login(loginDto, request);
     this.authService.setSessionCookie(reply, result.sessionToken);
     return { user: result.user };
+  }
+
+  @Get('verify-email')
+  async verifyEmail(@Query('token') token: string) {
+    await this.authService.verifyEmail(token);
+    return { message: 'Email verified' };
   }
 
   @Post('logout')
