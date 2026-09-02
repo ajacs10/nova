@@ -4,6 +4,10 @@
 
 Para instalação, validação, segurança e deploy, consulte `docs/`.
 
+## Validation Status
+
+The current codebase passes frontend lint and production build, as well as backend lint, unit tests, end-to-end tests, build, and Prisma schema validation. Dependency audit findings are reviewed separately because forced fixes may introduce incompatible framework changes.
+
 <p align="center">
   <img src="./NOVA.jpeg" alt="NOVA — Privacy-first mental wellness platform" width="850">
 </p>
