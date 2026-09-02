@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { LayoutGrid, CheckSquare, LineChart, Settings, LogOut } from "lucide-react";
 
 interface DashboardSidebarProps {
@@ -47,7 +48,8 @@ export function DashboardSidebar({
     >
       <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
         {/* LOGÓTIPO PRINCIPAL NA SIDEBAR */}
-        <div style={{ padding: "0 8px", height: "35px", display: "flex", alignItems: "center" }}>
+        <div style={{ padding: "0 8px", height: "35px", display: "flex", alignItems: "center", gap: 8 }}>
+          <Image src="/icons/nova-icon-192.svg" alt="NOVA Psychology" width={32} height={32} />
           <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "#00d2b5", letterSpacing: "1px" }}>
             NOVA
           </span>

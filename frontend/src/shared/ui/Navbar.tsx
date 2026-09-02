@@ -150,8 +150,9 @@ export function Navbar() {
         }}
       >
         <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 85, padding: "0 28px" }}>
-          <Link href={`/${locale}`} style={{ fontWeight: 800, fontSize: "1.5rem", letterSpacing: "-0.03em", color: "#ffffff", textDecoration: "none" }}>
-            <span style={{ fontWeight: 800 }}>NOVA</span> <span style={{ fontWeight: 300, fontSize: "1.05rem", opacity: 0.85, letterSpacing: "0.02em" }}>psychology</span>
+          <Link href={`/${locale}`} style={{ display: "flex", alignItems: "center", gap: 10, fontWeight: 800, fontSize: "1.5rem", letterSpacing: "-0.03em", color: "#ffffff", textDecoration: "none" }}>
+            <Image src="/icons/nova-icon-192.svg" alt="NOVA Psychology" width={38} height={38} />
+            <span><span style={{ fontWeight: 800 }}>NOVA</span> <span style={{ fontWeight: 300, fontSize: "1.05rem", opacity: 0.85, letterSpacing: "0.02em" }}>psychology</span></span>
           </Link>
 
           <nav style={{ display: "flex", gap: 36 }}>
