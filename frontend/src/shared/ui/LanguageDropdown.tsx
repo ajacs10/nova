@@ -18,8 +18,8 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
   const currentLocale = (params?.locale as string) || 'en';
 
   const languages = [
-    { code: 'pt', name: 'Português', codeLabel: 'PT' },
-    { code: 'en', name: 'English', codeLabel: 'GB' },
+    { code: 'pt', name: 'Português', codeLabel: 'PT', flag: '🇵🇹' },
+    { code: 'en', name: 'English', codeLabel: 'GB', flag: '🇬🇧' },
   ];
 
   const currentLang = languages.find((l) => l.code === currentLocale) || languages[0];
@@ -74,6 +74,7 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
           }}
         >
           <Languages size={15} color="#ffffff" style={{ opacity: 0.9 }} />
+          <span aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }}>{currentLang.flag}</span>
           <span style={{ fontSize: '0.7rem', lineHeight: 1, fontWeight: 800, letterSpacing: '0.04em' }}>{currentLang.codeLabel}</span>
         </button>
       )}
@@ -127,6 +128,7 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                  <span aria-hidden="true" style={{ fontSize: '1rem', lineHeight: 1 }}>{lang.flag}</span>
                   <span style={{ minWidth: 24, fontSize: '0.68rem', lineHeight: 1, fontWeight: 800, letterSpacing: '0.04em' }}>{lang.codeLabel}</span>
                   <span
                     style={{

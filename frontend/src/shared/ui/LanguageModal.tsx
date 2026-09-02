@@ -130,6 +130,7 @@ export function LanguageModal({ isOpen, onClose }: LanguageModalProps) {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <span aria-hidden="true" style={{ fontSize: '1.2rem', lineHeight: 1 }}>🇵🇹</span>
               <span style={{ fontSize: '0.72rem', fontWeight: 800 }}>PT</span>
               <div>
                 <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#ffffff' }}>Português</div>
@@ -171,6 +172,7 @@ export function LanguageModal({ isOpen, onClose }: LanguageModalProps) {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+              <span aria-hidden="true" style={{ fontSize: '1.2rem', lineHeight: 1 }}>🇬🇧</span>
               <span style={{ fontSize: '0.72rem', fontWeight: 800 }}>GB</span>
               <div>
                 <div style={{ fontSize: '0.95rem', fontWeight: 700, color: '#ffffff' }}>English</div>
