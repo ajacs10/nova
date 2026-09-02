@@ -30,7 +30,7 @@ export default function RegisterPage() {
   const params = useParams();
   const locale = (params?.locale as string) || 'en';
   const isPt = locale === 'pt';
-  const { loginUser, isLoggedIn, isReady } = useAuth();
+  const { isLoggedIn, isReady } = useAuth();
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -206,10 +206,9 @@ export default function RegisterPage() {
     setIsLoading(true);
     const fullName = `${firstName} ${lastName}`.trim();
     try {
-      const result = await register(fullName, email, password);
+      await register(fullName, email, password);
       setIsLoading(false);
-      loginUser(result.user);
-      router.push(`/${locale}/dashboard`);
+      router.push(`/${locale}/auth/verify-email?email=${encodeURIComponent(email)}`);
     } catch (requestError) {
       setIsLoading(false);
       setErrors((previous) => ({
