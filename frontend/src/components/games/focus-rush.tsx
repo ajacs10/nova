@@ -11,8 +11,8 @@ export function FocusRush({ isPt, onComplete }: GameProps) {
   const [score, setScore] = React.useState(0);
   const [combo, setCombo] = React.useState(0);
   const [bestCombo, setBestCombo] = React.useState(0);
-  const [target, setTarget] = React.useState(0);
-  const [items, setItems] = React.useState<number[]>(() => makeItems(0));
+  const [target, setTarget] = React.useState(() => randomTarget());
+  const [items, setItems] = React.useState<number[]>(() => makeItems(0, randomTarget()));
   const [done, setDone] = React.useState(false);
   const [timeLeft, setTimeLeft] = React.useState(30);
   const completedRef = React.useRef(false);
@@ -37,13 +37,19 @@ export function FocusRush({ isPt, onComplete }: GameProps) {
     const nextScore = Math.max(0, score + (hit ? 10 : -5));
     setScore(nextScore); setCombo(nextCombo); setBestCombo((value) => Math.max(value, nextCombo));
     if (round === 3) { completedRef.current = true; setDone(true); onComplete(nextScore); return; }
-    setRound((value) => value + 1); setTarget((value) => (value + 1) % SHAPES.length); setItems(makeItems(round));
+    const nextTarget = randomTarget();
+    setRound((value) => value + 1); setTarget(nextTarget); setItems(makeItems(round, nextTarget));
   };
-  if (done) return <div className="nova-game-result"><div className="result-mark">✓</div><h2>{isPt ? "Ronda completa" : "Round complete"}</h2><p>{isPt ? "Joga para superar a tua própria pontuação." : "Play again to beat your own score."}</p><div className="result-grid"><span><strong>{score}</strong>{isPt ? "pontos" : "score"}</span><span><strong>{bestCombo}</strong>{isPt ? "melhor combo" : "best combo"}</span></div><button type="button" className="game-primary" onClick={() => { setRound(1); setScore(0); setCombo(0); setBestCombo(0); setDone(false); setTarget(0); setItems(makeItems(0)); setTimeLeft(30); completedRef.current = false; }}>{isPt ? "Jogar novamente" : "Play again"}</button></div>;
+  if (done) return <div className="nova-game-result"><div className="result-mark">✓</div><h2>{isPt ? "Ronda completa" : "Round complete"}</h2><p>{isPt ? "Joga para superar a tua própria pontuação." : "Play again to beat your own score."}</p><div className="result-grid"><span><strong>{score}</strong>{isPt ? "pontos" : "score"}</span><span><strong>{bestCombo}</strong>{isPt ? "melhor combo" : "best combo"}</span></div><button type="button" className="game-primary" onClick={() => { const nextTarget = randomTarget(); setRound(1); setScore(0); setCombo(0); setBestCombo(0); setDone(false); setTarget(nextTarget); setItems(makeItems(0, nextTarget)); setTimeLeft(30); completedRef.current = false; }}>{isPt ? "Jogar novamente" : "Play again"}</button></div>;
   const targetName = shapeLabels[SHAPES[target]][isPt ? 0 : 1];
   return <div className="nova-game-play"><div className="nova-game-play-head"><span>{isPt ? `Ronda ${round} de 3` : `Round ${round} of 3`}</span><strong>{isPt ? `Tempo ${timeLeft}s` : `Time ${timeLeft}s`} · {score} pts · {combo} combo</strong></div><h2>{isPt ? "Toca apenas em" : "Tap only"} <ShapeIcon shape={SHAPES[target]} label={targetName} /></h2><p className="game-muted">{isPt ? "Segue a regra. O tempo termina ao fim dos 30 segundos." : "Follow the rule. The timer ends after 30 seconds."}</p><div className="focus-grid">{items.map((shape, index) => { const name = shapeLabels[SHAPES[shape]][isPt ? 0 : 1]; return <button type="button" key={`${shape}-${index}`} aria-label={`${isPt ? "Forma" : "Shape"}: ${name}`} onClick={() => choose(index)}><ShapeIcon shape={SHAPES[shape]} label={name} /></button>; })}</div></div>;
 }
 
 function ShapeIcon({ shape, label }: { shape: typeof SHAPES[number]; label: string }) { return <span className={`focus-shape focus-shape-${shape}`} role="img" aria-label={label} />; }
 
-function makeItems(round: number) { return Array.from({ length: 12 + round * 4 }, (_, index) => index % (round + 2) === 0 ? 0 : (index + round) % 4); }
+function randomTarget() { return Math.floor(Math.random() * SHAPES.length); }
+function makeItems(round: number, target: number) {
+  const items = Array.from({ length: 12 + round * 4 }, () => Math.floor(Math.random() * SHAPES.length));
+  items[Math.floor(Math.random() * items.length)] = target;
+  return items;
+}
