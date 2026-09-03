@@ -173,7 +173,7 @@ export function DashboardSidebar({
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
-            padding-top: 18px;
+            padding-top: 30px;
           }
 
           .nav-group {

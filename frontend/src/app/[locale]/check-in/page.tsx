@@ -41,44 +41,33 @@ export default function CheckInPage() {
     {
       href: `/${locale}/recovery`,
       title: isPt ? "Sintomas e atividades" : "Symptoms & activities",
-      description: isPt
-        ? "Regista sintomas, sono e resposta às atividades."
-        : "Record symptoms, sleep, and your response to activities.",
     },
     {
       href: `/${locale}/return-to-learn`,
       title: isPt ? "Regresso à aprendizagem" : "Return to Learn",
-      description: isPt
-        ? "Organiza estudo, pausas e adaptações para discutir com a tua equipa de cuidados."
-        : "Organize learning, breaks, and accommodations to discuss with your care team.",
     },
     {
       href: `/${locale}/return-to-activity`,
       title: isPt ? "Regresso à atividade" : "Return to Activity",
-      description: isPt
-        ? "Acompanha atividades e alterações que observares."
-        : "Track activities and any changes you observe.",
     },
   ];
 
   const recoveryToolsPanel = (
     <section className="recovery-tools" aria-labelledby="recovery-tools-title">
       <div className="recovery-tools-heading">
-        <span>{isPt ? "ACOMPANHAMENTO DE CONCUSSÃO" : "CONCUSSION TRACKING"}</span>
         <h2 id="recovery-tools-title">
-          {isPt ? "Complementa o teu check-in diário" : "Complement your daily check-in"}
+          {isPt ? "Continua o teu acompanhamento" : "Continue your recovery tracking"}
         </h2>
         <p>
           {isPt
-            ? "Estas ferramentas organizam informação autorrelatada para conversares com um profissional. Não substituem cuidados médicos."
-            : "These tools organize self-reported information for conversations with a professional. They do not replace medical care."}
+            ? "Regista o que observas para apoiar conversas com profissionais de saúde."
+            : "Record what you observe to support conversations with healthcare professionals."}
         </p>
       </div>
       <div className="recovery-tools-grid">
         {recoveryTools.map((tool) => (
           <Link key={tool.href} href={tool.href} className="recovery-tool-link">
             <strong>{tool.title}</strong>
-            <span>{tool.description}</span>
           </Link>
         ))}
       </div>
@@ -180,9 +169,9 @@ export default function CheckInPage() {
         <main className="checkin-private-content" style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "140px 24px 80px", textAlign: "center" }}>
           <section style={{ maxWidth: 560 }}>
             <div style={{ fontSize: "3rem", marginBottom: 20 }}>✓</div>
-            <h1 style={{ marginBottom: 16 }}>{isPt ? "Já fizeste o check-in de hoje" : "You already checked in today"}</h1>
+            <h1 style={{ marginBottom: 16 }}>{isPt ? "Check-in concluído" : "Check-in complete"}</h1>
             <p style={{ color: "rgba(255,255,255,0.7)", lineHeight: 1.7, marginBottom: 28 }}>
-              {isPt ? "O próximo check-in ficará disponível amanhã, a partir da meia-noite." : "Your next check-in will be available tomorrow at midnight."}
+              {isPt ? "O próximo fica disponível à meia-noite." : "Your next check-in is available at midnight."}
             </p>
             <Link href={`/${locale}/dashboard`} style={{ display: "inline-block", padding: "12px 22px", borderRadius: 999, background: "#00d2b5", color: "#060810", fontWeight: 700, textDecoration: "none" }}>
               {isPt ? "Ver o meu painel" : "View my dashboard"}
@@ -941,15 +930,8 @@ export default function CheckInPage() {
           background: rgba(0, 210, 181, 0.055);
         }
 
-        .recovery-tools-heading span {
-          color: #00d2b5;
-          font-size: 0.7rem;
-          font-weight: 800;
-          letter-spacing: 0.12em;
-        }
-
         .recovery-tools-heading h2 {
-          margin: 8px 0;
+          margin: 0 0 6px;
           color: #ffffff;
           font-size: 1.15rem;
         }
@@ -970,10 +952,10 @@ export default function CheckInPage() {
 
         .recovery-tool-link {
           display: flex;
-          flex-direction: column;
-          gap: 7px;
-          min-height: 92px;
-          padding: 15px;
+          align-items: center;
+          justify-content: center;
+          min-height: 0;
+          padding: 13px 15px;
           border: 1px solid rgba(255, 255, 255, 0.11);
           border-radius: 12px;
           background: rgba(6, 8, 16, 0.45);
@@ -992,12 +974,6 @@ export default function CheckInPage() {
         .recovery-tool-link strong {
           color: #00d2b5;
           font-size: 0.88rem;
-        }
-
-        .recovery-tool-link span {
-          color: rgba(255, 255, 255, 0.65);
-          font-size: 0.76rem;
-          line-height: 1.45;
         }
 
         .mood-avatar-wrapper {
