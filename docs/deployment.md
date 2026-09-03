@@ -14,6 +14,20 @@ Set these values through the hosting provider secret manager:
 - `JWT_SECRET` as a long random value if the authentication implementation uses it
 - `NEXT_PUBLIC_API_URL` as the public API URL
 
+For the current production deployment, configure the Render backend with:
+
+- Root directory: `backend`
+- Build command: `npm ci && npx prisma generate && npm run build`
+- Start command: `npm run start:prod`
+- `FRONTEND_URL=https://nova-psychology.vercel.app`
+
+Configure the Vercel frontend with:
+
+- `NEXT_PUBLIC_API_URL=https://nova-api-n8qb.onrender.com/api`
+
+`FRONTEND_URL` may contain comma-separated HTTPS origins when preview deployments
+also need access. Do not add a trailing slash to the API origin or frontend origin.
+
 Never commit `.env`, `.env.local`, database passwords, tokens, or provider keys.
 
 ## Release sequence

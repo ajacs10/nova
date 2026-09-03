@@ -154,14 +154,19 @@ export class AuthService {
     reply.setCookie('nova_session', sessionToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/api',
       maxAge: 60 * 60 * 24 * 30,
     });
   }
 
   clearSessionCookie(reply: FastifyReply) {
-    reply.clearCookie('nova_session', { httpOnly: true, sameSite: 'strict', path: '/api' });
+    reply.clearCookie('nova_session', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/api',
+    });
   }
 
   private async createSession(userId: string, request: FastifyRequest) {
@@ -182,6 +187,16 @@ export class AuthService {
     return createHash('sha256').update(token).digest('hex');
   }
 
+  private escapeHtml(value: string) {
+    return value.replace(/[&<>'"]/g, (character) => ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      "'": '&#39;',
+      '"': '&quot;',
+    })[character] ?? character);
+  }
+
   private async sendVerificationEmail(name: string, email: string, token: string) {
     const apiKey = process.env.RESEND_API_KEY;
     const from = process.env.EMAIL_FROM;
@@ -192,6 +207,8 @@ export class AuthService {
 
     const resend = new Resend(apiKey);
     const verificationUrl = `${frontendUrl}/pt/auth/verify-email?token=${encodeURIComponent(token)}`;
+    const safeName = this.escapeHtml(name);
+    const safeVerificationUrl = this.escapeHtml(verificationUrl);
     const { error } = await resend.emails.send({
       from,
       to: email,
@@ -210,11 +227,11 @@ export class AuthService {
         </td></tr>
         <tr><td style="padding:38px 32px 34px;">
           <h1 style="margin:0 0 22px;font-size:26px;line-height:1.3;font-weight:700;color:#f8f9fc;">A tua conta NOVA está quase pronta</h1>
-          <p style="margin:0 0 16px;font-size:16px;line-height:1.7;color:#dde2ef;">Olá, ${name}!</p>
+          <p style="margin:0 0 16px;font-size:16px;line-height:1.7;color:#dde2ef;">Olá, ${safeName}!</p>
           <p style="margin:0 0 16px;font-size:16px;line-height:1.7;color:#dde2ef;">Obrigado por te juntares à NOVA Psychology.</p>
           <p style="margin:0 0 28px;font-size:16px;line-height:1.7;color:#dde2ef;">Para terminares a criação da tua conta, confirma o teu endereço de email através do botão abaixo:</p>
           <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:0 auto 30px;"><tr><td align="center" style="border-radius:9px;background-color:#00d2b5;">
-            <a href="${verificationUrl}" target="_blank" style="display:inline-block;padding:15px 26px;border-radius:9px;background-color:#00d2b5;color:#060810;font-size:16px;line-height:1;font-weight:700;text-decoration:none;">Confirmar o meu email</a>
+            <a href="${safeVerificationUrl}" target="_blank" style="display:inline-block;padding:15px 26px;border-radius:9px;background-color:#00d2b5;color:#060810;font-size:16px;line-height:1;font-weight:700;text-decoration:none;">Confirmar o meu email</a>
           </td></tr></table>
           <p style="margin:0 0 16px;font-size:14px;line-height:1.7;color:#b9c3db;">A confirmação ajuda-nos a manter a tua conta segura. Este link é válido durante 24 horas.</p>
           <p style="margin:0;font-size:14px;line-height:1.7;color:#b9c3db;">Se não foste tu a criar esta conta, podes ignorar este email.</p>
@@ -222,7 +239,7 @@ export class AuthService {
         </td></tr>
         <tr><td style="padding:22px 32px;background-color:#182350;border-top:1px solid #364876;">
           <p style="margin:0 0 8px;font-size:12px;line-height:1.6;color:#b9c3db;">O botão não funcionou? Copia e cola este endereço no teu navegador:</p>
-          <p style="margin:0;font-size:12px;line-height:1.6;word-break:break-all;color:#00d2b5;">${verificationUrl}</p>
+          <p style="margin:0;font-size:12px;line-height:1.6;word-break:break-all;color:#00d2b5;">${safeVerificationUrl}</p>
         </td></tr>
       </table>
       <p style="max-width:560px;margin:20px auto 0;text-align:center;font-size:11px;line-height:1.6;color:#6378a3;">NOVA Psychology · Bem-estar, autoconsciência e cuidado diário</p>

@@ -6,11 +6,13 @@ export class InsightsService {
   constructor(private readonly prisma: PrismaService) {}
 
   async getInsights(userId: string) {
-    const checkIns = await this.prisma.checkIn.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-      take: 30,
-    });
+    const checkIns = await this.prisma.withUserContext(userId, (tx) =>
+      tx.checkIn.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+        take: 30,
+      }),
+    );
 
     if (checkIns.length === 0) return [];
 
@@ -41,10 +43,12 @@ export class InsightsService {
   }
 
   async getDashboard(userId: string) {
-    const checkIns = await this.prisma.checkIn.findMany({
-      where: { userId }, orderBy: { createdAt: 'desc' }, take: 30,
-    });
-    const totalCheckins = await this.prisma.checkIn.count({ where: { userId } });
+    const { checkIns, totalCheckins } = await this.prisma.withUserContext(userId, async (tx) => ({
+      checkIns: await tx.checkIn.findMany({
+        where: { userId }, orderBy: { createdAt: 'desc' }, take: 30,
+      }),
+      totalCheckins: await tx.checkIn.count({ where: { userId } }),
+    }));
     const avgMood = checkIns.length ? checkIns.reduce((sum, item) => sum + item.mood, 0) / checkIns.length : 0;
 
     return {

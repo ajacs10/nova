@@ -25,7 +25,7 @@ const content = {
         { title: "Storage and security", body: "Passwords are stored as secure hashes. Sessions use HttpOnly cookies and are checked on the server. Check-in records are associated with the authenticated account. No system can guarantee absolute security, so users should protect their credentials." },
         { title: "Cookies and logs", body: "NOVA uses an authentication cookie and essential technical logs such as session creation data, user agent, and IP address for security and operation. We do not currently use advertising cookies." },
         { title: "Retention and deletion", body: "Information is retained while the account is active or while it is needed for service operation and legal obligations. Contact us to request access, correction, or deletion. Requests are reviewed before action is taken." },
-        { title: "Third-party services", body: "The current application uses its own PostgreSQL database and does not currently integrate Supabase. Any future provider, including Supabase, will be documented before it is used in production." },
+        { title: "Third-party services", body: "The current application uses PostgreSQL hosted by Supabase through the backend and Prisma. The application does not expose Supabase credentials or call Supabase directly from the browser." },
         { title: "Contact and changes", body: "Privacy questions can be sent to info@novapsychology.ao. We may update this policy when the service changes and will publish the new version on this page." },
       ] as Section[],
     },

@@ -7,13 +7,17 @@ export class CheckInService {
   constructor(private readonly prisma: PrismaService) {}
 
   create(createCheckInDto: CreateCheckInDto, userId: string) {
-    return this.prisma.checkIn.create({ data: { ...createCheckInDto, userId } });
+    return this.prisma.withUserContext(userId, (tx) =>
+      tx.checkIn.create({ data: { ...createCheckInDto, userId } }),
+    );
   }
 
   findAll(userId: string) {
-    return this.prisma.checkIn.findMany({
-      where: { userId },
-      orderBy: { createdAt: 'desc' },
-    });
+    return this.prisma.withUserContext(userId, (tx) =>
+      tx.checkIn.findMany({
+        where: { userId },
+        orderBy: { createdAt: 'desc' },
+      }),
+    );
   }
 }

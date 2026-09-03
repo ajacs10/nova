@@ -13,9 +13,25 @@ import { AppModule } from './app.module.js';
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
   const isProduction = process.env.NODE_ENV === 'production';
-  const frontendUrl = process.env.FRONTEND_URL;
+  const frontendUrls = (process.env.FRONTEND_URL ?? '')
+    .split(',')
+    .map((url) => url.trim().replace(/\/$/, ''))
+    .filter(Boolean);
+  const frontendUrl = frontendUrls[0];
+  const allowedOrigins = new Set(frontendUrls);
 
-  if (isProduction && (!frontendUrl || !frontendUrl.startsWith('https://'))) {
+  if (
+    isProduction &&
+    (frontendUrls.length === 0 ||
+      frontendUrls.some((url) => {
+        try {
+          const parsed = new URL(url);
+          return parsed.protocol !== 'https:' || parsed.pathname !== '/' || parsed.search || parsed.hash;
+        } catch {
+          return true;
+        }
+      }))
+  ) {
     throw new Error('FRONTEND_URL must be an HTTPS URL in production');
   }
   const app = await NestFactory.create<NestFastifyApplication>(
@@ -34,6 +50,14 @@ async function bootstrap() {
     hook: 'onRequest',
     keyGenerator: (request) => request.ip,
   });
+
+  const authRequestCounts = new Map<string, { count: number; resetAt: number }>();
+  const authPaths = new Set([
+    '/api/auth/login',
+    '/api/auth/register',
+    '/api/auth/verify-email',
+    '/api/auth/change-password',
+  ]);
 
   // Security headers
   await app.register(fastifyHelmet, {
@@ -60,10 +84,37 @@ async function bootstrap() {
 
   // CORS — only allow the frontend origin
   app.enableCors({
-    origin: frontendUrl || 'http://localhost:3000',
+    origin: frontendUrls.length > 0 ? frontendUrls : 'http://localhost:3000',
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Request-Id'],
+  });
+
+  app.getHttpAdapter().getInstance().addHook('onRequest', async (request, reply) => {
+    const origin = request.headers.origin;
+    const protectedMethod = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(request.method);
+    if (protectedMethod && origin && !allowedOrigins.has(origin)) {
+      return reply.code(403).send({ message: 'Origin not allowed' });
+    }
+
+    if (authPaths.has(request.url.split('?')[0])) {
+      const key = `${request.ip}:${request.url.split('?')[0]}`;
+      const now = Date.now();
+      const current = authRequestCounts.get(key);
+      if (!current || current.resetAt <= now) {
+        authRequestCounts.set(key, { count: 1, resetAt: now + 60_000 });
+      } else if (current.count >= 10) {
+        return reply.code(429).send({ message: 'Too many requests' });
+      } else {
+        current.count += 1;
+      }
+
+      if (authRequestCounts.size > 10_000) {
+        for (const [entryKey, entry] of authRequestCounts) {
+          if (entry.resetAt <= now) authRequestCounts.delete(entryKey);
+        }
+      }
+    }
   });
 
   // Global input validation — strip unknown fields, transform types
