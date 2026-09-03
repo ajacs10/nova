@@ -35,10 +35,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 24.19.0
           cache: npm
           cache-dependency-path: backend/package-lock.json
-      - run: npm ci
+      # Prisma CLI and its generated runtime must be installed from the same lockfile.
+      - run: npm ci --include=dev
       - run: npx prisma generate
       - run: npx prisma migrate deploy
       - run: npm run lint
@@ -58,7 +59,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 24
+          node-version: 24.19.0
           cache: npm
           cache-dependency-path: frontend/package-lock.json
       - run: npm ci
