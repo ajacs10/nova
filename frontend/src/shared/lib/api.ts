@@ -100,6 +100,10 @@ export function verifyEmail(token: string) {
   return fetcher<{ message: string }>(`/auth/verify-email?token=${encodeURIComponent(token)}`);
 }
 
+export function verifyEmailCode(code: string) {
+  return fetcher<{ message: string }>(`/auth/verify-email?code=${encodeURIComponent(code)}`);
+}
+
 export function logout()
 {
   return fetcher<{ message: string }>("/auth/logout", { method: "POST" });

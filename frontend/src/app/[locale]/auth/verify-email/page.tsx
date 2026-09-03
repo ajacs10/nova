@@ -1,14 +1,15 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { FormEvent, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ArrowRight, Check, Clock3, Mail, RefreshCw, TriangleAlert } from 'lucide-react';
-import { ApiError, verifyEmail } from '@/shared/lib/api';
+import { ApiError, verifyEmail, verifyEmailCode } from '@/shared/lib/api';
 
 export default function VerifyEmailPage() {
   const params = useParams();
+  const router = useRouter();
   const locale = (params?.locale as string) || 'pt';
   const isPt = locale === 'pt';
   const [state, setState] = useState<'loading' | 'success' | 'error' | 'waiting'>(() => {
@@ -19,6 +20,8 @@ export default function VerifyEmailPage() {
     if (typeof window === 'undefined') return '';
     return new URLSearchParams(window.location.search).get('email') || '';
   });
+  const [code, setCode] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     const query = new URLSearchParams(window.location.search);
@@ -34,6 +37,26 @@ export default function VerifyEmailPage() {
         else setState('error');
       });
   }, []);
+
+  async function handleCodeSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (!/^\d{6}$/.test(code)) return;
+    setIsSubmitting(true);
+    try {
+      await verifyEmailCode(code);
+      setState('success');
+    } catch (error: unknown) {
+      if (error instanceof ApiError) setState('error');
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  useEffect(() => {
+    if (state !== 'success') return;
+    const timeout = window.setTimeout(() => router.replace(`/${locale}/auth/login`), 1400);
+    return () => window.clearTimeout(timeout);
+  }, [locale, router, state]);
 
   const title = state === 'success'
     ? (isPt ? 'Email confirmado' : 'Email verified')
@@ -76,9 +99,16 @@ export default function VerifyEmailPage() {
         <h1 style={{ margin: '20px 0 12px', fontSize: 'clamp(1.7rem, 5vw, 2.15rem)', lineHeight: 1.15, letterSpacing: 0 }}>{title}</h1>
         <p style={{ margin: '0 auto 28px', maxWidth: 340, color: 'rgba(255,255,255,0.68)', lineHeight: 1.65 }}>{description}</p>
         {state === 'waiting' && (
-          <div style={{ margin: '0 auto 28px', padding: '14px 16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: 'rgba(255,255,255,0.52)', fontSize: '0.82rem', lineHeight: 1.55 }}>
-            {isPt ? 'Verifica também a pasta de spam ou lixo eletrónico.' : 'Also check your spam or junk folder.'}
-          </div>
+          <>
+            <form onSubmit={handleCodeSubmit} style={{ margin: '0 auto 20px', display: 'grid', gap: 10 }}>
+              <label htmlFor="verification-code" style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.82rem' }}>{isPt ? 'Código de confirmação' : 'Confirmation code'}</label>
+              <input id="verification-code" value={code} onChange={(event) => setCode(event.target.value.replace(/\D/g, '').slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" maxLength={6} placeholder="000000" aria-label={isPt ? 'Código de seis dígitos' : 'Six-digit code'} style={{ width: '100%', boxSizing: 'border-box', padding: '14px 16px', border: '1px solid rgba(255,255,255,0.18)', borderRadius: 6, background: 'rgba(0,0,0,0.2)', color: '#fff', textAlign: 'center', fontSize: '1.4rem', letterSpacing: '0.35em', outline: 'none' }} />
+              <button type="submit" disabled={code.length !== 6 || isSubmitting} style={{ minHeight: 48, border: 0, borderRadius: 6, background: code.length === 6 ? '#00d2b5' : 'rgba(255,255,255,0.12)', color: '#061018', fontWeight: 700, cursor: code.length === 6 ? 'pointer' : 'not-allowed' }}>{isSubmitting ? (isPt ? 'A confirmar...' : 'Confirming...') : (isPt ? 'Confirmar email' : 'Confirm email')}</button>
+            </form>
+            <div style={{ margin: '0 auto 28px', padding: '14px 16px', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 6, color: 'rgba(255,255,255,0.52)', fontSize: '0.82rem', lineHeight: 1.55 }}>
+              {isPt ? 'Verifica também a pasta de spam ou lixo eletrónico.' : 'Also check your spam or junk folder.'}
+            </div>
+          </>
         )}
         {(state === 'success' || state === 'error') && (
           <Link href={`/${locale}/auth/login`} style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 10, minHeight: 48, padding: '0 20px', borderRadius: 6, background: '#00d2b5', color: '#061018', fontWeight: 700, textDecoration: 'none' }}>

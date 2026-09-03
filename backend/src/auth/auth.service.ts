@@ -23,6 +23,7 @@ export class AuthService {
     if (exists) throw new ConflictException('Email already registered');
 
     const verificationToken = randomBytes(32).toString('base64url');
+    const verificationCode = String(Math.floor(100000 + Math.random() * 900000));
     const user = await this.prisma.user.create({
       data: {
         name: registerDto.name.trim(),
@@ -30,13 +31,14 @@ export class AuthService {
         phone: registerDto.phone?.trim() || null,
         passwordHash: await argon2.hash(registerDto.password, { type: argon2.argon2id }),
         emailVerificationTokenHash: this.hashToken(verificationToken),
+        emailVerificationCodeHash: this.hashToken(verificationCode),
         emailVerificationExpiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),
       },
       select: { id: true, name: true, email: true },
     });
 
     try {
-      await this.sendVerificationEmail(user.name, user.email, verificationToken);
+      await this.sendVerificationEmail(user.name, user.email, verificationToken, verificationCode);
     } catch {
       await this.prisma.user.delete({ where: { id: user.id } });
       throw new InternalServerErrorException('Verification email could not be sent');
@@ -60,10 +62,13 @@ export class AuthService {
     };
   }
 
-  async verifyEmail(token: string) {
+  async verifyEmail(identifier: string) {
     const user = await this.prisma.user.findFirst({
       where: {
-        emailVerificationTokenHash: this.hashToken(token),
+        OR: [
+          { emailVerificationTokenHash: this.hashToken(identifier) },
+          { emailVerificationCodeHash: this.hashToken(identifier) },
+        ],
         emailVerificationExpiresAt: { gt: new Date() },
       },
       select: { id: true },
@@ -76,6 +81,7 @@ export class AuthService {
       data: {
         emailVerifiedAt: new Date(),
         emailVerificationTokenHash: null,
+        emailVerificationCodeHash: null,
         emailVerificationExpiresAt: null,
       },
     });
@@ -213,7 +219,7 @@ export class AuthService {
     })[character] ?? character);
   }
 
-  private async sendVerificationEmail(name: string, email: string, token: string) {
+  private async sendVerificationEmail(name: string, email: string, token: string, code: string) {
     const apiKey = process.env.RESEND_API_KEY;
     const from = process.env.EMAIL_FROM;
     const frontendUrl = process.env.FRONTEND_URL;
@@ -225,6 +231,7 @@ export class AuthService {
     const verificationUrl = `${frontendUrl}/pt/auth/verify-email?token=${encodeURIComponent(token)}`;
     const safeName = this.escapeHtml(name);
     const safeVerificationUrl = this.escapeHtml(verificationUrl);
+    const safeCode = this.escapeHtml(code);
     const { error } = await resend.emails.send({
       from,
       to: email,
@@ -246,6 +253,8 @@ export class AuthService {
           <p style="margin:0 0 16px;font-size:16px;line-height:1.7;color:#dde2ef;">Olá, ${safeName}!</p>
           <p style="margin:0 0 16px;font-size:16px;line-height:1.7;color:#dde2ef;">Obrigado por te juntares à NOVA Psychology.</p>
           <p style="margin:0 0 28px;font-size:16px;line-height:1.7;color:#dde2ef;">Para terminares a criação da tua conta, confirma o teu endereço de email através do botão abaixo:</p>
+          <p style="margin:0 0 20px;font-size:14px;line-height:1.7;color:#b9c3db;">Ou introduz este código de confirmação na aplicação:</p>
+          <p style="margin:0 0 28px;font-size:30px;line-height:1;font-weight:800;letter-spacing:8px;color:#00d2b5;text-align:center;">${safeCode}</p>
           <table role="presentation" cellspacing="0" cellpadding="0" border="0" align="center" style="margin:0 auto 30px;"><tr><td align="center" style="border-radius:9px;background-color:#00d2b5;">
             <a href="${safeVerificationUrl}" target="_blank" style="display:inline-block;padding:15px 26px;border-radius:9px;background-color:#00d2b5;color:#060810;font-size:16px;line-height:1;font-weight:700;text-decoration:none;">Confirmar o meu email</a>
           </td></tr></table>

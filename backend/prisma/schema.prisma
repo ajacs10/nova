@@ -17,6 +17,7 @@ model User {
   passwordHash String    @map("password_hash")
   emailVerifiedAt DateTime? @map("email_verified_at")
   emailVerificationTokenHash String? @unique @map("email_verification_token_hash")
+  emailVerificationCodeHash String? @map("email_verification_code_hash")
   emailVerificationExpiresAt DateTime? @map("email_verification_expires_at")
   role         UserRole  @default(USER)
   createdAt    DateTime  @default(now()) @map("created_at")

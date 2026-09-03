@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Patch, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common';
 import { IsEmail, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthService } from './auth.service.js';
@@ -68,8 +68,10 @@ export class AuthController {
   }
 
   @Get('verify-email')
-  async verifyEmail(@Query('token') token: string) {
-    await this.authService.verifyEmail(token);
+  async verifyEmail(@Query('token') token?: string, @Query('code') code?: string) {
+    const identifier = token ?? code;
+    if (!identifier) throw new UnauthorizedException('Verification code required');
+    await this.authService.verifyEmail(identifier);
     return { message: 'Email verified' };
   }
 
