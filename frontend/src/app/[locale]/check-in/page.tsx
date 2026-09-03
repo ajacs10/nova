@@ -112,6 +112,27 @@ export default function CheckInPage() {
     );
   }
 
+  if (alreadyCheckedIn && !submitted) {
+    return (
+      <div className="checkin-page min-h-screen" style={{ background: "#060810", color: "#ffffff" }}>
+        <Navbar />
+        <DashboardSidebar locale={locale} activePath={`/${locale}/check-in`} onLogout={handleSidebarLogout} />
+        <main className="checkin-private-content" style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "140px 24px 80px", textAlign: "center" }}>
+          <section style={{ maxWidth: 560 }}>
+            <div style={{ fontSize: "3rem", marginBottom: 20 }}>✓</div>
+            <h1 style={{ marginBottom: 16 }}>{locale === "pt" ? "Já fizeste o check-in de hoje" : "You already checked in today"}</h1>
+            <p style={{ color: "rgba(255,255,255,0.7)", lineHeight: 1.7, marginBottom: 28 }}>
+              {locale === "pt" ? "O próximo check-in ficará disponível amanhã, a partir da meia-noite." : "Your next check-in will be available tomorrow at midnight."}
+            </p>
+            <Link href={`/${locale}/dashboard`} style={{ display: "inline-block", padding: "12px 22px", borderRadius: 999, background: "#00d2b5", color: "#060810", fontWeight: 700, textDecoration: "none" }}>
+              {locale === "pt" ? "Ver o meu painel" : "View my dashboard"}
+            </Link>
+          </section>
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div
       className="checkin-page min-h-screen overflow-y-auto flex flex-col"

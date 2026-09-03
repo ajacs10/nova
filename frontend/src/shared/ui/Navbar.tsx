@@ -4,7 +4,8 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useParams, usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Award, Flame, Menu, X } from "lucide-react";
+import { getDashboard } from "@/shared/lib/api";
 import { useAuth } from "@/shared/lib/AuthContext";
 import { LanguageDropdown } from "@/shared/ui/LanguageDropdown";
 
@@ -19,6 +20,7 @@ export function Navbar() {
   const { user, isLoggedIn } = useAuth();
   const [displayName, setDisplayName] = React.useState("");
   const [avatarSrc, setAvatarSrc] = React.useState("/mascotes/mascote_equilibrado_v2.svg");
+  const [progress, setProgress] = React.useState({ totalCheckins: 0, streak: 0 });
 
   const isDashboardRoute = pathname?.includes("/dashboard") ?? false;
   const isPrivateRoute = isLoggedIn && (
@@ -28,7 +30,20 @@ export function Navbar() {
     pathname?.includes("/check-in") ||
     pathname?.includes("/insights") ||
     pathname?.includes("/diary")
+    || pathname?.includes("/novagame")
   );
+
+  React.useEffect(() => {
+    if (!isPrivateRoute) return;
+    getDashboard().then(({ totalCheckins, streak }) => setProgress({ totalCheckins, streak })).catch(() => undefined);
+  }, [isPrivateRoute]);
+
+  const level = Math.max(1, Math.floor(progress.totalCheckins / 3) + 1);
+  const badges = [
+    progress.totalCheckins >= 1 ? "Primeiro passo" : null,
+    progress.totalCheckins >= 3 ? "A observar" : null,
+    progress.streak >= 3 ? "Ritmo presente" : null,
+  ].filter((badge): badge is string => Boolean(badge));
 
   React.useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -100,6 +115,14 @@ export function Navbar() {
             <div style={{ flex: 1 }} />
 
             <div className="header-actions" style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <div title={isPt ? `${badges.length} distintivos conquistados` : `${badges.length} badges earned`} style={{ display: "flex", alignItems: "center", gap: 8, color: "#00d2b5", fontSize: "0.78rem", fontWeight: 700 }}>
+                <Award size={17} aria-hidden="true" />
+                <span>{badges.length}</span>
+              </div>
+              <div title={isPt ? `Nível ${level}` : `Level ${level}`} style={{ display: "flex", alignItems: "center", gap: 6, padding: "6px 10px", border: "1px solid rgba(0,210,181,0.35)", borderRadius: 999, color: "#ffffff", fontSize: "0.78rem", fontWeight: 700 }}>
+                <Flame size={15} color="#f59e0b" aria-hidden="true" />
+                <span>{isPt ? `Nível ${level}` : `Level ${level}`}</span>
+              </div>
               <span style={{ color: "rgba(255,255,255,0.82)", fontSize: "0.9rem", fontWeight: 600 }}>{displayName}</span>
               <Link href={`/${locale}/settings`} aria-label={isPt ? "Abrir configurações" : "Open settings"} style={{ display: "block" }}>
                 <button
