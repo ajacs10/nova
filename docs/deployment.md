@@ -13,6 +13,8 @@ Set these values through the hosting provider secret manager:
 - `DIRECT_URL` for Prisma migrations
 - `JWT_SECRET` as a long random value if the authentication implementation uses it
 - `NEXT_PUBLIC_API_URL` as the public API URL
+- `RESEND_API_KEY` as a private Resend API key
+- `EMAIL_FROM` as `onboarding@resend.dev` for Resend testing, or an address on a verified production domain
 
 For the current production deployment, configure the Render backend with:
 
