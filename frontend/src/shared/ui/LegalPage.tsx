@@ -7,6 +7,7 @@ import { Navbar } from "@/shared/ui/Navbar";
 type LegalPageProps = {
   locale: string;
   kind: "privacy" | "terms";
+  backHref?: string;
 };
 
 type Section = {
@@ -73,7 +74,7 @@ const content = {
   },
 } as const;
 
-export function LegalPage({ locale, kind }: LegalPageProps) {
+export function LegalPage({ locale, kind, backHref }: LegalPageProps) {
   const language = locale === "pt" ? "pt" : "en";
   const page = content[language][kind];
 
@@ -94,7 +95,11 @@ export function LegalPage({ locale, kind }: LegalPageProps) {
             </section>
           ))}
         </div>
-        <Link href={`/${language}`} className="legal-back">{language === "pt" ? "Voltar à página inicial" : "Back to home"}</Link>
+        <Link href={backHref ?? `/${language}`} className="legal-back">
+          {backHref
+            ? language === "pt" ? "Voltar ao registo" : "Back to registration"
+            : language === "pt" ? "Voltar à página inicial" : "Back to home"}
+        </Link>
       </main>
       <Footer />
       <style jsx>{`

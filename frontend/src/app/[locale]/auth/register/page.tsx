@@ -599,7 +599,7 @@ export default function RegisterPage() {
               />
               <span>
                 {isPt ? 'Li e aceito os ' : 'I have read and accept the '}
-                <Link href={`/${locale}/terms`} target="_blank" style={{ color: '#00d2b5', textDecoration: 'underline' }}>
+                <Link href={`/${locale}/terms?from=register`} style={{ color: '#00d2b5', textDecoration: 'underline' }}>
                   {isPt ? 'Termos da plataforma' : 'Platform Terms'}
                 </Link>.
               </span>
