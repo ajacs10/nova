@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { useAuth } from '@/shared/lib/AuthContext';
-import { getUserFriendlyError, register } from '@/shared/lib/api';
+import { ApiError, getUserFriendlyError, register } from '@/shared/lib/api';
 
 const COUNTRY_PREFIXES = [
   { code: '+244', country: 'AO', name: 'Angola (+244)' },
@@ -216,7 +216,9 @@ export default function RegisterPage() {
       setIsLoading(false);
       setErrors((previous) => ({
         ...previous,
-        form: getUserFriendlyError(requestError, isPt),
+        email: requestError instanceof ApiError && requestError.status === 409
+          ? (isPt ? 'Este email já está registado. Inicia sessão ou usa outro email.' : 'This email is already registered. Sign in or use another email.')
+          : getUserFriendlyError(requestError, isPt),
       }));
     }
   };
@@ -495,6 +497,7 @@ export default function RegisterPage() {
                 </label>
                 <div style={{ position: 'relative' }}>
                   <input
+                    className="register-input"
                     type={showPassword ? 'text' : 'password'}
                     value={password}
                     onChange={(e) => {
@@ -514,6 +517,8 @@ export default function RegisterPage() {
                       border: touched.password && errors.password ? '1px solid #f87171' : '1px solid rgba(255, 255, 255, 0.15)',
                       backgroundColor: '#111111',
                       color: '#ffffff',
+                      WebkitTextFillColor: '#ffffff',
+                      caretColor: '#00d2b5',
                       fontSize: '0.88rem',
                       outline: 'none',
                       boxSizing: 'border-box'
@@ -551,6 +556,7 @@ export default function RegisterPage() {
                   {isPt ? 'Confirmar' : 'Confirm'} <span style={{ color: '#ffffff' }}>*</span>
                 </label>
                 <input
+                  className="register-input"
                   type={showPassword ? 'text' : 'password'}
                   value={confirmPassword}
                   onChange={(e) => {
@@ -566,6 +572,8 @@ export default function RegisterPage() {
                     border: touched.confirmPassword && errors.confirmPassword ? '1px solid #f87171' : '1px solid rgba(255, 255, 255, 0.15)',
                     backgroundColor: '#111111',
                     color: '#ffffff',
+                    WebkitTextFillColor: '#ffffff',
+                    caretColor: '#00d2b5',
                     fontSize: '0.88rem',
                     outline: 'none',
                     boxSizing: 'border-box'
@@ -648,6 +656,15 @@ export default function RegisterPage() {
 
       {/* Media Query Responsive */}
       <style>{`
+        .register-input:-webkit-autofill,
+        .register-input:-webkit-autofill:hover,
+        .register-input:-webkit-autofill:focus {
+          -webkit-text-fill-color: #ffffff;
+          -webkit-box-shadow: 0 0 0 1000px #111111 inset;
+          caret-color: #00d2b5;
+          transition: background-color 9999s ease-out 0s;
+        }
+
         @media (max-width: 900px) {
           .auth-hero-panel {
             display: none !important;
