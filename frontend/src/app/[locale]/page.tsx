@@ -219,7 +219,7 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {false && <>
+        <>
 
         {/* SECÇÃO CARROSSEL DE VÍDEOS DE BEM-ESTAR (INTACTO) */}
         <section
@@ -248,6 +248,7 @@ export default function LandingPage() {
           </div>
         </section>
 
+        {false && <>
         {/* WORKFLOW (ESTILO APPLE BENTO CARDS) */}
         <section id="recovery-workflow" style={{ padding: "120px 20px", background: "#080b15" }}>
           <div style={{ maxWidth: 1120, margin: "0 auto" }}>
@@ -512,6 +513,7 @@ export default function LandingPage() {
           </div>
         </section>
         </>}
+        </>
       </main>
 
       <Footer />
