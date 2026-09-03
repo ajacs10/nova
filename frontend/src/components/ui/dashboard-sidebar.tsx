@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { LayoutGrid, CheckSquare, LineChart, BookOpen, Gamepad2, Settings, LogOut } from "lucide-react";
+import * as React from "react";
+import { LayoutGrid, CheckSquare, LineChart, BookOpen, Gamepad2, Settings, LogOut, Menu, X } from "lucide-react";
 
 interface DashboardSidebarProps {
   locale: string;
@@ -15,6 +16,7 @@ export function DashboardSidebar({
   onLogout,
 }: DashboardSidebarProps) {
   const isPt = locale === "pt";
+  const [isOpen, setIsOpen] = React.useState(false);
 
   const mainNav = [
     { href: `/${locale}/dashboard`, label: "Dashboard", icon: LayoutGrid },
@@ -29,8 +31,13 @@ export function DashboardSidebar({
   ];
 
   return (
+    <>
+    <button type="button" className="mobile-sidebar-toggle" aria-label={isOpen ? (isPt ? "Fechar menu" : "Close menu") : (isPt ? "Abrir menu" : "Open menu")} aria-expanded={isOpen} onClick={() => setIsOpen((value) => !value)}>
+      {isOpen ? <X size={22} /> : <Menu size={22} />}
+    </button>
+    {isOpen && <button type="button" className="mobile-sidebar-backdrop" aria-label={isPt ? "Fechar menu" : "Close menu"} onClick={() => setIsOpen(false)} />}
     <aside
-      className="dashboard-sidebar"
+      className={`dashboard-sidebar${isOpen ? " mobile-sidebar-open" : ""}`}
       style={{
         position: "fixed",
         top: 0,
@@ -74,7 +81,6 @@ export function DashboardSidebar({
                   padding: "10px 14px",
                   borderRadius: "10px",
                   color: isActive ? "#00d2b5" : "rgba(255, 255, 255, 0.6)",
-                  background: isActive ? "rgba(0, 210, 181, 0.08)" : "transparent",
                   fontWeight: isActive ? 600 : 400,
                   fontSize: "0.9rem",
                   textDecoration: "none",
@@ -144,12 +150,48 @@ export function DashboardSidebar({
       </div>
 
       <style jsx>{`
+        .mobile-sidebar-toggle,
+        .mobile-sidebar-backdrop {
+          display: none;
+        }
+
         @media (max-width: 900px) {
           .dashboard-sidebar {
             display: none !important;
           }
+
+          .dashboard-sidebar.mobile-sidebar-open {
+            display: flex !important;
+            z-index: 120;
+          }
+
+          .mobile-sidebar-toggle {
+            position: fixed;
+            top: 16px;
+            left: 14px;
+            z-index: 140;
+            display: grid;
+            place-items: center;
+            width: 44px;
+            height: 44px;
+            color: #fff;
+            background: rgba(10, 14, 26, 0.94);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 10px;
+            cursor: pointer;
+          }
+
+          .mobile-sidebar-backdrop {
+            position: fixed;
+            inset: 0;
+            z-index: 115;
+            display: block;
+            background: rgba(0, 0, 0, 0.48);
+            border: 0;
+          }
         }
       `}</style>
     </aside>
+    </>
   );
 }

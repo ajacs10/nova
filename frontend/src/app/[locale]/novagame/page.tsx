@@ -5,7 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import { Navbar } from "@/shared/ui/Navbar";
 import { DashboardSidebar } from "@/components/ui/dashboard-sidebar";
 import { useAuth } from "@/shared/lib/AuthContext";
-import { ArrowLeft, Gamepad2, LockKeyhole, Play, Sparkles, Trophy } from "lucide-react";
+import { ArrowLeft, Play, Trophy } from "lucide-react";
 import { PatternDetective } from "@/components/games/pattern-detective";
 import { FocusRush } from "@/components/games/focus-rush";
 import { MemoryNova } from "@/components/games/memory-nova";
@@ -29,7 +29,7 @@ export default function NovaGamePage() {
   const locale = (params?.locale as string) || "pt";
   const isPt = locale === "pt";
   const { isLoggedIn, isReady, logoutUser } = useAuth();
-  const [arcadeStats, setArcadeStats] = React.useState(() => loadArcadeStats());
+  const [, setArcadeStats] = React.useState(() => loadArcadeStats());
   const [activeGame, setActiveGame] = React.useState<GameId | "sequence" | "focus" | "breathing" | null>(null);
   const [sequenceStep, setSequenceStep] = React.useState(0);
   const [breathingStep, setBreathingStep] = React.useState(0);
@@ -64,10 +64,7 @@ export default function NovaGamePage() {
       <Navbar />
       <DashboardSidebar locale={locale} activePath={`/${locale}/novagame`} onLogout={async () => { await logoutUser(); router.push(`/${locale}/auth/login`); }} />
       <main className="checkin-private-content nova-arcade-main" style={{ minHeight: "100vh", padding: "140px 32px 80px", maxWidth: 1100, margin: "0 auto" }}>
-        <section className="nova-arcade-hero"><div><span className="nova-eyebrow"><Gamepad2 size={16} /> NOVA GAMES</span><h1>{isPt ? "Joga. Explora. Descobre." : "Play. Explore. Discover."}</h1><p>{isPt ? "Pequenos jogos para fazer uma pausa, explorar ideias e descobrir padrões." : "Short games to pause, explore ideas and discover patterns."}</p></div><span className="arcade-count"><Sparkles size={17} /> {isPt ? "4 jogos disponíveis" : "4 games available"}</span></section>
-        <section className="arcade-stats"><div><strong>{arcadeStats.played}</strong><span>{isPt ? "Jogos jogados" : "Games played"}</span></div><div><strong>{arcadeStats.points}</strong><span>Psychology Points</span></div><div><strong>{arcadeStats.best}</strong><span>{isPt ? "Melhor pontuação" : "Best score"}</span></div><div><strong>{arcadeStats.level}</strong><span>{isPt ? "Nível" : "Level"}</span></div></section>
         <section className="arcade-section"><div className="arcade-section-title"><div><span className="nova-eyebrow">ARCADE</span><h2>{isPt ? "Escolhe a tua experiência" : "Choose your experience"}</h2></div><span className="arcade-level"><Trophy size={16} /> {isPt ? "Sem competição" : "No competition"}</span></div><div className="game-grid">{arcadeGames.map((game) => <button type="button" className="game-card" key={game.id} onClick={() => launchArcadeGame(game.id)} style={{ "--game-accent": game.accent } as React.CSSProperties}><div className="game-card-art"><span>{game.icon}</span><i /></div><div className="game-card-copy"><span className="game-card-meta">{game.meta}</span><h3>{game.title}</h3><p>{game.text}</p><span className="game-play"><Play size={14} fill="currentColor" /> {isPt ? "Jogar" : "Play"}</span></div></button>)}</div></section>
-        <p className="arcade-disclaimer"><LockKeyhole size={15} /> {isPt ? "Os jogos são experiências recreativas e de reflexão. O desempenho não é uma avaliação de saúde." : "These games are recreational and reflective experiences. Game performance is not a health assessment."}</p>
         <section style={{ marginTop: 44, display: "none" }}>
           <h2 style={{ fontSize: "1.5rem", marginBottom: 8 }}>{isPt ? "Escolhe um jogo" : "Choose a game"}</h2>
           <p style={{ color: "rgba(255,255,255,0.65)", marginBottom: 20 }}>{isPt ? "Pequenas pausas para atenção e presença. Joga ao teu ritmo." : "Small pauses for attention and presence. Play at your own pace."}</p>
