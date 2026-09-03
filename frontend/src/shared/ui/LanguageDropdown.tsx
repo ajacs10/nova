@@ -15,7 +15,8 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
   const dropdownRef = useRef<HTMLDivElement>(null);
   const params = useParams();
   const pathname = usePathname();
-  const currentLocale = (params?.locale as string) || 'en';
+  const pathLocale = pathname.match(/^\/(en|pt)(?=\/|$)/)?.[1];
+  const currentLocale = pathLocale || (params?.locale as string) || 'pt';
 
   const languages = [
     { code: 'pt', name: 'Português', codeLabel: 'PT', flag: '🇵🇹' },
@@ -40,7 +41,7 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
     if (code === currentLocale) return;
 
     const pathWithoutLocale = pathname.replace(/^\/(en|pt)(?=\/|$)/, '') || '/';
-    const localizedPath = code === 'en'
+    const localizedPath = code === 'pt'
       ? pathWithoutLocale
       : `/${code}${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`;
 
