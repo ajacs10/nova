@@ -79,6 +79,21 @@ html[data-theme="light"] .game-answer,
 html[data-theme="light"] .memory-card,
 html[data-theme="light"] .focus-grid button { background: #f5f7fb !important; border-color: #cbd5e1 !important; color: #172033 !important; }
 html[data-theme="light"] .settings-page input { background: #ffffff !important; color: #172033 !important; border-color: #cbd5e1 !important; }
+html[data-theme="light"] .settings-page,
+html[data-theme="light"] .settings-page h1,
+html[data-theme="light"] .settings-page h2,
+html[data-theme="light"] .settings-page h3,
+html[data-theme="light"] .settings-page h4,
+html[data-theme="light"] .settings-page strong,
+html[data-theme="light"] .settings-page label,
+html[data-theme="light"] .settings-page .profile-info p,
+html[data-theme="light"] .settings-page .row-info p,
+html[data-theme="light"] .settings-page .label-text,
+html[data-theme="light"] .settings-page .nav-item,
+html[data-theme="light"] .settings-page .edit-pill-btn,
+html[data-theme="light"] .settings-page .eye-btn { color: #172033 !important; }
+html[data-theme="light"] .settings-page .nav-item.active { color: #087f73 !important; }
+html[data-theme="light"] .settings-page .theme-btn.selected { color: #062c2a !important; }
 
 @media (max-width: 900px) {
   .dashboard-header .header-actions {

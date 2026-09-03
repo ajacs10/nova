@@ -48,7 +48,6 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
       document.cookie = `${scope === 'private' ? 'nova-private-locale' : 'nova-landing-locale'}=${code}; path=/; max-age=31536000`;
       document.cookie = `NEXT_LOCALE=${code}; path=/; max-age=31536000`;
       window.dispatchEvent(new CustomEvent('nova-locale-changed', { detail: { scope, locale: code } }));
-      window.location.assign(pathWithoutLocale);
     });
   };
 
