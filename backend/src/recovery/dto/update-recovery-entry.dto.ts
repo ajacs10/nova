@@ -1,4 +1,4 @@
-import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 
 export class UpdateRecoveryEntryDto {
 	@IsOptional() @IsInt() @Min(0) @Max(10) headache?: number;
@@ -12,5 +12,5 @@ export class UpdateRecoveryEntryDto {
 	@IsOptional() @IsInt() @Min(0) @Max(10) balance?: number;
 	@IsOptional() @IsInt() @Min(0) @Max(10) sleepDifficulty?: number;
 	@IsOptional() @IsString() @MaxLength(2000) note?: string;
-	@IsOptional() @IsInt() @Min(0) @Max(24) sleepHours?: number;
+	@IsOptional() @IsNumber({ maxDecimalPlaces: 1 }) @Min(0) @Max(24) sleepHours?: number;
 }

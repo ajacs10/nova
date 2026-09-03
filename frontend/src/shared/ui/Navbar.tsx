@@ -24,16 +24,7 @@ export function Navbar() {
   const [avatarSrc, setAvatarSrc] = React.useState("/mascotes/mascote_equilibrado_v2.svg");
   const [gameXp, setGameXp] = React.useState(0);
 
-  const isDashboardRoute = pathname?.includes("/dashboard") ?? false;
-  const isPrivateRoute = isLoggedIn && (
-    isDashboardRoute ||
-    pathname?.includes("/profile") ||
-    pathname?.includes("/settings") ||
-    pathname?.includes("/check-in") ||
-    pathname?.includes("/insights") ||
-    pathname?.includes("/diary")
-    || pathname?.includes("/novagame")
-  );
+  const isPrivateRoute = isLoggedIn && Boolean(pathname) && !pathname?.includes("/auth/") && pathname !== `/${locale}`;
 
   React.useEffect(() => {
     const updateGameXp = () => {
@@ -77,19 +68,7 @@ export function Navbar() {
     };
   }, [user]);
 
-  const navItems = isPt
-    ? [
-        { label: "Início", href: `/${locale}` },
-        { label: "Check-in", href: `/${locale}/check-in` },
-        { label: "Insights", href: `/${locale}/insights` },
-        { label: "Dashboard", href: `/${locale}/dashboard` },
-      ]
-    : [
-        { label: "Home", href: `/${locale}` },
-        { label: "Check-in", href: `/${locale}/check-in` },
-        { label: "Insights", href: `/${locale}/insights` },
-        { label: "Dashboard", href: `/${locale}/dashboard` },
-      ];
+  const navItems: { label: string; href: string }[] = [];
 
   if (isPrivateRoute) {
     return (
@@ -181,8 +160,8 @@ export function Navbar() {
       >
         <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 85, padding: "0 28px" }}>
           <Link href="/en" style={{ display: "flex", alignItems: "center", gap: 10, fontWeight: 800, fontSize: "1.5rem", letterSpacing: "-0.03em", color: "#ffffff", textDecoration: "none" }}>
-            <Image src="/icons/nova-icon-192.svg" alt="NOVA Psychology" width={38} height={38} />
-            <span><span style={{ fontWeight: 800 }}>NOVA</span> <span style={{ fontWeight: 300, fontSize: "1.05rem", opacity: 0.85, letterSpacing: "0.02em" }}>psychology</span></span>
+            <Image src="/icons/nova-icon-192.svg" alt="NOVA Recovery" width={38} height={38} />
+            <span><span style={{ fontWeight: 800 }}>NOVA</span> <span style={{ fontWeight: 300, fontSize: "1.05rem", opacity: 0.85, letterSpacing: "0.02em" }}>recovery</span></span>
           </Link>
 
           <nav style={{ display: "flex", gap: 36 }}>

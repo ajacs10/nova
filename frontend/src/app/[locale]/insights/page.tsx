@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { Moon, Sun, Sunset } from "lucide-react";
 import { Navbar } from "@/shared/ui/Navbar";
@@ -146,6 +147,10 @@ export default function InsightsPage() {
           <div style={{ maxWidth: 440 }}>
             <h1 style={{ marginBottom: 10 }}>{isPt ? "O teu primeiro padrão está à espera" : "Your first pattern is waiting"}</h1>
             <p style={{ color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>{isPt ? "Completa pelo menos três check-ins para começarmos a comparar os teus dados. Os padrões serão baseados apenas no que registares." : "Complete at least three check-ins so we can start comparing your data. Patterns will be based only on what you record."}</p>
+            <div className="recovery-record-links">
+              <Link href={`/${locale}/recovery-history`}>{isPt ? "Histórico de recuperação" : "Recovery history"}</Link>
+              <Link href={`/${locale}/summary`}>{isPt ? "Resumo para consulta" : "Appointment summary"}</Link>
+            </div>
           </div>
         </main>
       </div>
@@ -190,6 +195,18 @@ export default function InsightsPage() {
       {isLoggedIn && <DashboardSidebar locale={locale} activePath={`/${locale}/insights`} onLogout={handleSidebarLogout} />}
 
       <main className={isLoggedIn ? "insights-private-content" : undefined} style={{ paddingTop: 110, paddingBottom: 60 }}>
+
+        <section className="recovery-records" aria-label={isPt ? "Registos de recuperação" : "Recovery records"}>
+          <div>
+            <span>{isPt ? "ACOMPANHAMENTO" : "TRACKING"}</span>
+            <h1>{isPt ? "Os teus registos de recuperação" : "Your recovery records"}</h1>
+            <p>{isPt ? "Revê a timeline e prepara um resumo para conversares com um profissional de saúde." : "Review your timeline and prepare a summary for a conversation with a healthcare professional."}</p>
+          </div>
+          <div className="recovery-record-links">
+            <Link href={`/${locale}/recovery-history`}>{isPt ? "Ver histórico" : "View history"}</Link>
+            <Link href={`/${locale}/summary`}>{isPt ? "Ver resumo" : "View summary"}</Link>
+          </div>
+        </section>
 
         {/* CENTRO: Seletor de Período de Tempo (Manhã 06h-12h | Tarde 12h-19h | Noite 19h-06h) */}
         <div
@@ -372,6 +389,14 @@ export default function InsightsPage() {
           margin-right: 24px !important;
         }
 
+        .recovery-records { display:flex; align-items:end; justify-content:space-between; gap:24px; max-width:1052px; margin:0 24px 24px; padding:18px 20px; border:1px solid rgba(0,210,181,.2); border-radius:14px; background:rgba(0,210,181,.05); }
+        .recovery-records span { color:#00d2b5; font-size:.68rem; font-weight:800; letter-spacing:.12em; }
+        .recovery-records h1 { margin:6px 0; font-size:1.1rem; }
+        .recovery-records p { max-width:590px; margin:0; color:rgba(255,255,255,.63); font-size:.85rem; line-height:1.5; }
+        .recovery-record-links { display:flex; flex-wrap:wrap; gap:10px; }
+        .recovery-record-links a { padding:10px 13px; border:1px solid rgba(0,210,181,.32); border-radius:9px; color:#00d2b5; font-size:.82rem; font-weight:700; text-decoration:none; white-space:nowrap; }
+        .recovery-record-links a:hover, .recovery-record-links a:focus-visible { background:rgba(0,210,181,.12); outline:none; }
+
         .period-tooltip {
           position: absolute;
           top: calc(100% + 10px);
@@ -447,6 +472,8 @@ export default function InsightsPage() {
             transform: none;
           }
         }
+
+        @media (max-width: 640px) { .recovery-records { align-items:flex-start; flex-direction:column; } }
       `}</style>
     </div>
   );

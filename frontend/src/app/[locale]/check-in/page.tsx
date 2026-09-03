@@ -37,6 +37,54 @@ export default function CheckInPage() {
     noteTitle: isPt ? "Nota ou Reflexão Diária" : "Daily Note or Reflection",
   };
 
+  const recoveryTools = [
+    {
+      href: `/${locale}/recovery`,
+      title: isPt ? "Sintomas e atividades" : "Symptoms & activities",
+      description: isPt
+        ? "Regista sintomas, sono e resposta às atividades."
+        : "Record symptoms, sleep, and your response to activities.",
+    },
+    {
+      href: `/${locale}/return-to-learn`,
+      title: isPt ? "Regresso à aprendizagem" : "Return to Learn",
+      description: isPt
+        ? "Organiza estudo, pausas e adaptações para discutir com a tua equipa de cuidados."
+        : "Organize learning, breaks, and accommodations to discuss with your care team.",
+    },
+    {
+      href: `/${locale}/return-to-activity`,
+      title: isPt ? "Regresso à atividade" : "Return to Activity",
+      description: isPt
+        ? "Acompanha atividades e alterações que observares."
+        : "Track activities and any changes you observe.",
+    },
+  ];
+
+  const recoveryToolsPanel = (
+    <section className="recovery-tools" aria-labelledby="recovery-tools-title">
+      <div className="recovery-tools-heading">
+        <span>{isPt ? "ACOMPANHAMENTO DE CONCUSSÃO" : "CONCUSSION TRACKING"}</span>
+        <h2 id="recovery-tools-title">
+          {isPt ? "Complementa o teu check-in diário" : "Complement your daily check-in"}
+        </h2>
+        <p>
+          {isPt
+            ? "Estas ferramentas organizam informação autorrelatada para conversares com um profissional. Não substituem cuidados médicos."
+            : "These tools organize self-reported information for conversations with a professional. They do not replace medical care."}
+        </p>
+      </div>
+      <div className="recovery-tools-grid">
+        {recoveryTools.map((tool) => (
+          <Link key={tool.href} href={tool.href} className="recovery-tool-link">
+            <strong>{tool.title}</strong>
+            <span>{tool.description}</span>
+          </Link>
+        ))}
+      </div>
+    </section>
+  );
+
   const handleSidebarLogout = async () => {
     await logoutUser();
     router.push(`/${locale}/auth/login`);
@@ -139,6 +187,7 @@ export default function CheckInPage() {
             <Link href={`/${locale}/dashboard`} style={{ display: "inline-block", padding: "12px 22px", borderRadius: 999, background: "#00d2b5", color: "#060810", fontWeight: 700, textDecoration: "none" }}>
               {isPt ? "Ver o meu painel" : "View my dashboard"}
             </Link>
+            <div style={{ marginTop: 32, textAlign: "left" }}>{recoveryToolsPanel}</div>
           </section>
         </main>
       </div>
@@ -267,6 +316,7 @@ export default function CheckInPage() {
                   {text.next}
                 </button>
               </div>
+              <div className="recovery-tools-placement">{recoveryToolsPanel}</div>
             </div>
           )}
 
@@ -760,6 +810,7 @@ export default function CheckInPage() {
                   >
                     {isPt ? "Ver o meu painel" : "View my dashboard"}
                   </Link>
+                  <div style={{ width: "100%", marginTop: 32, textAlign: "left" }}>{recoveryToolsPanel}</div>
                 </>
               ) : (
                 <>
@@ -876,6 +927,77 @@ export default function CheckInPage() {
           align-items: center;
           justifyContent: center;
           width: 100%;
+        }
+
+        .recovery-tools-placement {
+          width: min(100%, 820px);
+          margin-top: 40px;
+        }
+
+        .recovery-tools {
+          padding: 22px;
+          border: 1px solid rgba(0, 210, 181, 0.24);
+          border-radius: 18px;
+          background: rgba(0, 210, 181, 0.055);
+        }
+
+        .recovery-tools-heading span {
+          color: #00d2b5;
+          font-size: 0.7rem;
+          font-weight: 800;
+          letter-spacing: 0.12em;
+        }
+
+        .recovery-tools-heading h2 {
+          margin: 8px 0;
+          color: #ffffff;
+          font-size: 1.15rem;
+        }
+
+        .recovery-tools-heading p {
+          margin: 0;
+          color: rgba(255, 255, 255, 0.66);
+          font-size: 0.86rem;
+          line-height: 1.55;
+        }
+
+        .recovery-tools-grid {
+          display: grid;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+          gap: 10px;
+          margin-top: 18px;
+        }
+
+        .recovery-tool-link {
+          display: flex;
+          flex-direction: column;
+          gap: 7px;
+          min-height: 92px;
+          padding: 15px;
+          border: 1px solid rgba(255, 255, 255, 0.11);
+          border-radius: 12px;
+          background: rgba(6, 8, 16, 0.45);
+          color: #ffffff;
+          text-decoration: none;
+          transition: border-color 0.16s ease, transform 0.16s ease;
+        }
+
+        .recovery-tool-link:hover,
+        .recovery-tool-link:focus-visible {
+          border-color: #00d2b5;
+          outline: none;
+          transform: translateY(-2px);
+        }
+
+        .recovery-tool-link strong {
+          color: #00d2b5;
+          font-size: 0.88rem;
+        }
+
+        .recovery-tool-link span {
+          color: rgba(255, 255, 255, 0.65);
+          font-size: 0.76rem;
+          line-height: 1.45;
         }
 
         .mood-avatar-wrapper {
@@ -1008,6 +1130,12 @@ export default function CheckInPage() {
             width: calc(50% - 6px) !important;
             min-width: 0 !important;
             flex: 1 1 0 !important;
+          }
+        }
+
+        @media (max-width: 640px) {
+          .recovery-tools-grid {
+            grid-template-columns: 1fr;
           }
         }
 

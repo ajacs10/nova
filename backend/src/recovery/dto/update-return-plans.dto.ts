@@ -1,8 +1,8 @@
-import { IsInt, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
+import { IsInt, IsNumber, IsOptional, IsString, Max, MaxLength, Min } from 'class-validator';
 
 export class UpdateReturnToLearnDto {
   @IsInt() @Min(1) @Max(5) currentStage!: number;
-  @IsOptional() @IsInt() @Min(0) @Max(24) schoolHours?: number;
+  @IsOptional() @IsNumber({ maxDecimalPlaces: 1 }) @Min(0) @Max(24) schoolHours?: number;
   @IsOptional() @IsString() @MaxLength(500) breaks?: string;
   @IsOptional() @IsInt() @Min(0) @Max(1440) screenTimeMinutes?: number;
   @IsOptional() @IsString() @MaxLength(500) cognitiveActivity?: string;

@@ -193,8 +193,8 @@ export default function LandingPage() {
               }}
             >
               {isPt
-                ? "Acompanha sintomas, sono, atividades e mudanças diárias ao longo do tempo — e transforma experiências dispersas numa história de recuperação mais clara."
-                : "Track symptoms, sleep, activities and daily changes over time — and turn scattered experiences into a clearer recovery story."}
+                ? "Acompanha sintomas, sono e atividades num único lugar."
+                : "Track symptoms, sleep, and activities in one place."}
             </p>
 
             <div style={{ display: "flex", gap: 16, justifyContent: "center", alignItems: "center", flexWrap: "wrap" }}>
@@ -214,29 +214,29 @@ export default function LandingPage() {
               >
                 {isPt ? "Explorar NOVA Recovery" : "Explore NOVA Recovery"}
               </Link>
-              <a
-                href="#recovery-workflow"
-                style={{
-                  color: "#ffffff",
-                  padding: "16px 28px",
-                  fontWeight: 600,
-                  fontSize: "1rem",
-                  textDecoration: "none",
-                  borderRadius: "100px",
-                  background: "rgba(255, 255, 255, 0.08)",
-                  backdropFilter: "blur(10px)",
-                  border: "1px solid rgba(255, 255, 255, 0.12)",
-                  transition: "all 0.3s ease",
-                }}
-              >
-                {isPt ? "Ver como funciona" : "See how it works"}
-              </a>
             </div>
             <p style={{ maxWidth: 580, margin: "28px auto 0", color: "rgba(255,255,255,0.55)", fontSize: "0.8rem", lineHeight: 1.5 }}>
               {isPt ? "A NOVA é uma ferramenta de acompanhamento e educação. Não diagnostica, trata nem fornece autorização médica." : "NOVA is a tracking and education tool. It does not diagnose, treat, or provide medical clearance."}
             </p>
           </div>
         </section>
+
+        <section style={{ padding: "72px 20px", background: "#080b15" }}>
+          <div style={{ maxWidth: 960, margin: "0 auto", textAlign: "center" }}>
+            <h2 style={{ color: "#fff", fontSize: "clamp(1.7rem, 3vw, 2.4rem)", margin: "0 0 14px" }}>{isPt ? "Regista. Organiza. Conversa." : "Record. Organize. Discuss."}</h2>
+            <p style={{ color: "rgba(255,255,255,.65)", margin: "0 auto 30px", maxWidth: 600, lineHeight: 1.6 }}>{isPt ? "Informação clara para a tua recuperação e para conversas com profissionais." : "Clear information for your recovery and conversations with professionals."}</p>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14, textAlign: "left" }}>
+              {[
+                [isPt ? "Check-in diário" : "Daily check-in", isPt ? "Sintomas, sono e rotina." : "Symptoms, sleep, and routine."],
+                [isPt ? "Os teus dados" : "Your data", isPt ? "Histórico e tendências autorrelatadas." : "History and self-reported trends."],
+                [isPt ? "Resumo claro" : "Clear summary", isPt ? "Prepara a próxima conversa clínica." : "Prepare the next clinical conversation."],
+              ].map(([title, text]) => <article key={title} style={{ padding: 22, border: "1px solid rgba(255,255,255,.09)", borderRadius: 14, background: "rgba(255,255,255,.025)" }}><strong style={{ display: "block", color: "#00d2b5", marginBottom: 8 }}>{title}</strong><span style={{ color: "rgba(255,255,255,.68)", fontSize: ".9rem" }}>{text}</span></article>)}
+            </div>
+            <p style={{ color: "rgba(255,255,255,.46)", fontSize: ".78rem", margin: "28px 0 0", lineHeight: 1.5 }}>{isPt ? "A NOVA não diagnostica nem substitui cuidados profissionais." : "NOVA does not diagnose or replace professional care."}</p>
+          </div>
+        </section>
+
+        {false && <>
 
         {/* SECÇÃO CARROSSEL DE VÍDEOS DE BEM-ESTAR (INTACTO) */}
         <section
@@ -528,6 +528,7 @@ export default function LandingPage() {
             </Link>
           </div>
         </section>
+        </>}
       </main>
 
       <Footer />

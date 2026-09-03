@@ -1,19 +1,27 @@
-# NOVA Recovery
+# NOVA
 
-> Status: protótipo funcional de apoio à recuperação, em preparação para produção. As funcionalidades disponíveis e as limitações reais estão descritas abaixo.
+> An evidence-informed, private companion for organizing concussion-recovery information and preparing conversations with healthcare professionals.
 
-NOVA Recovery is an evidence-informed recovery companion that organizes self-reported symptoms, activities, sleep, and daily functioning over time for conversations with healthcare professionals.
+NOVA records self-reported symptoms, sleep, daily functioning, activities, learning adjustments, and return-to-activity notes. Its charts, history, and summary are based on the signed-in user’s stored records — never demo values or a clinical score.
 
-It does not diagnose concussion, confirm recovery, measure brain function, determine readiness, provide medical clearance, prescribe treatment, or replace professional care. See [docs/clinical-foundation.md](docs/clinical-foundation.md) for the evidence sources and product boundaries.
+## Safety boundary
 
-Para instalação, validação, segurança e deploy, consulte `docs/`.
+NOVA supports tracking and organization. It does **not** diagnose concussion, measure brain function, prescribe treatment, determine readiness, provide medical clearance, or replace professional or emergency care. Seek qualified medical advice when concerned or when symptoms persist or worsen; in an emergency, contact local emergency services.
 
-## Validation Status
+## What the platform includes
 
-The current codebase passes frontend lint and production build, as well as backend lint, unit tests, end-to-end tests, build, and Prisma schema validation. Dependency audit findings are reviewed separately because forced fixes may introduce incompatible framework changes.
+- Daily well-being check-ins for mood, sleep, energy, workload, and notes.
+- Concussion-specific symptom and activity records, including before/after observations.
+- Information-only Return to Learn and Return to Activity logs.
+- User-scoped history, symptom trends, and appointment-ready recovery summary.
+- Evidence and safety pages grounded in recognised international guidance.
+
+The current insight engine makes deterministic comparisons within the user’s own data. It does not call an LLM, send health records to an external AI provider, claim causation, or make a medical prediction.
+
+For local setup, validation, security, and deployment, see [`docs/`](docs/). The clinical sources, product rationale, and limitations are documented in [clinical foundation](docs/clinical-foundation.md).
 
 <p align="center">
-  <img src="./NOVA.jpeg" alt="NOVA — Privacy-first mental wellness platform" width="850">
+  <img src="./NOVA.jpeg" alt="NOVA concussion recovery companion interface" width="850">
 </p>
 
 <p align="center">
@@ -21,7 +29,7 @@ The current codebase passes frontend lint and production build, as well as backe
 </p>
 
 <p align="center">
-  NOVA helps users understand their daily well-being, recognise personal patterns, and make small changes to their routines.
+  NOVA helps users organize their own recovery information without replacing professional care.
 </p>
 
 ---
@@ -601,4 +609,3 @@ Software Engineer interested in building practical software, user-centred produc
 # Licence
 
 This project is currently being developed as an independent project.
-

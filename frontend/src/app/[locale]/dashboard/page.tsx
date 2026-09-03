@@ -6,11 +6,11 @@ import { useRouter, useParams } from "next/navigation";
 import { Navbar } from "@/shared/ui/Navbar";
 import { useAuth } from "@/shared/lib/AuthContext";
 import { MetricCard } from "@/components/templates/metric-card";
-import { getDashboard, getUserFriendlyError } from "@/shared/lib/api";
+import { getActivityEntries, getDashboard, getRecoveryEntries, getUserFriendlyError, type RecoveryEntry } from "@/shared/lib/api";
 import { DashboardSidebar } from "@/components/ui/dashboard-sidebar";
 import { usePreferredLocale } from "@/shared/lib/locale";
 
-type ChartTab = "sleep" | "workload" | "metrics";
+type ChartTab = "sleep" | "workload" | "symptoms" | "metrics";
 
 export default function DashboardPage() {
   const [activeChartTab, setActiveChartTab] = React.useState<ChartTab>("sleep");
@@ -18,6 +18,8 @@ export default function DashboardPage() {
   const [activeBalanceMetric, setActiveBalanceMetric] = React.useState<"sleep" | "workload">("sleep");
   const [dashboard, setDashboard] = React.useState<Awaited<ReturnType<typeof getDashboard>> | null>(null);
   const [dashboardError, setDashboardError] = React.useState<string | null>(null);
+  const [recoveryEntries, setRecoveryEntries] = React.useState<RecoveryEntry[]>([]);
+  const [activityCount, setActivityCount] = React.useState(0);
 
   const router = useRouter();
   const params = useParams();
@@ -36,8 +38,12 @@ export default function DashboardPage() {
 
   React.useEffect(() => {
     if (!isReady || !isLoggedIn) return;
-    getDashboard()
-      .then(setDashboard)
+    Promise.all([getDashboard(), getRecoveryEntries(), getActivityEntries()])
+      .then(([nextDashboard, nextRecoveryEntries, activities]) => {
+        setDashboard(nextDashboard);
+        setRecoveryEntries(nextRecoveryEntries);
+        setActivityCount(activities.length);
+      })
       .catch((error: unknown) => setDashboardError(getUserFriendlyError(error, locale === "pt")));
   }, [isReady, isLoggedIn, locale]);
 
@@ -108,6 +114,13 @@ export default function DashboardPage() {
     ? (locale === "pt" ? "Sono" : "Sleep")
     : (locale === "pt" ? "Trabalho" : "Workload");
   const weeklyCompletion = clampPercent((weeklyData.length / 7) * 100);
+  const symptomData = recoveryEntries.slice(0, 14).reverse();
+  const symptomAverage = symptomData.length
+    ? symptomData.reduce((sum, item) => sum + item.headache + item.dizziness + item.fatigue + item.nausea + item.lightSensitivity + item.noiseSensitivity + item.concentration + item.memory + item.balance + item.sleepDifficulty, 0) / (symptomData.length * 10)
+    : 0;
+  const symptomX = (index: number) => 52 + (symptomData.length > 1 ? index * (510 / (symptomData.length - 1)) : 255);
+  const symptomY = (value: number) => 220 - value * 20;
+  const symptomPath = (key: "headache" | "dizziness" | "fatigue") => symptomData.length ? `M ${symptomData.map((item, index) => `${symptomX(index)},${symptomY(item[key])}`).join(" L ")}` : "";
 
   return (
     <div style={{ background: "#060810", color: "#ffffff", width: "100%", minHeight: "100vh", fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
@@ -126,7 +139,12 @@ export default function DashboardPage() {
         <div className="dashboard-wrapper" style={{ width: "100%", maxWidth: 1440, margin: "0 auto", padding: "0 32px", boxSizing: "border-box" }}>
 
           {/* CABEÇALHO DO PAINEL */}
-          <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 24, width: "100%" }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 20, marginBottom: 24, width: "100%" }}>
+            <div>
+              <span style={{ color: "#00d2b5", fontSize: ".7rem", fontWeight: 800, letterSpacing: ".12em" }}>{isPt ? "ACOMPANHAMENTO DE CONCUSSÃO" : "CONCUSSION TRACKING"}</span>
+              <h1 style={{ margin: "6px 0 0", fontSize: "1.5rem" }}>{isPt ? "O teu panorama de recuperação" : "Your recovery overview"}</h1>
+              <p style={{ margin: "6px 0 0", color: "rgba(255,255,255,.62)", fontSize: ".86rem" }}>{isPt ? "Dados autorrelatados para observação e conversa com profissionais." : "Self-reported data for observation and conversations with professionals."}</p>
+            </div>
             <Link
               href="/check-in"
               style={{
@@ -154,7 +172,7 @@ export default function DashboardPage() {
                 <div style={{ height: "100%", background: "#0a0e1a", padding: "18px", borderRadius: "12px", display: "flex", justifyContent: "space-between", alignItems: "center", boxSizing: "border-box" }}>
                   <div>
                     <div style={{ fontSize: "1.3rem", fontWeight: 800 }}>{dashboard.streak} {isPt ? "Dias" : "Days"}</div>
-                    <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{isPt ? "Check-ins" : "Check-ins"}</div>
+                    <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{isPt ? "Dias com check-in" : "Check-in days"}</div>
                   </div>
                   <div style={{ width: 38, height: 38, borderRadius: "50%", border: "3px solid #00d2b5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.68rem", fontWeight: 700, color: "#00d2b5" }}>
                     {weeklyCompletion}%
@@ -164,7 +182,7 @@ export default function DashboardPage() {
                 <div style={{ height: "100%", background: "#0a0e1a", padding: "18px", borderRadius: "12px", display: "flex", justifyContent: "space-between", alignItems: "center", boxSizing: "border-box" }}>
                   <div>
                     <div style={{ fontSize: "1.3rem", fontWeight: 800 }}>{dashboard.totalCheckins}</div>
-                    <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{isPt ? "Total Registos" : "Total Entries"}</div>
+                    <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{isPt ? "Check-ins guardados" : "Saved check-ins"}</div>
                   </div>
                   <div style={{ width: 38, height: 38, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.68rem", fontWeight: 700, color: "rgba(255,255,255,0.7)" }}>
                     {weeklyCompletion}%
@@ -227,6 +245,7 @@ export default function DashboardPage() {
                     {[
                       { id: "sleep", label: isPt ? "Horas de Sono" : "Sleep Hours" },
                       { id: "workload", label: isPt ? "Carga & Descanso" : "Workload & Rest" },
+                      { id: "symptoms", label: isPt ? "Sintomas" : "Symptoms" },
                       { id: "metrics", label: isPt ? "Equilíbrio & Funil" : "Balance & Funnel" },
                     ].map((tab) => (
                       <button
@@ -339,11 +358,26 @@ export default function DashboardPage() {
                     </div>
                   )}
 
+                  {activeChartTab === "symptoms" && (
+                    <div style={{ height: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 12, fontSize: "0.74rem", color: "rgba(255,255,255,0.68)" }}>
+                        <span>{isPt ? `${symptomData.length} registos autorrelatados · média ${symptomAverage.toFixed(1)}/10` : `${symptomData.length} self-reported entries · average ${symptomAverage.toFixed(1)}/10`}</span>
+                        <span>{isPt ? `${activityCount} atividades registadas` : `${activityCount} activities recorded`}</span>
+                      </div>
+                      {symptomData.length ? <svg width="100%" height="100%" viewBox="0 0 580 260" preserveAspectRatio="none" role="img" aria-label={isPt ? "Evolução de sintomas autorrelatados" : "Self-reported symptom trend"}>
+                        {[0, 2, 4, 6, 8, 10].map((value) => <g key={value}><line x1="42" y1={symptomY(value)} x2="570" y2={symptomY(value)} stroke="rgba(255,255,255,.08)"/><text x="32" y={symptomY(value) + 4} fill="rgba(255,255,255,.5)" fontSize="10" textAnchor="end">{value}</text></g>)}
+                        <path d={symptomPath("headache")} fill="none" stroke="#f59e0b" strokeWidth="3"/><path d={symptomPath("dizziness")} fill="none" stroke="#3b82f6" strokeWidth="3"/><path d={symptomPath("fatigue")} fill="none" stroke="#00d2b5" strokeWidth="3"/>
+                        {symptomData.map((item, index) => <text key={item.id} x={symptomX(index)} y="240" fill="rgba(255,255,255,.55)" fontSize="9" textAnchor="middle">{new Date(item.createdAt).toLocaleDateString(isPt ? "pt-PT" : "en-GB", { day: "2-digit", month: "2-digit" })}</text>)}
+                      </svg> : <div style={{ display: "grid", placeItems: "center", flex: 1, color: "rgba(255,255,255,.62)", textAlign: "center", lineHeight: 1.6 }}>{isPt ? "Ainda não existem registos de sintomas. Adiciona-os em Check-in para veres tendências reais, sem diagnóstico ou previsão." : "There are no symptom records yet. Add them in Check-in to see real trends, without diagnosis or prediction."}</div>}
+                      {symptomData.length > 0 && <div style={{ display: "flex", justifyContent: "center", gap: 16, fontSize: ".75rem", color: "rgba(255,255,255,.7)" }}><span style={{ color: "#f59e0b" }}>● {isPt ? "Dor de cabeça" : "Headache"}</span><span style={{ color: "#3b82f6" }}>● {isPt ? "Tontura" : "Dizziness"}</span><span style={{ color: "#00d2b5" }}>● {isPt ? "Fadiga" : "Fatigue"}</span></div>}
+                    </div>
+                  )}
+
                   {/* ABA: MÉTRICAS */}
                   {activeChartTab === "metrics" && (
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 30, alignItems: "center", height: "100%" }}>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#ffffff", marginBottom: 12 }}>{isPt ? "Índice de Estabilidade" : "Stability Score"}</div>
+                        <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#ffffff", marginBottom: 12 }}>{isPt ? "Consistência dos registos" : "Record consistency"}</div>
                         <div style={{ position: "relative", width: 180, height: 100, display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
                           <svg width="180" height="100" viewBox="0 0 220 120">
                             <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="rgba(255, 255, 255, 0.06)" strokeWidth="18" />
@@ -383,7 +417,7 @@ export default function DashboardPage() {
             {/* COLUNA DIREITA */}
             <div style={{ display: "flex", flexDirection: "column", gap: 24, justifyContent: "flex-end" }}>
               <div style={{ background: "#0a0e1a", padding: "16px", borderRadius: 0, height: 480, boxSizing: "border-box", display: "flex", flexDirection: "column", alignItems: "center", transform: "translateY(20px)" }}>
-                <h3 style={{ fontSize: "1rem", fontWeight: 700, margin: "0 0 20px 0", alignSelf: "flex-start" }}>Equilíbrio Geral</h3>
+                <h3 style={{ fontSize: "1rem", fontWeight: 700, margin: "0 0 20px 0", alignSelf: "flex-start" }}>{isPt ? "Observação pessoal" : "Personal observation"}</h3>
                 <div style={{ position: "relative", width: 300, height: 300, margin: "auto", display: "flex", alignItems: "center", justifyContent: "center" }}>
                   <svg width="300" height="300" viewBox="0 0 100 100">
                     <circle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0.06)" strokeWidth="12" fill="none" />

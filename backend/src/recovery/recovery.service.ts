@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service.js';
 import { CreateActivityEntryDto } from './dto/create-activity-entry.dto.js';
 import { CreateRecoveryEntryDto } from './dto/create-recovery-entry.dto.js';
@@ -18,12 +18,20 @@ export class RecoveryService {
     return this.prisma.withUserContext(userId, (tx) => tx.recoveryEntry.findMany({ where: { userId }, orderBy: { createdAt: 'desc' }, take: 90 }));
   }
 
-  updateEntry(id: string, dto: UpdateRecoveryEntryDto, userId: string) {
-    return this.prisma.withUserContext(userId, (tx) => tx.recoveryEntry.update({ where: { id }, data: dto }));
+  async updateEntry(id: string, dto: UpdateRecoveryEntryDto, userId: string) {
+    return this.prisma.withUserContext(userId, async (tx) => {
+      const entry = await tx.recoveryEntry.findFirst({ where: { id, userId }, select: { id: true } });
+      if (!entry) throw new NotFoundException('Recovery entry not found');
+      return tx.recoveryEntry.update({ where: { id }, data: dto });
+    });
   }
 
-  deleteEntry(id: string, userId: string) {
-    return this.prisma.withUserContext(userId, (tx) => tx.recoveryEntry.delete({ where: { id } }));
+  async deleteEntry(id: string, userId: string) {
+    return this.prisma.withUserContext(userId, async (tx) => {
+      const entry = await tx.recoveryEntry.findFirst({ where: { id, userId }, select: { id: true } });
+      if (!entry) throw new NotFoundException('Recovery entry not found');
+      return tx.recoveryEntry.delete({ where: { id } });
+    });
   }
 
   createActivity(dto: CreateActivityEntryDto, userId: string) {
@@ -34,12 +42,20 @@ export class RecoveryService {
     return this.prisma.withUserContext(userId, (tx) => tx.activityEntry.findMany({ where: { userId }, orderBy: { createdAt: 'desc' }, take: 90 }));
   }
 
-  updateActivity(id: string, dto: UpdateActivityEntryDto, userId: string) {
-    return this.prisma.withUserContext(userId, (tx) => tx.activityEntry.update({ where: { id }, data: dto }));
+  async updateActivity(id: string, dto: UpdateActivityEntryDto, userId: string) {
+    return this.prisma.withUserContext(userId, async (tx) => {
+      const entry = await tx.activityEntry.findFirst({ where: { id, userId }, select: { id: true } });
+      if (!entry) throw new NotFoundException('Activity entry not found');
+      return tx.activityEntry.update({ where: { id }, data: dto });
+    });
   }
 
-  deleteActivity(id: string, userId: string) {
-    return this.prisma.withUserContext(userId, (tx) => tx.activityEntry.delete({ where: { id } }));
+  async deleteActivity(id: string, userId: string) {
+    return this.prisma.withUserContext(userId, async (tx) => {
+      const entry = await tx.activityEntry.findFirst({ where: { id, userId }, select: { id: true } });
+      if (!entry) throw new NotFoundException('Activity entry not found');
+      return tx.activityEntry.delete({ where: { id } });
+    });
   }
 
   getReturnToLearn(userId: string) { return this.prisma.withUserContext(userId, (tx) => tx.returnToLearn.findUnique({ where: { userId } })); }
