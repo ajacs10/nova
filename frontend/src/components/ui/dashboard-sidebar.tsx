@@ -2,7 +2,20 @@
 
 import Link from "next/link";
 import * as React from "react";
-import { LayoutGrid, CheckSquare, LineChart, BookOpen, Gamepad2, Settings, LogOut, Menu, X, Activity, ShieldCheck, FileText } from "lucide-react";
+import {
+  LayoutGrid,
+  CheckSquare,
+  LineChart,
+  BookOpen,
+  Gamepad2,
+  Settings,
+  LogOut,
+  Menu,
+  X,
+  Activity,
+  ShieldCheck,
+  FileText,
+} from "lucide-react";
 import { usePreferredLocale } from "@/shared/lib/locale";
 
 interface DashboardSidebarProps {
@@ -23,7 +36,7 @@ export function DashboardSidebar({
 
   const mainNav = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
-    { href: "/recovery", label: isPt ? "NOVA Recovery" : "NOVA Recovery", icon: Activity },
+    { href: "/recovery", label: "NOVA Recovery", icon: Activity },
     { href: "/recovery-history", label: isPt ? "Histórico de recuperação" : "Recovery history", icon: FileText },
     { href: "/return-to-learn", label: isPt ? "Regresso à aprendizagem" : "Return to Learn", icon: BookOpen },
     { href: "/return-to-activity", label: isPt ? "Regresso à atividade" : "Return to Activity", icon: Activity },
@@ -42,170 +55,236 @@ export function DashboardSidebar({
 
   return (
     <>
-    <button type="button" className="mobile-sidebar-toggle" aria-label={isOpen ? (isPt ? "Fechar menu" : "Close menu") : (isPt ? "Abrir menu" : "Open menu")} aria-expanded={isOpen} onClick={() => setIsOpen((value) => !value)}>
-      {isOpen ? <X size={22} /> : <Menu size={22} />}
-    </button>
-    {isOpen && <button type="button" className="mobile-sidebar-backdrop" aria-label={isPt ? "Fechar menu" : "Close menu"} onClick={() => setIsOpen(false)} />}
-    <aside
-      className={`dashboard-sidebar${isOpen ? " mobile-sidebar-open" : ""}`}
-      style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        bottom: 0,
-        width: "220px",
-        height: "100vh",
-        background: "#0a0e1a",
-        borderRight: "1px solid rgba(255, 255, 255, 0.08)",
-        padding: "24px 16px",
-        display: "flex",
-        flexDirection: "column",
-        boxSizing: "border-box",
-        zIndex: 110, // Fica acima do Header
-      }}
-    >
-      <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-              {/* NOME PRINCIPAL NA SIDEBAR */}
-              <div style={{ padding: "0 8px", height: "35px", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-          <span style={{ fontSize: "1.2rem", fontWeight: 800, color: "#00d2b5", letterSpacing: "1px" }}>
-            NOVA
-          </span>
-          <span style={{ marginLeft: 6, color: "rgba(255,255,255,0.65)", fontSize: "0.82rem", fontWeight: 300, letterSpacing: "0.02em" }}>
-            psychology
-          </span>
+      <button
+        type="button"
+        className="mobile-sidebar-toggle"
+        aria-label={isOpen ? (isPt ? "Fechar menu" : "Close menu") : (isPt ? "Abrir menu" : "Open menu")}
+        aria-expanded={isOpen}
+        onClick={() => setIsOpen((prev) => !prev)}
+      >
+        {isOpen ? <X size={22} /> : <Menu size={22} />}
+      </button>
+
+      {isOpen && (
+        <button
+          type="button"
+          className="mobile-sidebar-backdrop"
+          aria-label={isPt ? "Fechar menu" : "Close menu"}
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      <aside className={`dashboard-sidebar${isOpen ? " mobile-sidebar-open" : ""}`}>
+        <div className="sidebar-brand">
+          <span className="brand-title">NOVA</span>
+          <span className="brand-subtitle">psychology</span>
         </div>
 
-        {/* NAVEGAÇÃO */}
-        <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
-          {mainNav.map((item) => {
-            const Icon = item.icon;
-            const isActive = normalizedActivePath === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                prefetch
-                onClick={() => setIsOpen(false)}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "12px",
-                  padding: "10px 14px",
-                  borderRadius: "10px",
-                  color: isActive ? "#00d2b5" : "rgba(255, 255, 255, 0.6)",
-                  fontWeight: isActive ? 600 : 400,
-                  fontSize: "0.9rem",
-                  textDecoration: "none",
-                  transition: "all 0.15s ease",
-                }}
-              >
-                <Icon size={18} />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-      </div>
+        <div className="sidebar-content">
+          <nav className="nav-group">
+            {mainNav.map((item) => {
+              const Icon = item.icon;
+              const isActive = normalizedActivePath === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  prefetch
+                  aria-current={isActive ? "page" : undefined}
+                  onClick={() => setIsOpen(false)}
+                  className={`nav-link${isActive ? " active" : ""}`}
+                >
+                  <Icon size={18} />
+                  <span>{item.label}</span>
+                </Link>
+              );
+            })}
+          </nav>
 
-      {/* ÁREA INFERIOR DA SIDEBAR */}
-      <div style={{ marginTop: "auto", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "16px", display: "flex", flexDirection: "column", gap: "4px" }}>
-        {accountNav.map((item) => {
-          const Icon = item.icon;
-          const isActive = normalizedActivePath === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              prefetch
-              onClick={() => setIsOpen(false)}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                padding: "10px 14px",
-                borderRadius: "10px",
-                color: isActive ? "#00d2b5" : "rgba(255, 255, 255, 0.6)",
-                background: isActive ? "rgba(0, 210, 181, 0.08)" : "transparent",
-                fontWeight: isActive ? 600 : 400,
-                fontSize: "0.88rem",
-                textDecoration: "none",
-                transition: "all 0.15s ease",
-              }}
-            >
-              <Icon size={18} />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
+          <div className="sidebar-footer">
+            <nav className="nav-group">
+              {accountNav.map((item) => {
+                const Icon = item.icon;
+                const isActive = normalizedActivePath === item.href;
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    prefetch
+                    aria-current={isActive ? "page" : undefined}
+                    onClick={() => setIsOpen(false)}
+                    className={`nav-link${isActive ? " active" : ""}`}
+                  >
+                    <Icon size={18} />
+                    <span>{item.label}</span>
+                  </Link>
+                );
+              })}
+            </nav>
 
-        {onLogout && (
-          <button
-            onClick={onLogout}
-            style={{
-              width: "100%",
-              display: "flex",
-              alignItems: "center",
-              gap: "12px",
-              padding: "10px 14px",
-              borderRadius: "10px",
-              color: "#f87171",
-              background: "transparent",
-              border: "none",
-              fontSize: "0.88rem",
-              fontWeight: 500,
-              cursor: "pointer",
-              transition: "all 0.15s ease",
-            }}
-          >
-            <LogOut size={18} />
-            <span>{isPt ? "Sair" : "Logout"}</span>
-          </button>
-        )}
-      </div>
+            {onLogout && (
+              <button type="button" onClick={onLogout} className="logout-btn">
+                <LogOut size={18} />
+                <span>{isPt ? "Sair" : "Logout"}</span>
+              </button>
+            )}
+          </div>
+        </div>
 
-      <style jsx>{`
-        .mobile-sidebar-toggle,
-        .mobile-sidebar-backdrop {
-          display: none;
-        }
-
-        @media (max-width: 900px) {
+        <style jsx>{`
           .dashboard-sidebar {
-            display: none !important;
-          }
-
-          .dashboard-sidebar.mobile-sidebar-open {
-            display: flex !important;
-            z-index: 120;
-          }
-
-          .mobile-sidebar-toggle {
             position: fixed;
-            top: 16px;
-            left: 14px;
-            z-index: 140;
-            display: grid;
-            place-items: center;
-            width: 44px;
-            height: 44px;
-            color: #fff;
-            background: rgba(10, 14, 26, 0.94);
-            border: 1px solid rgba(255, 255, 255, 0.18);
+            top: 0;
+            left: 0;
+            bottom: 0;
+            width: 220px;
+            height: 100vh;
+            background: #0a0e1a;
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            padding: 24px 14px;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            z-index: 110;
+          }
+
+          .sidebar-brand {
+            padding: 0 8px 20px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-shrink: 0;
+          }
+
+          .brand-title {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #00d2b5;
+            letter-spacing: 1px;
+          }
+
+          .brand-subtitle {
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 0.82rem;
+            font-weight: 300;
+            letter-spacing: 0.02em;
+          }
+
+          .sidebar-content {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: rgba(255, 255, 255, 0.1) transparent;
+          }
+
+          .nav-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+          }
+
+          :global(.nav-link) {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
             border-radius: 10px;
-            cursor: pointer;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 400;
+            font-size: 0.88rem;
+            text-decoration: none;
+            transition: all 0.15s ease;
           }
 
-          .mobile-sidebar-backdrop {
-            position: fixed;
-            inset: 0;
-            z-index: 115;
-            display: block;
-            background: rgba(0, 0, 0, 0.48);
-            border: 0;
+          :global(.nav-link:hover) {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.04);
           }
-        }
-      `}</style>
-    </aside>
+
+          :global(.nav-link.active) {
+            color: #00d2b5;
+            background: rgba(0, 210, 181, 0.08);
+            font-weight: 600;
+          }
+
+          .sidebar-footer {
+            margin-top: 16px;
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
+            padding-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            flex-shrink: 0;
+          }
+
+          .logout-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: 10px;
+            color: #f87171;
+            background: transparent;
+            border: none;
+            font-size: 0.88rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: left;
+          }
+
+          .logout-btn:hover {
+            background: rgba(248, 113, 113, 0.08);
+          }
+
+          .mobile-sidebar-toggle,
+          .mobile-sidebar-backdrop {
+            display: none;
+          }
+
+          @media (max-width: 900px) {
+            .dashboard-sidebar {
+              display: none;
+            }
+
+            .dashboard-sidebar.mobile-sidebar-open {
+              display: flex;
+              z-index: 120;
+            }
+
+            .mobile-sidebar-toggle {
+              position: fixed;
+              top: 16px;
+              left: 14px;
+              z-index: 140;
+              display: grid;
+              place-items: center;
+              width: 44px;
+              height: 44px;
+              color: #fff;
+              background: rgba(10, 14, 26, 0.94);
+              border: 1px solid rgba(255, 255, 255, 0.18);
+              border-radius: 10px;
+              cursor: pointer;
+            }
+
+            .mobile-sidebar-backdrop {
+              position: fixed;
+              inset: 0;
+              z-index: 115;
+              display: block;
+              background: rgba(0, 0, 0, 0.48);
+              border: 0;
+            }
+          }
+        `}</style>
+      </aside>
     </>
   );
 }
