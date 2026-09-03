@@ -437,7 +437,7 @@ export default function SettingsPage() {
 
         /* Cartão de Perfil do Topo */
         .header-profile-card { display: flex; align-items: center; gap: 20px; }
-        .profile-avatar { position: relative; width: 68px; height: 68px; padding: 0; border-radius: 50%; overflow: hidden; background: #151c2e; border: 2px solid rgba(0,210,181,.4); flex-shrink: 0; cursor: pointer; }
+        .profile-avatar { position: relative; width: 132px; height: 104px; padding: 0; border-radius: 18px; overflow: hidden; background: #151c2e; border: 2px solid rgba(0,210,181,.4); flex-shrink: 0; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,.18); }
         .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .avatar-upload-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.62); color: #fff; font-size: .68rem; font-weight: 700; opacity: 0; transition: opacity .2s ease; }
         .profile-avatar:hover .avatar-upload-hint, .profile-avatar:focus-visible .avatar-upload-hint { opacity: 1; }
@@ -493,6 +493,8 @@ export default function SettingsPage() {
           .settings-container { grid-template-columns: 1fr; }
           .settings-nav { flex-direction: row; border-right: 0; border-bottom: 1px solid rgba(255,255,255,.08); padding-right: 0; padding-bottom: 12px; overflow-x: auto; }
           .form-grid { grid-template-columns: 1fr; }
+          .header-profile-card { align-items: flex-start; flex-wrap: wrap; }
+          .profile-avatar { width: 120px; height: 96px; }
         }
       `}</style>
     </PrivateShell>

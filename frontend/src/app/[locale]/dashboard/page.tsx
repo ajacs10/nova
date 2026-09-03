@@ -128,7 +128,7 @@ export default function DashboardPage() {
           {/* CABEÇALHO DO PAINEL */}
           <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 24, width: "100%" }}>
             <Link
-              href={`/${locale}/check-in`}
+              href="/check-in"
               style={{
                 background: "#00d2b5",
                 color: "#060810",

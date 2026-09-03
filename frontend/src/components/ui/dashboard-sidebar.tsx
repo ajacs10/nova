@@ -19,17 +19,18 @@ export function DashboardSidebar({
   const preferredLocale = usePreferredLocale("private", locale);
   const isPt = preferredLocale === "pt";
   const [isOpen, setIsOpen] = React.useState(false);
+  const normalizedActivePath = activePath.replace(/^\/(en|pt)(?=\/|$)/, "") || "/";
 
   const mainNav = [
-    { href: `/${locale}/dashboard`, label: "Dashboard", icon: LayoutGrid },
-    { href: `/${locale}/check-in`, label: "Check-in", icon: CheckSquare },
-    { href: `/${locale}/insights`, label: "Insights", icon: LineChart },
-    { href: `/${locale}/diary`, label: isPt ? "Meu Diário" : "My Diary", icon: BookOpen },
-    { href: `/${locale}/novagame`, label: "NOVA Game", icon: Gamepad2 },
+    { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
+    { href: "/check-in", label: "Check-in", icon: CheckSquare },
+    { href: "/insights", label: "Insights", icon: LineChart },
+    { href: "/diary", label: isPt ? "Meu Diário" : "My Diary", icon: BookOpen },
+    { href: "/novagame", label: isPt ? "Jogos NOVA" : "NOVA Games", icon: Gamepad2 },
   ];
 
   const accountNav = [
-    { href: `/${locale}/settings`, label: isPt ? "Configurações" : "Settings", icon: Settings },
+    { href: "/settings", label: isPt ? "Configurações" : "Settings", icon: Settings },
   ];
 
   return (
@@ -71,11 +72,13 @@ export function DashboardSidebar({
         <nav style={{ display: "flex", flexDirection: "column", gap: "8px" }}>
           {mainNav.map((item) => {
             const Icon = item.icon;
-            const isActive = activePath === item.href;
+            const isActive = normalizedActivePath === item.href;
             return (
               <Link
                 key={item.href}
                 href={item.href}
+                prefetch
+                onClick={() => setIsOpen(false)}
                 style={{
                   display: "flex",
                   alignItems: "center",
@@ -101,11 +104,13 @@ export function DashboardSidebar({
       <div style={{ marginTop: "auto", borderTop: "1px solid rgba(255, 255, 255, 0.08)", paddingTop: "16px", display: "flex", flexDirection: "column", gap: "4px" }}>
         {accountNav.map((item) => {
           const Icon = item.icon;
-          const isActive = activePath === item.href;
+          const isActive = normalizedActivePath === item.href;
           return (
             <Link
               key={item.href}
               href={item.href}
+              prefetch
+              onClick={() => setIsOpen(false)}
               style={{
                 display: "flex",
                 alignItems: "center",

@@ -60,7 +60,7 @@ export default function NovaGamePage() {
 
   if (activeGame === "pattern" || activeGame === "focus" || activeGame === "memory" || activeGame === "day") {
     const game = arcadeGames.find((item) => item.id === activeGame);
-    return <div className="nova-arcade-page"><Navbar /><DashboardSidebar locale={locale} activePath={`/${locale}/novagame`} onLogout={async () => { await logoutUser(); router.push(`/${locale}/auth/login`); }} /><main className="nova-arcade-main"><section className="game-view"><button type="button" className="back-games" onClick={() => setActiveGame(null)}><ArrowLeft size={17} /> {isPt ? "Voltar aos jogos" : "Back to games"}</button><div className="game-view-title"><span style={{ background: game?.accent }}>{game?.icon}</span><div><span className="nova-eyebrow">NOVA GAMES</span><h1>{game?.title}</h1></div></div>{renderArcadeGame()}</section></main></div>;
+    return <div className="nova-arcade-page"><Navbar /><DashboardSidebar locale={locale} activePath="/novagame" onLogout={async () => { await logoutUser(); router.push("/auth/login"); }} /><main className="nova-arcade-main"><section className="game-view"><button type="button" className="back-games" onClick={() => setActiveGame(null)}><ArrowLeft size={17} /> {isPt ? "Voltar aos jogos" : "Back to games"}</button><div className="game-view-title"><span style={{ background: game?.accent }}>{game?.icon}</span><div><span className="nova-eyebrow">{isPt ? "JOGOS NOVA" : "NOVA GAMES"}</span><h1>{game?.title}</h1></div></div>{renderArcadeGame()}</section></main></div>;
   }
 
   return (

@@ -130,7 +130,7 @@ export function Navbar() {
                 </div>
               </div>
               <span style={{ color: "rgba(255,255,255,0.82)", fontSize: "0.9rem", fontWeight: 600 }}>{displayName}</span>
-              <Link href={`/${locale}/settings`} aria-label={isPt ? "Abrir configurações" : "Open settings"} style={{ display: "block" }}>
+              <Link href="/settings" prefetch aria-label={isPt ? "Abrir configurações" : "Open settings"} style={{ display: "block" }}>
                 <button
                   type="button"
                   style={{
