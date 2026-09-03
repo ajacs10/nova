@@ -129,14 +129,14 @@ export function Navbar() {
                     height: 50,
                     borderRadius: "50%",
                     backgroundColor: "transparent",
-                    border: "2px solid rgba(0, 210, 181, 0.6)",
+                    border: "1px solid rgba(0, 210, 181, 0.42)",
                     padding: 0,
                     overflow: "hidden",
                     cursor: "pointer",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    boxShadow: "0 4px 16px rgba(0,0,0,0.4)",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.22)",
                   }}
                   title={user?.name || "Avatar"}
                 >

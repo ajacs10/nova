@@ -32,12 +32,6 @@ export default function NovaGamePage() {
   if (!isReady || !isLoggedIn) return null;
 
   const level = Math.max(1, Math.floor(progress.totalCheckins / 3) + 1);
-  const badges = [
-    progress.totalCheckins >= 1 ? (isPt ? "Primeiro passo" : "First step") : null,
-    progress.totalCheckins >= 3 ? (isPt ? "A observar" : "Observing" ) : null,
-    progress.streak >= 3 ? (isPt ? "Ritmo presente" : "Present rhythm") : null,
-  ].filter((badge): badge is string => Boolean(badge));
-
   const sequence = [1, 3, 0, 2];
   const breathingLabels = isPt ? ["Inspira", "Segura", "Expira"] : ["Breathe in", "Hold", "Breathe out"];
   const selectGame = (game: "sequence" | "focus" | "breathing") => {
@@ -74,15 +68,6 @@ export default function NovaGamePage() {
         <section className="arcade-stats"><div><strong>0</strong><span>{isPt ? "Jogos jogados" : "Games played"}</span></div><div><strong>0</strong><span>{isPt ? "Padrões encontrados" : "Patterns found"}</span></div><div><strong>0</strong><span>{isPt ? "Melhor pontuação" : "Best score"}</span></div><div><strong>{level}</strong><span>{isPt ? "Nível atual" : "Current level"}</span></div></section>
         <section className="arcade-section"><div className="arcade-section-title"><div><span className="nova-eyebrow">ARCADE</span><h2>{isPt ? "Escolhe a tua experiência" : "Choose your experience"}</h2></div><span className="arcade-level"><Trophy size={16} /> {isPt ? "Sem competição" : "No competition"}</span></div><div className="game-grid">{arcadeGames.map((game) => <button type="button" className="game-card" key={game.id} onClick={() => launchArcadeGame(game.id)} style={{ "--game-accent": game.accent } as React.CSSProperties}><div className="game-card-art"><span>{game.icon}</span><i /></div><div className="game-card-copy"><span className="game-card-meta">{game.meta}</span><h3>{game.title}</h3><p>{game.text}</p><span className="game-play"><Play size={14} fill="currentColor" /> {isPt ? "Jogar" : "Play"}</span></div></button>)}</div></section>
         <p className="arcade-disclaimer"><LockKeyhole size={15} /> {isPt ? "Os jogos são experiências recreativas e de reflexão. O desempenho não é uma avaliação de saúde." : "These games are recreational and reflective experiences. Game performance is not a health assessment."}</p>
-        <p style={{ color: "#00d2b5", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", fontSize: "0.75rem" }}>NOVA Game</p>
-        <h1 style={{ margin: "12px 0", fontSize: "2.4rem" }}>{isPt ? "O teu progresso, sem pressão" : "Your progress, without pressure"}</h1>
-        <p style={{ color: "rgba(255,255,255,0.7)", lineHeight: 1.7, maxWidth: 580 }}>{isPt ? "Cada check-in ajuda-te a observar a tua rotina. Não há pontos perdidos nem competição." : "Each check-in helps you observe your routine. There are no lost points and no competition."}</p>
-        <section style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: 14, marginTop: 36 }}>
-          <div style={{ padding: 22, border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8 }}><strong style={{ display: "block", fontSize: "2rem" }}>{level}</strong><span style={{ color: "rgba(255,255,255,0.65)" }}>{isPt ? "Nível atual" : "Current level"}</span></div>
-          <div style={{ padding: 22, border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8 }}><strong style={{ display: "block", fontSize: "2rem" }}>{progress.totalCheckins}</strong><span style={{ color: "rgba(255,255,255,0.65)" }}>{isPt ? "Check-ins" : "Check-ins"}</span></div>
-          <div style={{ padding: 22, border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8 }}><strong style={{ display: "block", fontSize: "2rem" }}>{progress.streak}</strong><span style={{ color: "rgba(255,255,255,0.65)" }}>{isPt ? "Dias seguidos" : "Days in a row"}</span></div>
-        </section>
-        <section style={{ marginTop: 28 }}><h2 style={{ fontSize: "1.2rem" }}>{isPt ? "Distintivos" : "Badges"}</h2><p style={{ color: "rgba(255,255,255,0.65)" }}>{badges.length ? badges.join(" · ") : (isPt ? "O teu primeiro distintivo aparece depois do primeiro check-in." : "Your first badge appears after your first check-in.")}</p></section>
         <section style={{ marginTop: 44, display: "none" }}>
           <h2 style={{ fontSize: "1.5rem", marginBottom: 8 }}>{isPt ? "Escolhe um jogo" : "Choose a game"}</h2>
           <p style={{ color: "rgba(255,255,255,0.65)", marginBottom: 20 }}>{isPt ? "Pequenas pausas para atenção e presença. Joga ao teu ritmo." : "Small pauses for attention and presence. Play at your own pace."}</p>

@@ -20,14 +20,15 @@ export function NovaTheDay({ isPt, onComplete }: GameProps) {
   const [scene, setScene] = React.useState(0);
   const [stats, setStats] = React.useState({ energy: 70, focus: 70, mood: 70 });
   const [history, setHistory] = React.useState<string[]>([]);
+  const [finished, setFinished] = React.useState(false);
   const current = SCENES[scene];
   const choose = (choice: typeof current.choices[number]) => {
     const nextStats = { energy: clamp(stats.energy + choice[2]), focus: clamp(stats.focus + choice[3]), mood: clamp(stats.mood + choice[4]) };
     setStats(nextStats); setHistory((items) => [...items, isPt ? choice[0] : choice[1]]);
-    if (scene === SCENES.length - 1) onComplete(nextStats.energy + nextStats.focus + nextStats.mood);
+    if (scene === SCENES.length - 1) { setFinished(true); onComplete(nextStats.energy + nextStats.focus + nextStats.mood); }
     else setScene((value) => value + 1);
   };
-  if (scene === SCENES.length) return null;
+  if (finished) return <div className="nova-game-result"><div className="result-mark">✓</div><h2>{isPt ? "O teu dia" : "Your day"}</h2><p>{isPt ? "Diferentes escolhas moldaram este dia fictício." : "Different choices shaped this fictional day."}</p><div className="result-grid"><span><strong>{stats.energy}</strong>Energy</span><span><strong>{stats.focus}</strong>Focus</span><span><strong>{stats.mood}</strong>Mood</span></div><button type="button" className="game-primary" onClick={() => { setScene(0); setStats({ energy: 70, focus: 70, mood: 70 }); setHistory([]); setFinished(false); }}>{isPt ? "Jogar novamente" : "Play again"}</button></div>;
   return <div className="nova-game-play nova-story"><div className="nova-game-play-head"><span>{current.time}</span><strong>{scene + 1} / 7</strong></div><div className="story-sky"><span className="story-orbit" aria-hidden="true">◒</span><h2>{current.title[isPt ? 0 : 1]}</h2></div><div className="story-choices">{current.choices.map((choice) => <button type="button" key={choice[0]} className="game-answer" onClick={() => choose(choice)}>{choice[isPt ? 0 : 1]}</button>)}</div><div className="story-stats"><span>Energy <b>{stats.energy}</b></span><span>Focus <b>{stats.focus}</b></span><span>Mood <b>{stats.mood}</b></span></div>{history.length > 0 && <small>{isPt ? "As escolhas moldam este dia fictício." : "Your choices shape this fictional day."}</small>}</div>;
 }
 
