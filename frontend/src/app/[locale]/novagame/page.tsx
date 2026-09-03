@@ -6,6 +6,12 @@ import { Navbar } from "@/shared/ui/Navbar";
 import { DashboardSidebar } from "@/components/ui/dashboard-sidebar";
 import { useAuth } from "@/shared/lib/AuthContext";
 import { getDashboard } from "@/shared/lib/api";
+import { ArrowLeft, Gamepad2, LockKeyhole, Play, Sparkles, Trophy } from "lucide-react";
+import { PatternDetective } from "@/components/games/pattern-detective";
+import { FocusRush } from "@/components/games/focus-rush";
+import { MemoryNova } from "@/components/games/memory-nova";
+import { NovaTheDay } from "@/components/games/nova-the-day";
+import type { GameId } from "@/components/games/game-types";
 
 export default function NovaGamePage() {
   const params = useParams();
@@ -14,9 +20,8 @@ export default function NovaGamePage() {
   const isPt = locale === "pt";
   const { isLoggedIn, isReady, logoutUser } = useAuth();
   const [progress, setProgress] = React.useState({ totalCheckins: 0, streak: 0 });
-  const [activeGame, setActiveGame] = React.useState<"sequence" | "focus" | "breathing" | null>(null);
+  const [activeGame, setActiveGame] = React.useState<GameId | "sequence" | "focus" | "breathing" | null>(null);
   const [sequenceStep, setSequenceStep] = React.useState(0);
-  const [focusFound, setFocusFound] = React.useState(false);
   const [breathingStep, setBreathingStep] = React.useState(0);
 
   React.useEffect(() => {
@@ -38,15 +43,37 @@ export default function NovaGamePage() {
   const selectGame = (game: "sequence" | "focus" | "breathing") => {
     setActiveGame(game);
     setSequenceStep(0);
-    setFocusFound(false);
     setBreathingStep(0);
   };
+
+  const arcadeGames = [
+    { id: "pattern" as const, icon: "🧠", title: isPt ? "Detetive de Padrões" : "Pattern Detective", text: isPt ? "Encontra a pista. Descobre o padrão." : "Find the clue. Discover the pattern.", meta: isPt ? "5 rondas" : "5 rounds", accent: "#a78bfa" },
+    { id: "focus" as const, icon: "⚡", title: "Focus Rush", text: isPt ? "Segue a regra. Supera a pontuação." : "Follow the rule. Beat your score.", meta: isPt ? "3 rondas" : "3 rounds", accent: "#f59e0b" },
+    { id: "memory" as const, icon: "🧩", title: "Memory NOVA", text: isPt ? "Encontra todos os pares." : "Find every pair.", meta: isPt ? "8 pares" : "8 pairs", accent: "#38bdf8" },
+    { id: "day" as const, icon: "🌎", title: isPt ? "NOVA: O Dia" : "NOVA: The Day", text: isPt ? "As tuas escolhas. Uma história fictícia." : "Your choices. A fictional story.", meta: isPt ? "7 cenas" : "7 scenes", accent: "#fb7185" },
+  ];
+  const launchArcadeGame = (game: GameId) => setActiveGame(game);
+  const renderArcadeGame = () => {
+    if (activeGame === "pattern") return <PatternDetective isPt={isPt} onComplete={() => undefined} />;
+    if (activeGame === "focus") return <FocusRush isPt={isPt} onComplete={() => undefined} />;
+    if (activeGame === "memory") return <MemoryNova isPt={isPt} onComplete={() => undefined} />;
+    return <NovaTheDay isPt={isPt} onComplete={() => undefined} />;
+  };
+
+  if (activeGame === "pattern" || activeGame === "focus" || activeGame === "memory" || activeGame === "day") {
+    const game = arcadeGames.find((item) => item.id === activeGame);
+    return <div className="nova-arcade-page"><Navbar /><DashboardSidebar locale={locale} activePath={`/${locale}/novagame`} onLogout={async () => { await logoutUser(); router.push(`/${locale}/auth/login`); }} /><main className="nova-arcade-main"><section className="game-view"><button type="button" className="back-games" onClick={() => setActiveGame(null)}><ArrowLeft size={17} /> {isPt ? "Voltar aos jogos" : "Back to games"}</button><div className="game-view-title"><span style={{ background: game?.accent }}>{game?.icon}</span><div><span className="nova-eyebrow">NOVA GAMES</span><h1>{game?.title}</h1></div></div>{renderArcadeGame()}</section></main></div>;
+  }
 
   return (
     <div style={{ minHeight: "100vh", background: "#060810", color: "#fff" }}>
       <Navbar />
       <DashboardSidebar locale={locale} activePath={`/${locale}/novagame`} onLogout={async () => { await logoutUser(); router.push(`/${locale}/auth/login`); }} />
-      <main className="checkin-private-content" style={{ minHeight: "100vh", padding: "140px 32px 80px", maxWidth: 900, margin: "0 auto" }}>
+      <main className="checkin-private-content nova-arcade-main" style={{ minHeight: "100vh", padding: "140px 32px 80px", maxWidth: 1100, margin: "0 auto" }}>
+        <section className="nova-arcade-hero"><div><span className="nova-eyebrow"><Gamepad2 size={16} /> NOVA GAMES</span><h1>{isPt ? "Joga. Explora. Descobre." : "Play. Explore. Discover."}</h1><p>{isPt ? "Pequenos jogos para fazer uma pausa, explorar ideias e descobrir padrões." : "Short games to pause, explore ideas and discover patterns."}</p></div><span className="arcade-count"><Sparkles size={17} /> {isPt ? "4 jogos disponíveis" : "4 games available"}</span></section>
+        <section className="arcade-stats"><div><strong>0</strong><span>{isPt ? "Jogos jogados" : "Games played"}</span></div><div><strong>0</strong><span>{isPt ? "Padrões encontrados" : "Patterns found"}</span></div><div><strong>0</strong><span>{isPt ? "Melhor pontuação" : "Best score"}</span></div><div><strong>{level}</strong><span>{isPt ? "Nível atual" : "Current level"}</span></div></section>
+        <section className="arcade-section"><div className="arcade-section-title"><div><span className="nova-eyebrow">ARCADE</span><h2>{isPt ? "Escolhe a tua experiência" : "Choose your experience"}</h2></div><span className="arcade-level"><Trophy size={16} /> {isPt ? "Sem competição" : "No competition"}</span></div><div className="game-grid">{arcadeGames.map((game) => <button type="button" className="game-card" key={game.id} onClick={() => launchArcadeGame(game.id)} style={{ "--game-accent": game.accent } as React.CSSProperties}><div className="game-card-art"><span>{game.icon}</span><i /></div><div className="game-card-copy"><span className="game-card-meta">{game.meta}</span><h3>{game.title}</h3><p>{game.text}</p><span className="game-play"><Play size={14} fill="currentColor" /> {isPt ? "Jogar" : "Play"}</span></div></button>)}</div></section>
+        <p className="arcade-disclaimer"><LockKeyhole size={15} /> {isPt ? "Os jogos são experiências recreativas e de reflexão. O desempenho não é uma avaliação de saúde." : "These games are recreational and reflective experiences. Game performance is not a health assessment."}</p>
         <p style={{ color: "#00d2b5", fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", fontSize: "0.75rem" }}>NOVA Game</p>
         <h1 style={{ margin: "12px 0", fontSize: "2.4rem" }}>{isPt ? "O teu progresso, sem pressão" : "Your progress, without pressure"}</h1>
         <p style={{ color: "rgba(255,255,255,0.7)", lineHeight: 1.7, maxWidth: 580 }}>{isPt ? "Cada check-in ajuda-te a observar a tua rotina. Não há pontos perdidos nem competição." : "Each check-in helps you observe your routine. There are no lost points and no competition."}</p>
@@ -56,7 +83,7 @@ export default function NovaGamePage() {
           <div style={{ padding: 22, border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8 }}><strong style={{ display: "block", fontSize: "2rem" }}>{progress.streak}</strong><span style={{ color: "rgba(255,255,255,0.65)" }}>{isPt ? "Dias seguidos" : "Days in a row"}</span></div>
         </section>
         <section style={{ marginTop: 28 }}><h2 style={{ fontSize: "1.2rem" }}>{isPt ? "Distintivos" : "Badges"}</h2><p style={{ color: "rgba(255,255,255,0.65)" }}>{badges.length ? badges.join(" · ") : (isPt ? "O teu primeiro distintivo aparece depois do primeiro check-in." : "Your first badge appears after your first check-in.")}</p></section>
-        <section style={{ marginTop: 44 }}>
+        <section style={{ marginTop: 44, display: "none" }}>
           <h2 style={{ fontSize: "1.5rem", marginBottom: 8 }}>{isPt ? "Escolhe um jogo" : "Choose a game"}</h2>
           <p style={{ color: "rgba(255,255,255,0.65)", marginBottom: 20 }}>{isPt ? "Pequenas pausas para atenção e presença. Joga ao teu ritmo." : "Small pauses for attention and presence. Play at your own pace."}</p>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(210px, 1fr))", gap: 14 }}>
@@ -81,15 +108,6 @@ export default function NovaGamePage() {
                 <p style={{ color: "rgba(255,255,255,0.7)" }}>{sequenceStep === sequence.length ? (isPt ? "Muito bem. Terminaste esta pausa." : "Well done. You completed this pause.") : (isPt ? `Escolhe a luz ${sequenceStep + 1} de ${sequence.length}.` : `Choose light ${sequenceStep + 1} of ${sequence.length}.`)}</p>
                 <div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
                   {[0, 1, 2, 3].map((button) => <button key={button} type="button" aria-label={`${isPt ? "Luz" : "Light"} ${button + 1}`} onClick={() => setSequenceStep((step) => step < sequence.length && button === sequence[step] ? step + 1 : 0)} style={{ width: 54, height: 54, borderRadius: "50%", border: "1px solid rgba(255,255,255,0.3)", background: ["#00d2b5", "#f59e0b", "#60a5fa", "#f472b6"][button], cursor: "pointer" }} />)}
-                </div>
-              </div>
-            )}
-            {activeGame === "focus" && (
-              <div>
-                <h2 style={{ marginTop: 0 }}>{isPt ? "Encontra o ponto" : "Find the point"}</h2>
-                <p style={{ color: "rgba(255,255,255,0.7)" }}>{focusFound ? (isPt ? "Encontraste. Boa atenção." : "You found it. Nice attention.") : (isPt ? "Toca no símbolo que é diferente." : "Tap the symbol that is different.")}</p>
-                <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 54px)", gap: 10 }}>
-                  {Array.from({ length: 12 }, (_, index) => <button key={index} type="button" onClick={() => index === 7 && setFocusFound(true)} aria-label={isPt ? `Símbolo ${index + 1}` : `Symbol ${index + 1}`} style={{ width: 54, height: 54, borderRadius: 8, border: "1px solid rgba(255,255,255,0.2)", background: "rgba(255,255,255,0.06)", color: "#00d2b5", fontSize: "1.5rem", cursor: "pointer" }}>{index === 7 ? "◉" : "○"}</button>)}
                 </div>
               </div>
             )}

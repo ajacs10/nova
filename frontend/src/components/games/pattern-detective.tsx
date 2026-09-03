@@ -1,0 +1,45 @@
+"use client";
+
+import * as React from "react";
+import type { GameProps } from "./game-types";
+
+const DATASETS = [
+  { rows: [["Mon", "7.5", "4", "8"], ["Tue", "5.5", "8", "4"], ["Wed", "6", "9", "5"], ["Thu", "7.5", "4", "8"]], correct: 0, answers: ["More sleep coincided with higher energy", "Workload always improved energy", "The days had identical moods"] },
+  { rows: [["Mon", "8", "3", "7"], ["Tue", "7.5", "4", "7"], ["Wed", "6", "7", "5"], ["Thu", "5.5", "8", "4"]], correct: 0, answers: ["Higher workload coincided with lower energy", "Less sleep coincided with higher energy", "Energy stayed exactly the same"] },
+  { rows: [["Mon", "6", "6", "6"], ["Tue", "8", "5", "8"], ["Wed", "6", "5", "6"], ["Thu", "8", "4", "8"]], correct: 1, answers: ["Workload doubled each day", "Longer sleep coincided with higher energy", "Mood was always lower after sleep"] },
+  { rows: [["Mon", "7", "8", "5"], ["Tue", "7", "3", "8"], ["Wed", "6", "8", "5"], ["Thu", "8", "3", "9"]], correct: 2, answers: ["Sleep never changed", "Higher workload coincided with higher energy", "Lower workload coincided with higher energy"] },
+  { rows: [["Mon", "5", "7", "4"], ["Tue", "6", "6", "5"], ["Wed", "7", "5", "7"], ["Thu", "8", "4", "8"]], correct: 1, answers: ["Energy fell as sleep increased", "Longer sleep coincided with higher energy", "Workload increased with sleep"] },
+];
+
+export function PatternDetective({ isPt, onComplete }: GameProps) {
+  const [round, setRound] = React.useState(0);
+  const [score, setScore] = React.useState(0);
+  const [choice, setChoice] = React.useState<number | null>(null);
+  const [finished, setFinished] = React.useState(false);
+  const dataset = DATASETS[round % DATASETS.length];
+  const correct = dataset.correct;
+
+  const answer = (index: number) => {
+    if (choice !== null) return;
+    const nextScore = score + (index === correct ? 100 : 0);
+    setChoice(index);
+    setScore(nextScore);
+    if (round === 4) {
+      setFinished(true);
+      onComplete(nextScore);
+    } else window.setTimeout(() => { setRound((value) => value + 1); setChoice(null); }, 900);
+  };
+
+  if (finished) return <Result title={isPt ? "Padrão encontrado" : "Pattern found"} text={isPt ? "Completaste as 5 rondas." : "You completed all 5 rounds."} score={score} isPt={isPt} onAgain={() => { setRound(0); setScore(0); setChoice(null); setFinished(false); }} />;
+  return <div className="nova-game-play">
+    <div className="nova-game-play-head"><span>{isPt ? `Ronda ${round + 1} de 5` : `Round ${round + 1} of 5`}</span><strong>{score} pts</strong></div>
+    <h2>{isPt ? "Que padrão encontras?" : "What pattern do you see?"}</h2>
+    <div className="pattern-table" role="table"><div className="pattern-row pattern-head">{["DAY", "SLEEP", "LOAD", "ENERGY"].map((cell) => <span key={cell}>{cell}</span>)}</div>{dataset.rows.map((row) => <div className="pattern-row" role="row" key={row[0]}>{row.map((cell) => <span key={cell}>{cell}</span>)}</div>)}</div>
+    <div className="pattern-answers">{dataset.answers.map((text, index) => <button key={text} type="button" className={choice === index ? (index === correct ? "game-answer correct" : "game-answer wrong") : "game-answer"} onClick={() => answer(index)}>{text}</button>)}</div>
+    {choice !== null && <p className="game-feedback">{choice === correct ? (isPt ? "Padrão encontrado." : "Pattern found.") : (isPt ? "Observa novamente os dados." : "Take another look at the data.")}</p>}
+  </div>;
+}
+
+function Result({ title, text, score, isPt, onAgain }: { title: string; text: string; score: number; isPt: boolean; onAgain: () => void }) {
+  return <div className="nova-game-result"><div className="result-mark">✓</div><h2>{title}</h2><p>{text}</p><strong className="result-score">{score}</strong><span>{isPt ? "pontuação" : "score"}</span><button type="button" className="game-primary" onClick={onAgain}>{isPt ? "Jogar novamente" : "Play again"}</button></div>;
+}
