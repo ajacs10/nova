@@ -438,7 +438,7 @@ export default function SettingsPage() {
         /* Cartão de Perfil do Topo */
         .header-profile-card { display: flex; align-items: center; gap: 20px; }
         .profile-avatar { position: relative; width: 128px; height: 128px; padding: 0; border-radius: 18px; overflow: hidden; background: #151c2e; border: 2px solid rgba(0,210,181,.4); flex-shrink: 0; cursor: pointer; box-shadow: 0 10px 24px rgba(0,0,0,.18); }
-        .profile-avatar img { display: block; width: 100% !important; height: 100% !important; object-fit: contain; object-position: center; }
+        .profile-avatar img { display: block; width: 100% !important; height: 100% !important; object-fit: cover; object-position: center; }
         .avatar-upload-hint { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,.62); color: #fff; font-size: .68rem; font-weight: 700; opacity: 0; transition: opacity .2s ease; }
         .profile-avatar:hover .avatar-upload-hint, .profile-avatar:focus-visible .avatar-upload-hint { opacity: 1; }
         .avatar-input { display: none; }
