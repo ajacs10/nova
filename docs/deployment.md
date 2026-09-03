@@ -19,13 +19,18 @@ Set these values through the hosting provider secret manager:
 For the current production deployment, configure the Render backend with:
 
 - Root directory: `backend`
-- Build command: `npm ci && npx prisma generate && npm run build`
+- Build command: `npm ci && npx prisma generate && npx prisma migrate deploy && npm run build`
 - Start command: `npm run start:prod`
 - `FRONTEND_URL=https://nova-psychology.vercel.app`
 
 Configure the Vercel frontend with:
 
 - `NEXT_PUBLIC_API_URL=https://nova-api-n8qb.onrender.com/api`
+
+After changing the Render build command, manually deploy the latest commit. The
+recovery endpoints (`/api/recovery/entries` and `/api/recovery/activities`) were
+introduced after the backend currently serving the public site, so a frontend-only
+deployment cannot make those endpoints available.
 
 `FRONTEND_URL` may contain comma-separated HTTPS origins when preview deployments
 also need access. Do not add a trailing slash to the API origin or frontend origin.

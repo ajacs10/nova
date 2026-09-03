@@ -176,12 +176,23 @@ export class AuthService {
   }
 
   setSessionCookie(reply: FastifyReply, sessionToken: string) {
-    reply.setCookie('nova_session', sessionToken, {
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/api',
       maxAge: 60 * 60 * 24 * 30,
+    } as const;
+
+    reply.setCookie('nova_session', sessionToken, cookieOptions);
+    // This marker contains no credential. It prevents an expected unauthenticated
+    // /auth/me request when a visitor has never signed in on this browser.
+    reply.setCookie('nova_session_present', '1', {
+      httpOnly: false,
+      secure: cookieOptions.secure,
+      sameSite: cookieOptions.sameSite,
+      path: '/',
+      maxAge: cookieOptions.maxAge,
     });
   }
 
@@ -191,6 +202,12 @@ export class AuthService {
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
       path: '/api',
+    });
+    reply.clearCookie('nova_session_present', {
+      httpOnly: false,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+      path: '/',
     });
   }
 

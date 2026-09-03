@@ -38,11 +38,21 @@ export function AuthProvider({ children }: { children: React.ReactNode })
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
+    const hasSessionMarker = document.cookie
+      .split('; ')
+      .some((cookie) => cookie === 'nova_session_present=1');
+
+    if (!hasSessionMarker) {
+      const readyTimer = window.setTimeout(() => setIsReady(true), 0);
+      return () => window.clearTimeout(readyTimer);
+    }
+
     getCurrentUser()
       .then(({ user: currentUser }) => setUser(currentUser))
       .catch((error: unknown) => {
         if (error instanceof ApiError && error.status === 401) {
           setUser(null);
+          document.cookie = 'nova_session_present=; path=/; max-age=0; samesite=lax';
         }
       })
       .finally(() => setIsReady(true));
