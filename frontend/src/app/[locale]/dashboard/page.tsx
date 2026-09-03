@@ -71,7 +71,7 @@ export default function DashboardPage() {
   const getX = (index: number) => 50 + index * 80;
 
   const points = weeklyData.map((d, i) => `${getX(i)},${getY(d.sleep)}`);
-  const pathD = `M ${points.join(" L ")}`;
+  const pathD = points.length ? `M ${points.join(" L ")}` : "";
   const areaD = weeklyData.length ? `M ${getX(0)},220 L ${points.join(" L ")} L ${getX(weeklyData.length - 1)},220 Z` : "";
 
   const avgSleepHours = weeklyData.length
@@ -99,6 +99,7 @@ export default function DashboardPage() {
   const balanceLabel = activeBalanceMetric === "sleep"
     ? (locale === "pt" ? "Sono" : "Sleep")
     : (locale === "pt" ? "Trabalho" : "Workload");
+  const weeklyCompletion = clampPercent((weeklyData.length / 7) * 100);
 
   return (
     <div style={{ background: "#060810", color: "#ffffff", width: "100%", minHeight: "100vh", fontFamily: "'Inter', system-ui, -apple-system, sans-serif" }}>
@@ -148,7 +149,7 @@ export default function DashboardPage() {
                     <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", marginTop: 2 }}>Check-ins</div>
                   </div>
                   <div style={{ width: 38, height: 38, borderRadius: "50%", border: "3px solid #00d2b5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.68rem", fontWeight: 700, color: "#00d2b5" }}>
-                    +40%
+                    {weeklyCompletion}%
                   </div>
                 </div>
 
@@ -158,7 +159,7 @@ export default function DashboardPage() {
                     <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", marginTop: 2 }}>Total Registos</div>
                   </div>
                   <div style={{ width: 38, height: 38, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.68rem", fontWeight: 700, color: "rgba(255,255,255,0.7)" }}>
-                    100%
+                    {weeklyCompletion}%
                   </div>
                 </div>
 
@@ -168,7 +169,7 @@ export default function DashboardPage() {
                     <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", marginTop: 2 }}>Humor Médio</div>
                   </div>
                   <div style={{ width: 38, height: 38, borderRadius: "50%", border: "3px solid #00d2b5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.68rem", fontWeight: 700, color: "#00d2b5" }}>
-                    70%
+                    {clampPercent((averageEnergy / 10) * 100)}%
                   </div>
                 </div>
 
@@ -273,8 +274,8 @@ export default function DashboardPage() {
                             );
                           })}
 
-                          <path d={areaD} fill="url(#sleepRealGrad)" />
-                          <path d={pathD} fill="none" stroke="#00d2b5" strokeWidth="3" />
+                          {areaD && <path d={areaD} fill="url(#sleepRealGrad)" />}
+                          {pathD && <path d={pathD} fill="none" stroke="#00d2b5" strokeWidth="3" />}
 
                           {weeklyData.map((d, i) => {
                             const cx = getX(i);

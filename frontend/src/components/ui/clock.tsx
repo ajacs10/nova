@@ -24,15 +24,6 @@ export function Clock({
   const secondHandContainerRef = useRef<HTMLDivElement>(null)
   const secondHandShadowRef = useRef<HTMLDivElement>(null)
 
-  // Log the initial secondsMode to confirm it's being received
-  useEffect(() => {
-    console.log(
-      "Clock component mounted. Initial secondsMode prop:",
-      initialSecondsMode
-    )
-    console.log("Clock component state secondsMode:", secondsMode)
-  }, [initialSecondsMode, secondsMode])
-
   const updateClockHands = useCallback(() => {
     const now = new Date()
     const displayTime = new Date(

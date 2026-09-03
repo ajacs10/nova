@@ -78,11 +78,11 @@ export function login(email: string, password: string)
   });
 }
 
-export function register(name: string, email: string, password: string)
+export function register(name: string, email: string, password: string, phone?: string)
 {
   return fetcher<{ message: string }>("/auth/register", {
     method: "POST",
-    body: JSON.stringify({ name, email, password }),
+    body: JSON.stringify({ name, email, password, phone }),
   });
 }
 

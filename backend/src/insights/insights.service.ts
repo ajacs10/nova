@@ -50,9 +50,16 @@ export class InsightsService {
       totalCheckins: await tx.checkIn.count({ where: { userId } }),
     }));
     const avgMood = checkIns.length ? checkIns.reduce((sum, item) => sum + item.mood, 0) / checkIns.length : 0;
+    const checkInDates = new Set(checkIns.map((item) => item.createdAt.toISOString().slice(0, 10)));
+    let streak = 0;
+    const cursor = new Date();
+    while (checkInDates.has(cursor.toISOString().slice(0, 10))) {
+      streak += 1;
+      cursor.setUTCDate(cursor.getUTCDate() - 1);
+    }
 
     return {
-      streak: 0,
+      streak,
       totalCheckins,
       avgMood: Number(avgMood.toFixed(1)),
       weekEntries: checkIns.slice(0, 7).reverse().map((item) => ({

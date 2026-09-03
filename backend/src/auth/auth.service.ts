@@ -27,6 +27,7 @@ export class AuthService {
       data: {
         name: registerDto.name.trim(),
         email,
+        phone: registerDto.phone?.trim() || null,
         passwordHash: await argon2.hash(registerDto.password, { type: argon2.argon2id }),
         emailVerificationTokenHash: this.hashToken(verificationToken),
         emailVerificationExpiresAt: new Date(Date.now() + 1000 * 60 * 60 * 24),

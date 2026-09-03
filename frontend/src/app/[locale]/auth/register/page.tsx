@@ -206,7 +206,7 @@ export default function RegisterPage() {
     setIsLoading(true);
     const fullName = `${firstName} ${lastName}`.trim();
     try {
-      await register(fullName, email, password);
+      await register(fullName, email, password, `${countryCode}${phoneNum.replace(/\D/g, '')}`);
       setIsLoading(false);
       router.push(`/${locale}/auth/verify-email?email=${encodeURIComponent(email)}`);
     } catch (requestError) {
