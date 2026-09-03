@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { LayoutGrid, CheckSquare, LineChart, Settings, LogOut } from "lucide-react";
+import { LayoutGrid, CheckSquare, LineChart, BookOpen, Settings, LogOut } from "lucide-react";
 
 interface DashboardSidebarProps {
   locale: string;
@@ -20,6 +20,7 @@ export function DashboardSidebar({
     { href: `/${locale}/dashboard`, label: "Dashboard", icon: LayoutGrid },
     { href: `/${locale}/check-in`, label: "Check-in", icon: CheckSquare },
     { href: `/${locale}/insights`, label: "Insights", icon: LineChart },
+    { href: `/${locale}/diary`, label: isPt ? "Meu Diário" : "My Diary", icon: BookOpen },
   ];
 
   const accountNav = [

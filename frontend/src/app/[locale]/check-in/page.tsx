@@ -545,6 +545,7 @@ export default function CheckInPage() {
                     </label>
                     <textarea
                       rows={4}
+                      maxLength={1000}
                       placeholder="Escreva como correu o seu dia ou pensamentos principais..."
                       value={formData.note}
                       onChange={(e) => setFormData({ ...formData, note: e.target.value })}
@@ -561,6 +562,9 @@ export default function CheckInPage() {
                         boxSizing: "border-box",
                       }}
                     />
+                    <div style={{ display: "flex", justifyContent: "flex-end", marginTop: 6, color: "rgba(255,255,255,0.45)", fontSize: "0.72rem" }}>
+                      {formData.note.length}/1000
+                    </div>
                   </div>
                 )}
 

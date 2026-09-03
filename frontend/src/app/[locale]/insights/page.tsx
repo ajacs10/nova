@@ -128,17 +128,27 @@ export default function InsightsPage() {
   }
 
   if (insightsError) {
-    return <main style={{ padding: 140, color: "#fff", textAlign: "center" }}>{insightsError}</main>;
+    return (
+      <div className="insights-private-page" style={{ minHeight: "100vh", background: "#060810", color: "#fff" }}>
+        <Navbar />
+        <DashboardSidebar locale={locale} activePath={`/${locale}/insights`} onLogout={handleSidebarLogout} />
+        <main className="insights-private-content" style={{ padding: 140, textAlign: "center" }}>{insightsError}</main>
+      </div>
+    );
   }
 
   if (insightsList.length === 0) {
     return (
-      <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 24, background: "#060810", color: "#fff", textAlign: "center" }}>
-        <div>
-          <h1 style={{ marginBottom: 10 }}>{isPt ? "O teu primeiro padrão está à espera" : "Your first pattern is waiting"}</h1>
-          <p style={{ color: "rgba(255,255,255,0.6)" }}>{isPt ? "Completa pelo menos três check-ins para começarmos a comparar os teus dados." : "Complete at least three check-ins so we can start comparing your data."}</p>
-        </div>
-      </main>
+      <div className="insights-private-page" style={{ minHeight: "100vh", background: "#060810", color: "#fff" }}>
+        <Navbar />
+        <DashboardSidebar locale={locale} activePath={`/${locale}/insights`} onLogout={handleSidebarLogout} />
+        <main className="insights-private-content" style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 24, textAlign: "center" }}>
+          <div style={{ maxWidth: 440 }}>
+            <h1 style={{ marginBottom: 10 }}>{isPt ? "O teu primeiro padrão está à espera" : "Your first pattern is waiting"}</h1>
+            <p style={{ color: "rgba(255,255,255,0.6)", lineHeight: 1.6 }}>{isPt ? "Completa pelo menos três check-ins para começarmos a comparar os teus dados. Os padrões serão baseados apenas no que registares." : "Complete at least three check-ins so we can start comparing your data. Patterns will be based only on what you record."}</p>
+          </div>
+        </main>
+      </div>
     );
   }
 
