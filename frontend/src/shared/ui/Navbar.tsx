@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { useParams, usePathname } from "next/navigation";
 import { Flame, Menu, X } from "lucide-react";
-import { getDashboard } from "@/shared/lib/api";
 import { useAuth } from "@/shared/lib/AuthContext";
 import { LanguageDropdown } from "@/shared/ui/LanguageDropdown";
 
@@ -20,7 +19,7 @@ export function Navbar() {
   const { user, isLoggedIn } = useAuth();
   const [displayName, setDisplayName] = React.useState("");
   const [avatarSrc, setAvatarSrc] = React.useState("/mascotes/mascote_equilibrado_v2.svg");
-  const [progress, setProgress] = React.useState({ totalCheckins: 0, streak: 0 });
+  const [gameXp, setGameXp] = React.useState(0);
 
   const isDashboardRoute = pathname?.includes("/dashboard") ?? false;
   const isPrivateRoute = isLoggedIn && (
@@ -34,12 +33,16 @@ export function Navbar() {
   );
 
   React.useEffect(() => {
-    if (!isPrivateRoute) return;
-    getDashboard().then(({ totalCheckins, streak }) => setProgress({ totalCheckins, streak })).catch(() => undefined);
-  }, [isPrivateRoute]);
+    const updateGameXp = () => {
+      try { setGameXp(Number(JSON.parse(window.localStorage.getItem("nova-games-progress") || "{}").xp) || 0); } catch { setGameXp(0); }
+    };
+    updateGameXp();
+    window.addEventListener("nova-game-xp-changed", updateGameXp);
+    return () => window.removeEventListener("nova-game-xp-changed", updateGameXp);
+  }, []);
 
-  const level = Math.max(1, Math.floor(progress.totalCheckins / 3) + 1);
-  const levelProgress = (progress.totalCheckins % 3) / 3 * 100;
+  const gameLevel = Math.floor(gameXp / 100) + 1;
+  const gameLevelProgress = gameXp % 100;
 
   React.useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 40);
@@ -111,12 +114,12 @@ export function Navbar() {
             <div style={{ flex: 1 }} />
 
             <div className="header-actions" style={{ display: "flex", alignItems: "center", gap: 14 }}>
-              <div title={isPt ? `${progress.totalCheckins} check-ins concluídos` : `${progress.totalCheckins} completed check-ins`} style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 112 }}>
+              <div title={`${gameXp} Psychology XP`} style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 128 }}>
                 <Flame size={16} color="#f59e0b" aria-hidden="true" />
                 <div style={{ display: "grid", gap: 4, minWidth: 76 }}>
-                  <span style={{ color: "#ffffff", fontSize: "0.76rem", fontWeight: 700, lineHeight: 1 }}>{isPt ? `Nível ${level}` : `Level ${level}`}</span>
+                  <span style={{ color: "#ffffff", fontSize: "0.76rem", fontWeight: 700, lineHeight: 1 }}>{isPt ? `Nível ${gameLevel} · ${gameXp} XP` : `Level ${gameLevel} · ${gameXp} XP`}</span>
                   <span aria-hidden="true" style={{ display: "block", width: "100%", height: 3, overflow: "hidden", borderRadius: 99, background: "rgba(255,255,255,0.16)" }}>
-                    <span style={{ display: "block", width: `${levelProgress}%`, height: "100%", borderRadius: 99, background: "#00d2b5", transition: "width 0.3s ease" }} />
+                    <span style={{ display: "block", width: `${gameLevelProgress}%`, height: "100%", borderRadius: 99, background: "#00d2b5", transition: "width 0.3s ease" }} />
                   </span>
                 </div>
               </div>
