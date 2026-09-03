@@ -46,7 +46,7 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
       : `/${code}${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`;
 
     startTransition(() => {
-      router.replace(localizedPath, { scroll: false });
+      router.push(localizedPath, { scroll: false });
     });
   };
 

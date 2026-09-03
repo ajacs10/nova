@@ -2,7 +2,8 @@
 @import "tailwindcss";
 
 .nova-arcade-page { min-height: 100vh; background: radial-gradient(circle at 75% 5%, rgba(124, 58, 237, .18), transparent 32%), #070914; color: #fff; }
-.nova-arcade-main { min-height: 100vh; }
+.nova-arcade-main { min-height: 100vh; margin-left: 220px; width: calc(100% - 220px); padding-left: 32px; padding-right: 32px; }
+.nova-arcade-main > section[style*="display: none"] { display: none !important; }
 .nova-arcade-hero { display: flex; align-items: end; justify-content: space-between; gap: 24px; padding: 48px 0 38px; }
 .nova-eyebrow { display: inline-flex; align-items: center; gap: 8px; color: #00d2b5; font-size: .72rem; font-weight: 800; letter-spacing: .14em; }
 .nova-arcade-hero h1 { margin: 14px 0 8px; color: #fff; font-size: clamp(2.4rem, 6vw, 5rem); letter-spacing: -.06em; }
@@ -45,7 +46,7 @@
 .memory-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; max-width: 480px; margin: 20px auto 0; }.memory-card { aspect-ratio: 1; color: #00d2b5; font-size: 1.8rem; border: 1px solid rgba(255,255,255,.12); border-radius: 10px; background: rgba(255,255,255,.04); cursor: pointer; transition: transform .2s ease, background .2s ease; }.memory-card.is-open { color: #fff; background: rgba(0,210,181,.15); transform: rotateY(180deg); }
 .nova-game-result { padding: 44px 24px; text-align: center; }.result-mark { display: grid; place-items: center; width: 64px; height: 64px; margin: 0 auto 18px; color: #071014; border-radius: 50%; background: #00d2b5; font-size: 2rem; font-weight: 900; }.nova-game-result h2 { color: #fff; }.nova-game-result p { color: rgba(255,255,255,.65); }.result-score { display: block; margin-top: 20px; color: #fff; font-size: 3rem; }.nova-game-result > span { color: rgba(255,255,255,.55); }.game-primary { margin-top: 24px; padding: 13px 22px; color: #071014; font-weight: 800; border: 0; border-radius: 999px; background: #00d2b5; cursor: pointer; }.result-grid { display: flex; justify-content: center; gap: 32px; margin-top: 20px; }.result-grid span { display: grid; gap: 3px; color: rgba(255,255,255,.55); font-size: .8rem; }.result-grid strong { color: #fff; font-size: 1.4rem; }.story-sky { padding: 30px; margin-top: 20px; text-align: center; border-radius: 14px; background: linear-gradient(135deg, rgba(251,113,133,.2), rgba(56,189,248,.1)); }.story-orbit { display: block; color: #fb7185; font-size: 3rem; }.story-sky h2 { margin: 14px 0 0; }.story-stats { display: flex; justify-content: space-around; margin-top: 20px; color: rgba(255,255,255,.6); font-size: .8rem; }.story-stats b { display: block; color: #fff; font-size: 1.2rem; }
 @keyframes nova-pulse { 50% { transform: scale(1.15); opacity: .45; } }
-@media (max-width: 900px) { .game-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 900px) { .nova-arcade-main { margin-left: 0; width: 100%; padding-left: 20px; padding-right: 20px; }.game-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .nova-arcade-hero, .arcade-section-title { align-items: flex-start; flex-direction: column; }.arcade-stats { grid-template-columns: repeat(2, 1fr); }.game-grid { grid-template-columns: 1fr; }.nova-arcade-main { padding-left: 18px !important; padding-right: 18px !important; }.game-view { padding-top: 28px; }.nova-game-play { padding: 18px; }.focus-grid { grid-template-columns: repeat(4, 1fr); }.arcade-count { margin-top: 8px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
 
