@@ -100,6 +100,10 @@ function Navbar() {
 
         {/* Actions */}
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div aria-label="Language" style={{ display: "flex", alignItems: "center", gap: 4, marginRight: 4 }}>
+            <Link href="/" className="btn btn-ghost btn-sm" aria-label="English">EN</Link>
+            <Link href="/pt" className="btn btn-ghost btn-sm" aria-label="Português">PT</Link>
+          </div>
           <Link href="/en/auth/login" className="btn btn-ghost btn-sm">Sign in</Link>
           <Link href="/en/auth/login" className="btn btn-primary btn-sm">Get started</Link>
         </div>

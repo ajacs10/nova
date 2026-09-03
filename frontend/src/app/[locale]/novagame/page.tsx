@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import { Navbar } from "@/shared/ui/Navbar";
 import { DashboardSidebar } from "@/components/ui/dashboard-sidebar";
 import { useAuth } from "@/shared/lib/AuthContext";
-import { getDashboard } from "@/shared/lib/api";
 import { ArrowLeft, Gamepad2, LockKeyhole, Play, Sparkles, Trophy } from "lucide-react";
 import { PatternDetective } from "@/components/games/pattern-detective";
 import { FocusRush } from "@/components/games/focus-rush";
@@ -13,25 +12,34 @@ import { MemoryNova } from "@/components/games/memory-nova";
 import { NovaTheDay } from "@/components/games/nova-the-day";
 import type { GameId } from "@/components/games/game-types";
 
+type ArcadeStats = { played: number; completed: number; points: number; best: number };
+
+function loadArcadeStats(): ArcadeStats {
+  if (typeof window === "undefined") return { played: 0, completed: 0, points: 0, best: 0 };
+  try {
+    return { played: 0, completed: 0, points: 0, best: 0, ...JSON.parse(window.localStorage.getItem("nova-games-progress") || "{}") };
+  } catch {
+    return { played: 0, completed: 0, points: 0, best: 0 };
+  }
+}
+
 export default function NovaGamePage() {
   const params = useParams();
   const router = useRouter();
   const locale = (params?.locale as string) || "pt";
   const isPt = locale === "pt";
   const { isLoggedIn, isReady, logoutUser } = useAuth();
-  const [progress, setProgress] = React.useState({ totalCheckins: 0, streak: 0 });
+  const [arcadeStats, setArcadeStats] = React.useState(() => loadArcadeStats());
   const [activeGame, setActiveGame] = React.useState<GameId | "sequence" | "focus" | "breathing" | null>(null);
   const [sequenceStep, setSequenceStep] = React.useState(0);
   const [breathingStep, setBreathingStep] = React.useState(0);
 
   React.useEffect(() => {
     if (!isReady || !isLoggedIn) return;
-    getDashboard().then(({ totalCheckins, streak }) => setProgress({ totalCheckins, streak })).catch(() => undefined);
   }, [isReady, isLoggedIn]);
 
   if (!isReady || !isLoggedIn) return null;
 
-  const level = Math.max(1, Math.floor(progress.totalCheckins / 3) + 1);
   const sequence = [1, 3, 0, 2];
   const breathingLabels = isPt ? ["Inspira", "Segura", "Expira"] : ["Breathe in", "Hold", "Breathe out"];
   const selectGame = (game: "sequence" | "focus" | "breathing") => {
@@ -46,12 +54,13 @@ export default function NovaGamePage() {
     { id: "memory" as const, icon: "🧩", title: "Memory NOVA", text: isPt ? "Encontra todos os pares." : "Find every pair.", meta: isPt ? "8 pares" : "8 pairs", accent: "#38bdf8" },
     { id: "day" as const, icon: "🌎", title: isPt ? "NOVA: O Dia" : "NOVA: The Day", text: isPt ? "As tuas escolhas. Uma história fictícia." : "Your choices. A fictional story.", meta: isPt ? "7 cenas" : "7 scenes", accent: "#fb7185" },
   ];
-  const launchArcadeGame = (game: GameId) => setActiveGame(game);
+  const completeGame = (score: number) => setArcadeStats((value) => { const next = { ...value, completed: value.completed + 1, points: value.points + score, best: Math.max(value.best, score) }; localStorage.setItem("nova-games-progress", JSON.stringify(next)); return next; });
+  const launchArcadeGame = (game: GameId) => { setActiveGame(game); setArcadeStats((value) => { const next = { ...value, played: value.played + 1 }; localStorage.setItem("nova-games-progress", JSON.stringify(next)); return next; }); };
   const renderArcadeGame = () => {
-    if (activeGame === "pattern") return <PatternDetective isPt={isPt} onComplete={() => undefined} />;
-    if (activeGame === "focus") return <FocusRush isPt={isPt} onComplete={() => undefined} />;
-    if (activeGame === "memory") return <MemoryNova isPt={isPt} onComplete={() => undefined} />;
-    return <NovaTheDay isPt={isPt} onComplete={() => undefined} />;
+    if (activeGame === "pattern") return <PatternDetective isPt={isPt} onComplete={completeGame} />;
+    if (activeGame === "focus") return <FocusRush isPt={isPt} onComplete={completeGame} />;
+    if (activeGame === "memory") return <MemoryNova isPt={isPt} onComplete={completeGame} />;
+    return <NovaTheDay isPt={isPt} onComplete={completeGame} />;
   };
 
   if (activeGame === "pattern" || activeGame === "focus" || activeGame === "memory" || activeGame === "day") {
@@ -65,7 +74,7 @@ export default function NovaGamePage() {
       <DashboardSidebar locale={locale} activePath={`/${locale}/novagame`} onLogout={async () => { await logoutUser(); router.push(`/${locale}/auth/login`); }} />
       <main className="checkin-private-content nova-arcade-main" style={{ minHeight: "100vh", padding: "140px 32px 80px", maxWidth: 1100, margin: "0 auto" }}>
         <section className="nova-arcade-hero"><div><span className="nova-eyebrow"><Gamepad2 size={16} /> NOVA GAMES</span><h1>{isPt ? "Joga. Explora. Descobre." : "Play. Explore. Discover."}</h1><p>{isPt ? "Pequenos jogos para fazer uma pausa, explorar ideias e descobrir padrões." : "Short games to pause, explore ideas and discover patterns."}</p></div><span className="arcade-count"><Sparkles size={17} /> {isPt ? "4 jogos disponíveis" : "4 games available"}</span></section>
-        <section className="arcade-stats"><div><strong>0</strong><span>{isPt ? "Jogos jogados" : "Games played"}</span></div><div><strong>0</strong><span>{isPt ? "Padrões encontrados" : "Patterns found"}</span></div><div><strong>0</strong><span>{isPt ? "Melhor pontuação" : "Best score"}</span></div><div><strong>{level}</strong><span>{isPt ? "Nível atual" : "Current level"}</span></div></section>
+        <section className="arcade-stats"><div><strong>{arcadeStats.played}</strong><span>{isPt ? "Jogos jogados" : "Games played"}</span></div><div><strong>{arcadeStats.points}</strong><span>Psychology Points</span></div><div><strong>{arcadeStats.best}</strong><span>{isPt ? "Melhor pontuação" : "Best score"}</span></div><div><strong>{arcadeStats.completed}</strong><span>{isPt ? "Completos" : "Completed"}</span></div></section>
         <section className="arcade-section"><div className="arcade-section-title"><div><span className="nova-eyebrow">ARCADE</span><h2>{isPt ? "Escolhe a tua experiência" : "Choose your experience"}</h2></div><span className="arcade-level"><Trophy size={16} /> {isPt ? "Sem competição" : "No competition"}</span></div><div className="game-grid">{arcadeGames.map((game) => <button type="button" className="game-card" key={game.id} onClick={() => launchArcadeGame(game.id)} style={{ "--game-accent": game.accent } as React.CSSProperties}><div className="game-card-art"><span>{game.icon}</span><i /></div><div className="game-card-copy"><span className="game-card-meta">{game.meta}</span><h3>{game.title}</h3><p>{game.text}</p><span className="game-play"><Play size={14} fill="currentColor" /> {isPt ? "Jogar" : "Play"}</span></div></button>)}</div></section>
         <p className="arcade-disclaimer"><LockKeyhole size={15} /> {isPt ? "Os jogos são experiências recreativas e de reflexão. O desempenho não é uma avaliação de saúde." : "These games are recreational and reflective experiences. Game performance is not a health assessment."}</p>
         <section style={{ marginTop: 44, display: "none" }}>
