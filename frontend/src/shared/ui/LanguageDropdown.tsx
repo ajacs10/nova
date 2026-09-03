@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useTransition } from 'react';
-import { useRouter, useParams, usePathname } from 'next/navigation';
+import { useParams, usePathname } from 'next/navigation';
 import { Languages, Check } from 'lucide-react';
 
 interface LanguageDropdownProps {
@@ -13,7 +13,6 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
   const [isOpen, setIsOpen] = useState(false);
   const [isPending, startTransition] = useTransition();
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const router = useRouter();
   const params = useParams();
   const pathname = usePathname();
   const currentLocale = (params?.locale as string) || 'en';
@@ -46,7 +45,7 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
       : `/${code}${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`;
 
     startTransition(() => {
-      router.push(localizedPath, { scroll: false });
+      window.location.assign(localizedPath);
     });
   };
 
