@@ -51,6 +51,10 @@
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
 
 @media (max-width: 900px) {
+  .dashboard-header .header-actions {
+    display: flex !important;
+  }
+
   .dashboard-header {
     left: 0 !important;
     width: 100% !important;
@@ -71,6 +75,27 @@
 }
 
 @media (max-width: 600px) {
+  .dashboard-header .header-actions {
+    gap: 8px !important;
+    min-width: 0;
+  }
+
+  .dashboard-header .header-actions > span {
+    max-width: 92px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .dashboard-header .header-actions > div:first-child {
+    min-width: 76px !important;
+  }
+
+  .dashboard-header .header-actions > a button {
+    width: 42px !important;
+    height: 42px !important;
+  }
+
   .dashboard-header .container {
     height: 72px !important;
     padding: 0 14px !important;
