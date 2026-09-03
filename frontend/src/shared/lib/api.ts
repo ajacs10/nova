@@ -6,6 +6,16 @@ import type
 } from "@/entities/check-in/model/types";
 
 const BASE_URL = "/api";
+type DashboardData = {
+  streak: number;
+  totalCheckins: number;
+  avgMood: number;
+  weekEntries: WellbeingEntry[];
+  latestInsight?: InsightPattern;
+};
+let dashboardCache: DashboardData | null = null;
+let dashboardCacheAt = 0;
+let dashboardRequest: Promise<DashboardData> | null = null;
 
 export class ApiError extends Error {
   constructor(
@@ -134,6 +144,12 @@ export function checkIn(data: CheckInFormData)
   return fetcher<WellbeingEntry | { crisis: true; message: string }>("/check-in", {
     method: "POST",
     body: JSON.stringify(data),
+  }).then((result) => {
+    if (!("crisis" in result)) {
+      dashboardCache = null;
+      dashboardCacheAt = 0;
+    }
+    return result;
   });
 }
 
@@ -149,11 +165,15 @@ export function getInsights()
 
 export function getDashboard()
 {
-  return fetcher<{
-    streak: number;
-    totalCheckins: number;
-    avgMood: number;
-    weekEntries: WellbeingEntry[];
-    latestInsight?: InsightPattern;
-  }>("/insights/dashboard");
+  const now = Date.now();
+  if (dashboardCache && now - dashboardCacheAt < 30_000) return Promise.resolve(dashboardCache);
+  if (dashboardRequest) return dashboardRequest;
+  dashboardRequest = fetcher<DashboardData>("/insights/dashboard").then((data) => {
+    dashboardCache = data;
+    dashboardCacheAt = Date.now();
+    return data;
+  }).finally(() => {
+    dashboardRequest = null;
+  });
+  return dashboardRequest;
 }

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { ArrowLeft, BookOpen, CalendarDays, Moon, Sparkles, Zap } from "lucide-react";
+import Image from "next/image";
 import { PrivateShell } from "@/components/templates/private-shell";
 import { getCheckIns, getUserFriendlyError } from "@/shared/lib/api";
 import type { WellbeingEntry } from "@/entities/check-in/model/types";
@@ -26,6 +27,17 @@ function getSupportMessage(entry: WellbeingEntry, isPt: boolean) {
   return isPt
     ? "Este registo mostra um dia relativamente estável. Continua a observar o que contribui para esse equilíbrio."
     : "This entry shows a relatively steady day. Keep noticing what may support that balance.";
+}
+
+function getMoodImage(mood: number) {
+  const images = [
+    "/mascotes/mascote_exaustao_v2.svg",
+    "/mascotes/mascote_cansaco_ligeiro_v2.svg",
+    "/mascotes/mascote_equilibrado_v2.svg",
+    "/mascotes/mascote_bom_v2.svg",
+    "/mascotes/mascote_excelente_v2.svg",
+  ];
+  return images[Math.max(0, Math.min(4, mood - 1))];
 }
 
 export default function DiaryPage() {
@@ -72,7 +84,7 @@ export default function DiaryPage() {
             <section className="entry-list" aria-label={isPt ? "Lista de registos" : "Entry list"}>
               {entries.map((entry) => (
                 <button key={entry.id} className={`entry-card ${selected?.id === entry.id ? "active" : ""}`} onClick={() => setSelected(entry)}>
-                  <span className="entry-date"><CalendarDays size={15} /> {new Date(entry.createdAt).toLocaleDateString(isPt ? "pt-PT" : "en-US", { day: "numeric", month: "short", year: "numeric" })}</span>
+                  <span className="entry-card-top"><Image src={getMoodImage(entry.mood)} alt="" width={42} height={42} /><span className="entry-date"><CalendarDays size={15} /> {new Date(entry.createdAt).toLocaleDateString(isPt ? "pt-PT" : "en-US", { day: "numeric", month: "short", year: "numeric" })}</span></span>
                   <span className="entry-preview">{entry.note?.trim() || (isPt ? "Sem nota escrita" : "No written note")}</span>
                   <span className="entry-metrics">{entry.sleep}h sleep · {entry.energy}/10 energy · {entry.mood}/5 mood</span>
                 </button>
@@ -84,6 +96,7 @@ export default function DiaryPage() {
                 <>
                   <div className="detail-top"><button className="back-button" onClick={() => setSelected(null)}><ArrowLeft size={16} /> {isPt ? "Todos os registos" : "All entries"}</button><span>{new Date(selected.createdAt).toLocaleDateString(isPt ? "pt-PT" : "en-US")}</span></div>
                   <h2>{isPt ? "O que escreveste" : "What you wrote"}</h2>
+                  <Image src={getMoodImage(selected.mood)} alt={isPt ? "Avatar correspondente ao humor registado" : "Avatar matching the recorded mood"} width={110} height={62} style={{ objectFit: "contain", marginBottom: 14 }} />
                   <p className="note-text">{selected.note?.trim() || (isPt ? "Não adicionaste uma nota a este check-in." : "You did not add a note to this check-in.")}</p>
                   <div className="metric-row"><span><Moon size={16} /> {selected.sleep}h</span><span><Zap size={16} /> {selected.energy}/10</span><span><Sparkles size={16} /> {selected.mood}/5</span></div>
                   <div className="support-box"><strong>{isPt ? "Uma reflexão para este dia" : "A reflection for this day"}</strong><p>{getSupportMessage(selected, isPt)}</p><small>{isPt ? "É uma sugestão de reflexão, não uma conclusão médica." : "This is a reflection prompt, not a medical conclusion."}</small></div>
@@ -104,6 +117,7 @@ export default function DiaryPage() {
         .entry-list { display: flex; flex-direction: column; gap: 10px; }
         .entry-card { text-align: left; border: 1px solid rgba(255,255,255,.1); background: #0a0e1a; color: #fff; padding: 18px; border-radius: 6px; cursor: pointer; }
         .entry-card:hover, .entry-card.active { border-color: #00d2b5; background: #0d1720; }
+        .entry-card-top { display: flex; align-items: center; gap: 12px; }
         .entry-date, .entry-metrics { display: flex; align-items: center; gap: 7px; color: rgba(255,255,255,.48); font-size: .75rem; }
         .entry-preview { display: block; margin: 12px 0; color: rgba(255,255,255,.88); line-height: 1.45; }
         .entry-detail { min-height: 390px; padding: 28px; border: 1px solid rgba(255,255,255,.1); background: #0a0e1a; border-radius: 6px; }
