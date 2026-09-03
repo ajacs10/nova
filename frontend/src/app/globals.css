@@ -50,6 +50,36 @@
 @media (max-width: 600px) { .nova-arcade-hero, .arcade-section-title { align-items: flex-start; flex-direction: column; }.arcade-stats { grid-template-columns: repeat(2, 1fr); }.game-grid { grid-template-columns: 1fr; }.nova-arcade-main { padding-left: 18px !important; padding-right: 18px !important; }.game-view { padding-top: 104px; }.nova-game-play { padding: 18px; }.focus-grid { grid-template-columns: repeat(4, 1fr); }.arcade-count { margin-top: 8px; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; } }
 
+html[data-theme="light"] body { background: #f5f7fb !important; color: #172033 !important; }
+html[data-theme="light"] [style*="#060810"],
+html[data-theme="light"] [style*="#0a0e1a"],
+html[data-theme="light"] .private-shell,
+html[data-theme="light"] .nova-arcade-page { background: #f5f7fb !important; color: #172033 !important; }
+html[data-theme="light"] .dashboard-sidebar,
+html[data-theme="light"] .mobile-sidebar-toggle { background: #ffffff !important; color: #172033 !important; border-color: #d9e0ec !important; }
+html[data-theme="light"] .dashboard-sidebar span,
+html[data-theme="light"] .dashboard-sidebar a { color: #526079 !important; }
+html[data-theme="light"] .dashboard-sidebar a[style*="#00d2b5"],
+html[data-theme="light"] .dashboard-sidebar a[style*="rgba(0, 210, 181"] { color: #087f73 !important; }
+html[data-theme="light"] .dashboard-header { background: rgba(255,255,255,.94) !important; border-bottom-color: #d9e0ec !important; }
+html[data-theme="light"] .dashboard-header span { color: #172033 !important; }
+html[data-theme="light"] [style*="rgba(255,255,255"] { color: #526079 !important; }
+html[data-theme="light"] .game-card,
+html[data-theme="light"] .nova-game-play,
+html[data-theme="light"] .content-card,
+html[data-theme="light"] .entry-card,
+html[data-theme="light"] .entry-detail { background: #ffffff !important; border-color: #d9e0ec !important; color: #172033 !important; }
+html[data-theme="light"] .game-card h3,
+html[data-theme="light"] .nova-game-play h2,
+html[data-theme="light"] .game-view-title h1,
+html[data-theme="light"] .content-card h2,
+html[data-theme="light"] .content-card h3,
+html[data-theme="light"] .content-card h4 { color: #172033 !important; }
+html[data-theme="light"] .game-answer,
+html[data-theme="light"] .memory-card,
+html[data-theme="light"] .focus-grid button { background: #f5f7fb !important; border-color: #cbd5e1 !important; color: #172033 !important; }
+html[data-theme="light"] .settings-page input { background: #ffffff !important; color: #172033 !important; border-color: #cbd5e1 !important; }
+
 @media (max-width: 900px) {
   .dashboard-header .header-actions {
     display: flex !important;

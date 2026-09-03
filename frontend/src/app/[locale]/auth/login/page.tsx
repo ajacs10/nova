@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
-import { LanguageDropdown } from '@/shared/ui/LanguageDropdown';
 
 import { useAuth } from '@/shared/lib/AuthContext';
 import { ApiError, getUserFriendlyError, login } from '@/shared/lib/api';
@@ -13,7 +12,7 @@ export default function LoginPage() {
   const router = useRouter();
   const params = useParams();
   const locale = (params?.locale as string) || 'en';
-  const isPt = locale === 'pt';
+  const isPt = false;
   const { loginUser, isLoggedIn, isReady } = useAuth();
 
   const [email, setEmail] = useState('');
@@ -104,12 +103,12 @@ export default function LoginPage() {
         boxSizing: 'border-box'
       }} className="auth-form-panel">
 
-        {/* Topo do Formulário com Botão Circular para Voltar + Dropdown de Idioma da Imagem */}
+        {/* Topo do formulário */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             {!isLoggedIn && (
               <Link
-                href={`/${locale}`}
+                href="/en"
                 style={{
                   width: 40,
                   height: 40,
@@ -140,8 +139,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Dropdown Flutuante de Idioma (Estilo Card Branco da Imagem) */}
-          <LanguageDropdown />
         </div>
 
         {/* Formulário Centralizado */}
@@ -268,7 +265,7 @@ export default function LoginPage() {
             <span style={{ color: 'rgba(255, 255, 255, 0.4)' }}>
               {isPt ? 'Ainda não tem conta? ' : "Don't have an account? "}
             </span>
-            <Link href={`/${locale}/auth/register`} style={{ color: '#ffffff', fontWeight: 700, textDecoration: 'underline' }}>
+            <Link href="/en/auth/register" style={{ color: '#ffffff', fontWeight: 700, textDecoration: 'underline' }}>
               {isPt ? 'Criar conta' : 'Create account'}
             </Link>
           </div>

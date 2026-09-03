@@ -8,12 +8,14 @@ import { PrivateShell } from "@/components/templates/private-shell";
 import { changePassword, getUserFriendlyError, uploadAvatar } from "@/shared/lib/api";
 import { useAuth } from "@/shared/lib/AuthContext";
 import { LanguageDropdown } from "@/shared/ui/LanguageDropdown";
+import { usePreferredLocale } from "@/shared/lib/locale";
 
 type TabType = "profile" | "security" | "system";
 
 export default function SettingsPage() {
   const params = useParams();
-  const isPt = ((params?.locale as string) || "pt") === "pt";
+  const locale = usePreferredLocale("private", (params?.locale as string) || "en");
+  const isPt = locale === "pt";
   const { user, updateUser } = useAuth();
 
   const [activeTab, setActiveTab] = useState<TabType>("profile");

@@ -38,6 +38,10 @@ export function PrivateShell({ children }: PrivateShellProps) {
           background: #060810;
           color: #ffffff;
         }
+        :global(html[data-theme="light"]) .private-shell {
+          background: #f5f7fb;
+          color: #172033;
+        }
         .private-content {
           min-height: 100vh;
           margin-left: 220px;

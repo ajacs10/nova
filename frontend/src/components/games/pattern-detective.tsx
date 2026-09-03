@@ -55,10 +55,11 @@ export function PatternDetective({ isPt, onComplete }: GameProps) {
   };
 
   if (finished) return <Result title={isPt ? "Padrão encontrado" : "Pattern found"} text={isPt ? "Completaste as 5 rondas." : "You completed all 5 rounds."} score={score} isPt={isPt} onAgain={() => { setRound(0); setScore(0); setChoice(null); setFinished(false); }} />;
+  const dayLabels = isPt ? { Mon: "Seg", Tue: "Ter", Wed: "Qua", Thu: "Qui" } : { Mon: "Mon", Tue: "Tue", Wed: "Wed", Thu: "Thu" };
   return <div className="nova-game-play">
-    <div className="nova-game-play-head"><span>{isPt ? `Ronda ${round + 1} de 5` : `Round ${round + 1} of 5`}</span><strong>{elapsed}s · {score} pts</strong></div>
+    <div className="nova-game-play-head"><span>{isPt ? `Ronda ${round + 1} de 5` : `Round ${round + 1} of 5`}</span><strong>{Math.max(0, 60 - elapsed)}s · {score} pts</strong></div>
     <h2>{isPt ? "Que padrão encontras?" : "What pattern do you see?"}</h2>
-    <div className="pattern-table" role="table"><div className="pattern-row pattern-head">{(isPt ? ["DIA", "SONO", "CARGA", "ENERGIA"] : ["DAY", "SLEEP", "LOAD", "ENERGY"]).map((cell) => <span key={cell}>{cell}</span>)}</div>{dataset.rows.map((row) => <div className="pattern-row" role="row" key={row[0]}>{row.map((cell) => <span key={cell}>{cell}</span>)}</div>)}</div>
+    <div className="pattern-table" role="table"><div className="pattern-row pattern-head">{(isPt ? ["DIA", "SONO", "CARGA", "ENERGIA"] : ["DAY", "SLEEP", "LOAD", "ENERGY"]).map((cell) => <span key={cell}>{cell}</span>)}</div>{dataset.rows.map((row) => <div className="pattern-row" role="row" key={row[0]}>{row.map((cell, index) => <span key={cell}>{index === 0 ? dayLabels[cell as keyof typeof dayLabels] : cell}</span>)}</div>)}</div>
     <div className="pattern-answers">{answers.map((text, index) => <button key={text} type="button" className={choice === index ? (index === correct ? "game-answer correct" : "game-answer wrong") : "game-answer"} onClick={() => answer(index)}>{text}</button>)}</div>
     {choice !== null && <p className="game-feedback">{choice === correct ? (isPt ? "Padrão encontrado." : "Pattern found.") : (isPt ? "Observa novamente os dados." : "Take another look at the data.")}</p>}
   </div>;

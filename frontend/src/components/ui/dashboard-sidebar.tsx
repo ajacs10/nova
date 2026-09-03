@@ -3,6 +3,7 @@
 import Link from "next/link";
 import * as React from "react";
 import { LayoutGrid, CheckSquare, LineChart, BookOpen, Gamepad2, Settings, LogOut, Menu, X } from "lucide-react";
+import { usePreferredLocale } from "@/shared/lib/locale";
 
 interface DashboardSidebarProps {
   locale: string;
@@ -15,7 +16,8 @@ export function DashboardSidebar({
   activePath,
   onLogout,
 }: DashboardSidebarProps) {
-  const isPt = locale === "pt";
+  const preferredLocale = usePreferredLocale("private", locale);
+  const isPt = preferredLocale === "pt";
   const [isOpen, setIsOpen] = React.useState(false);
 
   const mainNav = [

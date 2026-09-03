@@ -7,6 +7,7 @@ import { useParams, usePathname } from "next/navigation";
 import { Flame, Menu, X } from "lucide-react";
 import { useAuth } from "@/shared/lib/AuthContext";
 import { LanguageDropdown } from "@/shared/ui/LanguageDropdown";
+import { usePreferredLocale } from "@/shared/lib/locale";
 
 export function Navbar() {
   const [scrolled, setScrolled] = React.useState(false);
@@ -15,8 +16,10 @@ export function Navbar() {
   const pathname = usePathname();
   const params = useParams();
   const locale = (params?.locale as string) || "en";
-  const isPt = locale === "pt";
   const { user, isLoggedIn } = useAuth();
+  const localeScope = isLoggedIn ? "private" : "landing";
+  const preferredLocale = usePreferredLocale(localeScope, locale);
+  const isPt = preferredLocale === "pt";
   const [displayName, setDisplayName] = React.useState("");
   const [avatarSrc, setAvatarSrc] = React.useState("/mascotes/mascote_equilibrado_v2.svg");
   const [gameXp, setGameXp] = React.useState(0);
@@ -114,10 +117,13 @@ export function Navbar() {
             <div style={{ flex: 1 }} />
 
             <div className="header-actions" style={{ display: "flex", alignItems: "center", gap: 14 }}>
-              <div title={`${gameXp} Psychology XP`} style={{ display: "flex", alignItems: "center", gap: 8, minWidth: 128 }}>
+              <div title={`${gameXp} Psychology XP`} style={{ display: "flex", alignItems: "center", gap: 10, minWidth: 150 }}>
                 <Flame size={16} color="#f59e0b" aria-hidden="true" />
-                <div style={{ display: "grid", gap: 4, minWidth: 76 }}>
-                  <span style={{ color: "#ffffff", fontSize: "0.76rem", fontWeight: 700, lineHeight: 1 }}>{isPt ? `Nível ${gameLevel} · ${gameXp} XP` : `Level ${gameLevel} · ${gameXp} XP`}</span>
+                <div style={{ display: "grid", gap: 5, minWidth: 110 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12, lineHeight: 1 }}>
+                    <span style={{ color: "#ffffff", fontSize: "0.76rem", fontWeight: 700 }}>{isPt ? `Nível ${gameLevel}` : `Level ${gameLevel}`}</span>
+                    <span style={{ color: "#fbbf24", fontSize: "0.72rem", fontWeight: 800 }}>{gameXp} XP</span>
+                  </div>
                   <span aria-hidden="true" style={{ display: "block", width: "100%", height: 3, overflow: "hidden", borderRadius: 99, background: "rgba(255,255,255,0.16)" }}>
                     <span style={{ display: "block", width: `${gameLevelProgress}%`, height: "100%", borderRadius: 99, background: "#00d2b5", transition: "width 0.3s ease" }} />
                   </span>
@@ -174,7 +180,7 @@ export function Navbar() {
         }}
       >
         <div className="container" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", height: 85, padding: "0 28px" }}>
-          <Link href={`/${locale}`} style={{ display: "flex", alignItems: "center", gap: 10, fontWeight: 800, fontSize: "1.5rem", letterSpacing: "-0.03em", color: "#ffffff", textDecoration: "none" }}>
+          <Link href="/en" style={{ display: "flex", alignItems: "center", gap: 10, fontWeight: 800, fontSize: "1.5rem", letterSpacing: "-0.03em", color: "#ffffff", textDecoration: "none" }}>
             <Image src="/icons/nova-icon-192.svg" alt="NOVA Psychology" width={38} height={38} />
             <span><span style={{ fontWeight: 800 }}>NOVA</span> <span style={{ fontWeight: 300, fontSize: "1.05rem", opacity: 0.85, letterSpacing: "0.02em" }}>psychology</span></span>
           </Link>

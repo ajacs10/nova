@@ -8,6 +8,7 @@ import { useAuth } from "@/shared/lib/AuthContext";
 import { MetricCard } from "@/components/templates/metric-card";
 import { getDashboard, getUserFriendlyError } from "@/shared/lib/api";
 import { DashboardSidebar } from "@/components/ui/dashboard-sidebar";
+import { usePreferredLocale } from "@/shared/lib/locale";
 
 type ChartTab = "sleep" | "workload" | "metrics";
 
@@ -22,7 +23,9 @@ export default function DashboardPage() {
   const params = useParams();
   const locale = (params?.locale as string) || "pt";
   const { isLoggedIn, isReady, logoutUser } = useAuth();
-  const weekDayLabels = locale === "pt"
+  const preferredLocale = usePreferredLocale("private", locale);
+  const isPt = preferredLocale === "pt";
+  const weekDayLabels = isPt
     ? ["segunda", "terça", "quarta", "quinta", "sexta", "sábado", "domingo"]
     : ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
@@ -57,13 +60,13 @@ export default function DashboardPage() {
     return (
       <main style={{ padding: 140, color: "#fff", textAlign: "center" }}>
         <p>{dashboardError}</p>
-        <button type="button" onClick={() => window.location.reload()}>Tentar novamente</button>
+        <button type="button" onClick={() => window.location.reload()}>{isPt ? "Tentar novamente" : "Try again"}</button>
       </main>
     );
   }
 
   if (!dashboard) {
-    return <main style={{ padding: 140, color: "rgba(255,255,255,0.65)", textAlign: "center" }}>A carregar o teu painel...</main>;
+    return <main style={{ padding: 140, color: "rgba(255,255,255,0.65)", textAlign: "center" }}>{isPt ? "A carregar o teu painel..." : "Loading your dashboard..."}</main>;
   }
 
   const weeklyData = dashboard?.weekEntries ?? [];
@@ -150,8 +153,8 @@ export default function DashboardPage() {
               <div className="dashboard-metrics" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 16, gridAutoRows: 128, width: "100%" }}>
                 <div style={{ height: "100%", background: "#0a0e1a", padding: "18px", borderRadius: "12px", display: "flex", justifyContent: "space-between", alignItems: "center", boxSizing: "border-box" }}>
                   <div>
-                    <div style={{ fontSize: "1.3rem", fontWeight: 800 }}>{dashboard.streak} Dias</div>
-                    <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", marginTop: 2 }}>Check-ins</div>
+                    <div style={{ fontSize: "1.3rem", fontWeight: 800 }}>{dashboard.streak} {isPt ? "Dias" : "Days"}</div>
+                    <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{isPt ? "Check-ins" : "Check-ins"}</div>
                   </div>
                   <div style={{ width: 38, height: 38, borderRadius: "50%", border: "3px solid #00d2b5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.68rem", fontWeight: 700, color: "#00d2b5" }}>
                     {weeklyCompletion}%
@@ -161,7 +164,7 @@ export default function DashboardPage() {
                 <div style={{ height: "100%", background: "#0a0e1a", padding: "18px", borderRadius: "12px", display: "flex", justifyContent: "space-between", alignItems: "center", boxSizing: "border-box" }}>
                   <div>
                     <div style={{ fontSize: "1.3rem", fontWeight: 800 }}>{dashboard.totalCheckins}</div>
-                    <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", marginTop: 2 }}>Total Registos</div>
+                    <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{isPt ? "Total Registos" : "Total Entries"}</div>
                   </div>
                   <div style={{ width: 38, height: 38, borderRadius: "50%", border: "3px solid rgba(255,255,255,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.68rem", fontWeight: 700, color: "rgba(255,255,255,0.7)" }}>
                     {weeklyCompletion}%
@@ -171,7 +174,7 @@ export default function DashboardPage() {
                 <div style={{ height: "100%", background: "#0a0e1a", padding: "18px", borderRadius: "12px", display: "flex", justifyContent: "space-between", alignItems: "center", boxSizing: "border-box" }}>
                   <div>
                     <div style={{ fontSize: "1.3rem", fontWeight: 800, color: "#00d2b5" }}>{dashboard.avgMood}/5</div>
-                    <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", marginTop: 2 }}>Humor Médio</div>
+                    <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", marginTop: 2 }}>{isPt ? "Humor Médio" : "Average Mood"}</div>
                   </div>
                   <div style={{ width: 38, height: 38, borderRadius: "50%", border: "3px solid #00d2b5", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "0.68rem", fontWeight: 700, color: "#00d2b5" }}>
                     {clampPercent((averageEnergy / 10) * 100)}%
@@ -179,10 +182,10 @@ export default function DashboardPage() {
                 </div>
 
                 <MetricCard
-                  label="Média de Sono"
+                  label={isPt ? "Média de Sono" : "Average Sleep"}
                   value={Number(avgSleepHours)}
                   unit="h"
-                  description="Descanso reparador"
+                  description={isPt ? "Descanso reparador" : "Restful sleep"}
                 />
               </div>
 
@@ -222,9 +225,9 @@ export default function DashboardPage() {
                     }}
                   >
                     {[
-                      { id: "sleep", label: "Horas de Sono" },
-                      { id: "workload", label: "Carga & Descanso" },
-                      { id: "metrics", label: "Equilíbrio & Funil" },
+                      { id: "sleep", label: isPt ? "Horas de Sono" : "Sleep Hours" },
+                      { id: "workload", label: isPt ? "Carga & Descanso" : "Workload & Rest" },
+                      { id: "metrics", label: isPt ? "Equilíbrio & Funil" : "Balance & Funnel" },
                     ].map((tab) => (
                       <button
                         key={tab.id}
@@ -264,8 +267,8 @@ export default function DashboardPage() {
 
                           <line x1="40" y1="0" x2="40" y2="220" stroke="rgba(255,255,255,0.28)" strokeWidth="1" />
                           <line x1="40" y1="220" x2="570" y2="220" stroke="rgba(255,255,255,0.28)" strokeWidth="1" />
-                          <text x="305" y="257" fill="rgba(255,255,255,0.5)" fontSize="10" fontWeight="700" textAnchor="middle">Dias</text>
-                          <text x="12" y="110" fill="rgba(255,255,255,0.5)" fontSize="10" fontWeight="700" textAnchor="middle" transform="rotate(-90 12 110)">Horas</text>
+                          <text x="305" y="257" fill="rgba(255,255,255,0.5)" fontSize="10" fontWeight="700" textAnchor="middle">{isPt ? "Dias" : "Days"}</text>
+                          <text x="12" y="110" fill="rgba(255,255,255,0.5)" fontSize="10" fontWeight="700" textAnchor="middle" transform="rotate(-90 12 110)">{isPt ? "Horas" : "Hours"}</text>
 
                           {[12, 10, 8, 6, 4, 2, 0].map((h) => {
                             const yPos = getY(h);
@@ -312,8 +315,8 @@ export default function DashboardPage() {
                   {activeChartTab === "workload" && (
                     <div style={{ height: "100%", display: "flex", flexDirection: "column", gap: 12 }}>
                       <div style={{ display: "flex", justifyContent: "flex-end", gap: 18, fontSize: "0.72rem", color: "rgba(255,255,255,0.65)" }}>
-                        <span style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 9, height: 9, background: "#3b82f6", borderRadius: 2 }} /> {locale === "pt" ? "Carga" : "Workload"}</span>
-                        <span style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 9, height: 9, background: "#00d2b5", borderRadius: 2 }} /> {locale === "pt" ? "Descanso" : "Rest"}</span>
+                        <span style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 9, height: 9, background: "#3b82f6", borderRadius: 2 }} /> {isPt ? "Carga" : "Workload"}</span>
+                        <span style={{ display: "flex", alignItems: "center", gap: 6 }}><span style={{ width: 9, height: 9, background: "#00d2b5", borderRadius: 2 }} /> {isPt ? "Descanso" : "Rest"}</span>
                       </div>
                       <div style={{ flex: 1, minHeight: 0, display: "flex", position: "relative", paddingLeft: 34 }}>
                         <div style={{ position: "absolute", left: 0, top: 0, bottom: 28, display: "flex", flexDirection: "column", justifyContent: "space-between", fontSize: "0.68rem", color: "rgba(255,255,255,0.45)" }}>
@@ -340,7 +343,7 @@ export default function DashboardPage() {
                   {activeChartTab === "metrics" && (
                     <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 30, alignItems: "center", height: "100%" }}>
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-                        <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#ffffff", marginBottom: 12 }}>Índice de Estabilidade</div>
+                        <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#ffffff", marginBottom: 12 }}>{isPt ? "Índice de Estabilidade" : "Stability Score"}</div>
                         <div style={{ position: "relative", width: 180, height: 100, display: "flex", justifyContent: "center", alignItems: "flex-end" }}>
                           <svg width="180" height="100" viewBox="0 0 220 120">
                             <path d="M 20 110 A 90 90 0 0 1 200 110" fill="none" stroke="rgba(255, 255, 255, 0.06)" strokeWidth="18" />
@@ -348,13 +351,13 @@ export default function DashboardPage() {
                           </svg>
                           <div style={{ position: "absolute", bottom: 0, textAlign: "center" }}>
                             <div style={{ fontSize: "2rem", fontWeight: 800, color: "#ffffff", lineHeight: 1 }}>{balanceScore}%</div>
-                            <div style={{ fontSize: "0.75rem", color: "#00d2b5", fontWeight: 700, marginTop: 2 }}>{balanceScore >= 80 ? (locale === "pt" ? "Excelente" : "Excellent") : balanceScore >= 60 ? (locale === "pt" ? "Equilibrado" : "Balanced") : (locale === "pt" ? "A melhorar" : "Needs attention")}</div>
+                            <div style={{ fontSize: "0.75rem", color: "#00d2b5", fontWeight: 700, marginTop: 2 }}>{balanceScore >= 80 ? (isPt ? "Excelente" : "Excellent") : balanceScore >= 60 ? (isPt ? "Equilibrado" : "Balanced") : (isPt ? "A melhorar" : "Needs attention")}</div>
                           </div>
                         </div>
                       </div>
 
                       <div>
-                        <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#ffffff", marginBottom: 14 }}>Funil de Consistência</div>
+                        <div style={{ fontSize: "0.95rem", fontWeight: 700, color: "#ffffff", marginBottom: 14 }}>{isPt ? "Funil de Consistência" : "Consistency Funnel"}</div>
                         <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
                           {funnelItems.map((item, i) => (
                             <div key={i}>

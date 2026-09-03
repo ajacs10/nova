@@ -3,6 +3,7 @@
 import React, { useState, useRef, useEffect, useTransition } from 'react';
 import { useParams, usePathname } from 'next/navigation';
 import { Languages, Check } from 'lucide-react';
+import { usePreferredLocale } from '@/shared/lib/locale';
 
 interface LanguageDropdownProps {
   buttonStyle?: React.CSSProperties;
@@ -16,7 +17,9 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
   const params = useParams();
   const pathname = usePathname();
   const pathLocale = pathname.match(/^\/(en|pt)(?=\/|$)/)?.[1];
-  const currentLocale = pathLocale || (params?.locale as string) || 'pt';
+  const pathWithoutLocale = pathname.replace(/^\/(en|pt)(?=\/|$)/, '') || '/';
+  const isPrivatePath = /^\/(dashboard|check-in|insights|diary|novagame|settings|profile|security)(\/|$)/.test(pathWithoutLocale);
+  const currentLocale = usePreferredLocale(isPrivatePath ? 'private' : 'landing', pathLocale || (params?.locale as string) || 'en');
 
   const languages = [
     { code: 'pt', name: 'Português', codeLabel: 'PT', flag: '🇵🇹' },
@@ -40,13 +43,12 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
     setIsOpen(false);
     if (code === currentLocale) return;
 
-    const pathWithoutLocale = pathname.replace(/^\/(en|pt)(?=\/|$)/, '') || '/';
-    const localizedPath = code === 'pt'
-      ? pathWithoutLocale
-      : `/${code}${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`;
-
     startTransition(() => {
-      window.location.assign(localizedPath);
+      const scope = isPrivatePath ? 'private' : 'landing';
+      document.cookie = `${scope === 'private' ? 'nova-private-locale' : 'nova-landing-locale'}=${code}; path=/; max-age=31536000`;
+      document.cookie = `NEXT_LOCALE=${code}; path=/; max-age=31536000`;
+      window.dispatchEvent(new CustomEvent('nova-locale-changed', { detail: { scope, locale: code } }));
+      window.location.assign(pathWithoutLocale);
     });
   };
 

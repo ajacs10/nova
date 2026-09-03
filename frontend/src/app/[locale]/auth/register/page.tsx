@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { Eye, EyeOff, ArrowLeft } from 'lucide-react';
-import { LanguageDropdown } from '@/shared/ui/LanguageDropdown';
 import { useAuth } from '@/shared/lib/AuthContext';
 import { getUserFriendlyError, register } from '@/shared/lib/api';
 
@@ -29,7 +28,7 @@ export default function RegisterPage() {
   const router = useRouter();
   const params = useParams();
   const locale = (params?.locale as string) || 'en';
-  const isPt = locale === 'pt';
+  const isPt = false;
   const { isLoggedIn, isReady } = useAuth();
 
   const [firstName, setFirstName] = useState('');
@@ -212,7 +211,7 @@ export default function RegisterPage() {
     try {
       await register(fullName, email, password, `${countryCode}${phoneNum.replace(/\D/g, '')}`, acceptedTerms);
       setIsLoading(false);
-      router.push(`/${locale}/auth/verify-email?email=${encodeURIComponent(email)}`);
+      router.push(`/en/auth/verify-email?email=${encodeURIComponent(email)}`);
     } catch (requestError) {
       setIsLoading(false);
       setErrors((previous) => ({
@@ -280,11 +279,11 @@ export default function RegisterPage() {
         overflowY: 'auto'
       }} className="auth-form-panel auth-form-panel-mobile">
 
-        {/* Topo do Formulário com Botão Circular para Voltar + Dropdown de Idioma da Imagem */}
+        {/* Topo do formulário */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', position: 'relative', zIndex: 3 }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
             <Link
-              href={`/${locale}`}
+              href="/en"
               style={{
                 width: 40,
                 height: 40,
@@ -314,8 +313,6 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Dropdown Flutuante de Idioma (Estilo Card Branco da Imagem) */}
-          <LanguageDropdown />
         </div>
 
         {/* Formulário Centralizado em Preto e Branco */}
@@ -637,7 +634,7 @@ export default function RegisterPage() {
             <span style={{ color: 'rgba(255, 255, 255, 0.4)' }}>
               {isPt ? 'Já tem conta? ' : 'Already have an account? '}
             </span>
-            <Link href={`/${locale}/auth/login`} style={{ color: '#ffffff', fontWeight: 700, textDecoration: 'underline' }}>
+            <Link href="/en/auth/login" style={{ color: '#ffffff', fontWeight: 700, textDecoration: 'underline' }}>
               {isPt ? 'Entrar' : 'Sign in'}
             </Link>
           </div>

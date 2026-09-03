@@ -11,22 +11,26 @@ import { FocusRush } from "@/components/games/focus-rush";
 import { MemoryNova } from "@/components/games/memory-nova";
 import { NovaTheDay } from "@/components/games/nova-the-day";
 import type { GameId } from "@/components/games/game-types";
+import { usePreferredLocale } from "@/shared/lib/locale";
 
-type ArcadeStats = { played: number; completed: number; points: number; best: number; level: number };
+type ArcadeStats = { played: number; completed: number; points: number; best: number; level: number; xp: number };
 
 function loadArcadeStats(): ArcadeStats {
-  if (typeof window === "undefined") return { played: 0, completed: 0, points: 0, best: 0, level: 1 };
+  if (typeof window === "undefined") return { played: 0, completed: 0, points: 0, best: 0, level: 1, xp: 0 };
   try {
-    return { played: 0, completed: 0, points: 0, best: 0, level: 1, ...JSON.parse(window.localStorage.getItem("nova-games-progress") || "{}") };
+    const saved = JSON.parse(window.localStorage.getItem("nova-games-progress") || "{}");
+    const xp = Number(saved.xp) || 0;
+    return { played: 0, completed: 0, points: 0, best: 0, level: Math.floor(xp / 100) + 1, xp, ...saved };
   } catch {
-    return { played: 0, completed: 0, points: 0, best: 0, level: 1 };
+    return { played: 0, completed: 0, points: 0, best: 0, level: 1, xp: 0 };
   }
 }
 
 export default function NovaGamePage() {
   const params = useParams();
   const router = useRouter();
-  const locale = (params?.locale as string) || "pt";
+  const routeLocale = (params?.locale as string) || "en";
+  const locale = usePreferredLocale("private", routeLocale);
   const isPt = locale === "pt";
   const { isLoggedIn, isReady, logoutUser } = useAuth();
   const [, setArcadeStats] = React.useState(() => loadArcadeStats());
@@ -45,7 +49,7 @@ export default function NovaGamePage() {
     { id: "memory" as const, icon: "🧩", title: "Memory NOVA", text: isPt ? "Encontra todos os pares." : "Find every pair.", meta: isPt ? "8 pares" : "8 pairs", accent: "#38bdf8" },
     { id: "day" as const, icon: "🌎", title: isPt ? "NOVA: O Dia" : "NOVA: The Day", text: isPt ? "As tuas escolhas. Uma história fictícia." : "Your choices. A fictional story.", meta: isPt ? "7 cenas" : "7 scenes", accent: "#fb7185" },
   ];
-  const completeGame = (score: number) => setArcadeStats((value) => { const next = { ...value, completed: value.completed + 1, points: value.points + score, best: Math.max(value.best, score), level: value.level + 1 }; localStorage.setItem("nova-games-progress", JSON.stringify(next)); return next; });
+  const completeGame = (score: number) => setArcadeStats((value) => { const xp = value.xp + 10; const next = { ...value, completed: value.completed + 1, points: value.points + score, best: Math.max(value.best, score), level: Math.floor(xp / 100) + 1, xp }; localStorage.setItem("nova-games-progress", JSON.stringify(next)); return next; });
   const launchArcadeGame = (game: GameId) => { setActiveGame(game); setArcadeStats((value) => { const next = { ...value, played: value.played + 1 }; localStorage.setItem("nova-games-progress", JSON.stringify(next)); return next; }); };
   const renderArcadeGame = () => {
     if (activeGame === "pattern") return <PatternDetective isPt={isPt} onComplete={completeGame} />;

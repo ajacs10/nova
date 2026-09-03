@@ -12,6 +12,7 @@ import FolderInteraction from "@/components/ui/folder-interaction";
 import { useAuth } from "@/shared/lib/AuthContext";
 import { checkIn, getCheckIns, getUserFriendlyError } from "@/shared/lib/api";
 import { DashboardSidebar } from "@/components/ui/dashboard-sidebar";
+import { usePreferredLocale } from "@/shared/lib/locale";
 
 export default function CheckInPage() {
   const [step, setStep] = React.useState(0);
@@ -22,7 +23,8 @@ export default function CheckInPage() {
   const [alreadyCheckedIn, setAlreadyCheckedIn] = React.useState(false);
   const params = useParams();
   const router = useRouter();
-  const locale = (params?.locale as string) || "pt";
+  const routeLocale = (params?.locale as string) || "en";
+  const locale = usePreferredLocale("private", routeLocale);
   const { isLoggedIn, isReady, logoutUser } = useAuth();
 
   const handleSidebarLogout = async () => {
