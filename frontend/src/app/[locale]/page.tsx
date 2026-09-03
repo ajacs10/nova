@@ -154,19 +154,6 @@ export default function LandingPage() {
               margin: "0 auto",
             }}
           >
-            <span
-              style={{
-                display: "inline-block",
-                color: "#00d2b5",
-                fontSize: "0.75rem",
-                fontWeight: 800,
-                letterSpacing: "0.2em",
-                marginBottom: 20,
-                textTransform: "uppercase",
-              }}
-            >
-              NOVA RECOVERY
-            </span>
             <h1
               style={{
                 fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
@@ -215,9 +202,6 @@ export default function LandingPage() {
                 {isPt ? "Explorar NOVA Recovery" : "Explore NOVA Recovery"}
               </Link>
             </div>
-            <p style={{ maxWidth: 580, margin: "28px auto 0", color: "rgba(255,255,255,0.55)", fontSize: "0.8rem", lineHeight: 1.5 }}>
-              {isPt ? "A NOVA é uma ferramenta de acompanhamento e educação. Não diagnostica, trata nem fornece autorização médica." : "NOVA is a tracking and education tool. It does not diagnose, treat, or provide medical clearance."}
-            </p>
           </div>
         </section>
 
@@ -232,7 +216,6 @@ export default function LandingPage() {
                 [isPt ? "Resumo claro" : "Clear summary", isPt ? "Prepara a próxima conversa clínica." : "Prepare the next clinical conversation."],
               ].map(([title, text]) => <article key={title} style={{ padding: 22, border: "1px solid rgba(255,255,255,.09)", borderRadius: 14, background: "rgba(255,255,255,.025)" }}><strong style={{ display: "block", color: "#00d2b5", marginBottom: 8 }}>{title}</strong><span style={{ color: "rgba(255,255,255,.68)", fontSize: ".9rem" }}>{text}</span></article>)}
             </div>
-            <p style={{ color: "rgba(255,255,255,.46)", fontSize: ".78rem", margin: "28px 0 0", lineHeight: 1.5 }}>{isPt ? "A NOVA não diagnostica nem substitui cuidados profissionais." : "NOVA does not diagnose or replace professional care."}</p>
           </div>
         </section>
 
