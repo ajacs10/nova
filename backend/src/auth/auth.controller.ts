@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Patch, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Patch, Post, Query, Req, Res, UseGuards } from '@nestjs/common';
 import { IsEmail, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import type { FastifyReply, FastifyRequest } from 'fastify';
 import { AuthService } from './auth.service.js';
@@ -111,5 +111,22 @@ export class AuthController {
     @Req() request: FastifyRequest & { user: { id: string } },
   ) {
     return this.authService.updateAvatar(request.user.id, body.data, body.mimeType);
+  }
+
+  @Get('data-export')
+  @UseGuards(SessionGuard)
+  exportData(@Req() request: FastifyRequest & { user: { id: string } }) {
+    return this.authService.exportUserData(request.user.id);
+  }
+
+  @Delete('account')
+  @UseGuards(SessionGuard)
+  async deleteAccount(
+    @Req() request: FastifyRequest & { user: { id: string } },
+    @Res({ passthrough: true }) reply: FastifyReply,
+  ) {
+    await this.authService.deleteAccount(request.user.id);
+    this.authService.clearSessionCookie(reply);
+    return { message: 'Account deleted' };
   }
 }

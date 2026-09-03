@@ -107,6 +107,14 @@ export function uploadAvatar(data: string, mimeType: string) {
   });
 }
 
+export function exportUserData() {
+  return fetcher<{ user: { id: string; name: string; email: string; phone?: string | null; createdAt: string }; checkIns: WellbeingEntry[] }>('/auth/data-export');
+}
+
+export function deleteAccount() {
+  return fetcher<{ message: string }>('/auth/account', { method: 'DELETE' });
+}
+
 export function updateProfile(data: { name: string; email: string; phone?: string }) {
   return fetcher<{ user: { id: string; name: string; email: string; phone?: string; role: string } }>("/auth/me", {
     method: "PATCH",

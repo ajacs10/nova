@@ -6,6 +6,7 @@ import { Moon, Sun, Sunset } from "lucide-react";
 import { Navbar } from "@/shared/ui/Navbar";
 import { useAuth } from "@/shared/lib/AuthContext";
 import { DashboardSidebar } from "@/components/ui/dashboard-sidebar";
+import { getInsights, getUserFriendlyError } from "@/shared/lib/api";
 
 interface InsightCardData {
   id: string;
@@ -47,7 +48,7 @@ const INSIGHT_VARIANTS_EN: Omit<InsightCardData, "id" | "period">[] = [
   { title: "Consistent check-in", type: "Self-awareness", description: "Regular entries make it easier to compare energy, sleep, and workload over time.", action: "Complete your next check-in at a similar time if possible.", confidence: 80 },
 ];
 
-function getDailyInsights(locale: string): InsightCardData[] {
+export function getDailyInsights(locale: string): InsightCardData[] {
   const variants = locale === "pt" ? INSIGHT_VARIANTS_PT : INSIGHT_VARIANTS_EN;
   const daySeed = Math.floor(Date.now() / 86_400_000);
   const start = (daySeed * 5) % variants.length;
@@ -92,7 +93,23 @@ export default function InsightsPage() {
     }
   }, [isReady, isLoggedIn, locale, router]);
 
-  const insightsList = getDailyInsights(locale);
+  const [insightsList, setInsightsList] = useState<InsightCardData[]>([]);
+  const [insightsError, setInsightsError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isReady || !isLoggedIn) return;
+    getInsights()
+      .then((items) => setInsightsList(items.map((item) => ({
+        id: item.id,
+        title: item.type,
+        type: item.type,
+        description: item.description,
+        action: item.suggestion ?? (isPt ? "Continua a observar os teus dados." : "Keep observing your data."),
+        confidence: item.confidence,
+        period: ["manha", "tarde", "noite"],
+      }))))
+      .catch((error: unknown) => setInsightsError(getUserFriendlyError(error, isPt)));
+  }, [isReady, isLoggedIn, isPt]);
 
   const periodsList = isPt
     ? [
@@ -108,6 +125,21 @@ export default function InsightsPage() {
 
   if (!isReady || !isLoggedIn) {
     return null;
+  }
+
+  if (insightsError) {
+    return <main style={{ padding: 140, color: "#fff", textAlign: "center" }}>{insightsError}</main>;
+  }
+
+  if (insightsList.length === 0) {
+    return (
+      <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 24, background: "#060810", color: "#fff", textAlign: "center" }}>
+        <div>
+          <h1 style={{ marginBottom: 10 }}>{isPt ? "O teu primeiro padrão está à espera" : "Your first pattern is waiting"}</h1>
+          <p style={{ color: "rgba(255,255,255,0.6)" }}>{isPt ? "Completa pelo menos três check-ins para começarmos a comparar os teus dados." : "Complete at least three check-ins so we can start comparing your data."}</p>
+        </div>
+      </main>
+    );
   }
 
   function changePeriod(p: string) {

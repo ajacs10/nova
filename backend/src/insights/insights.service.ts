@@ -14,31 +14,42 @@ export class InsightsService {
       }),
     );
 
-    if (checkIns.length === 0) return [];
+    if (checkIns.length < 3) return [];
 
     const averageSleep = checkIns.reduce((sum, item) => sum + Number(item.sleep), 0) / checkIns.length;
     const averageEnergy = checkIns.reduce((sum, item) => sum + item.energy, 0) / checkIns.length;
     const averageWorkload = checkIns.reduce((sum, item) => sum + item.workload, 0) / checkIns.length;
+    const sleepThreshold = averageSleep;
+    const higherSleep = checkIns.filter((item) => Number(item.sleep) >= sleepThreshold);
+    const lowerSleep = checkIns.filter((item) => Number(item.sleep) < sleepThreshold);
+    const higherSleepEnergy = higherSleep.length ? higherSleep.reduce((sum, item) => sum + item.energy, 0) / higherSleep.length : 0;
+    const lowerSleepEnergy = lowerSleep.length ? lowerSleep.reduce((sum, item) => sum + item.energy, 0) / lowerSleep.length : 0;
+    const workloadThreshold = averageWorkload;
+    const higherWorkload = checkIns.filter((item) => item.workload >= workloadThreshold);
+    const lowerWorkload = checkIns.filter((item) => item.workload < workloadThreshold);
+    const higherWorkloadEnergy = higherWorkload.length ? higherWorkload.reduce((sum, item) => sum + item.energy, 0) / higherWorkload.length : 0;
+    const lowerWorkloadEnergy = lowerWorkload.length ? lowerWorkload.reduce((sum, item) => sum + item.energy, 0) / lowerWorkload.length : 0;
+    const signal = (difference: number) => Math.max(0, Math.min(100, Math.round(50 + Math.abs(difference) * 12)));
 
     return [
-      averageSleep < 6.5 ? {
-        id: 'sleep', type: 'recuperacao', title: 'Sono & Estabilidade',
-        description: `A tua média de sono é ${averageSleep.toFixed(1)} horas.`,
-        action: 'Experimenta proteger um horário regular de descanso.', confidence: 80,
+      higherSleepEnergy - lowerSleepEnergy >= 0.5 ? {
+        id: 'sleep-energy', type: 'sono-energia', title: 'Sono & Energia',
+        description: `Nos teus ${checkIns.length} registos, a energia média foi ${higherSleepEnergy.toFixed(1)}/10 em dias com mais sono e ${lowerSleepEnergy.toFixed(1)}/10 nos restantes.`,
+        action: 'Observa se este padrão continua nos próximos check-ins.', confidence: signal(higherSleepEnergy - lowerSleepEnergy),
         period: ['manha', 'noite'], observedAt: new Date().toISOString(),
       } : null,
-      averageEnergy < 5 ? {
-        id: 'energy', type: 'energia', title: 'Nível de Energia',
-        description: `A tua energia média está em ${averageEnergy.toFixed(1)}/10.`,
-        action: 'Observa quais rotinas coincidem com dias de menor energia.', confidence: 76,
+      lowerWorkloadEnergy - higherWorkloadEnergy >= 0.5 ? {
+        id: 'workload-energy', type: 'carga-energia', title: 'Carga & Energia',
+        description: `A energia média foi ${lowerWorkloadEnergy.toFixed(1)}/10 em dias de menor carga e ${higherWorkloadEnergy.toFixed(1)}/10 nos dias de maior carga.`,
+        action: 'Experimenta observar pausas e ritmo nos dias de maior carga.', confidence: signal(lowerWorkloadEnergy - higherWorkloadEnergy),
         period: ['tarde'], observedAt: new Date().toISOString(),
       } : null,
-      averageWorkload > 7 ? {
-        id: 'workload', type: 'carga', title: 'Carga de Trabalho',
-        description: `A tua carga média está em ${averageWorkload.toFixed(1)}/10.`,
-        action: 'Planeia pausas curtas antes de períodos de maior carga.', confidence: 78,
-        period: ['tarde'], observedAt: new Date().toISOString(),
-      } : null,
+      {
+        id: 'overview', type: 'visao-geral', title: 'Resumo dos teus dados',
+        description: `A média recente é ${averageSleep.toFixed(1)} horas de sono, ${averageEnergy.toFixed(1)}/10 de energia e ${averageWorkload.toFixed(1)}/10 de carga.`,
+        action: 'Continua a registar para tornar as comparações mais significativas.', confidence: checkIns.length >= 14 ? 75 : 55,
+        period: ['manha', 'tarde', 'noite'], observedAt: new Date().toISOString(),
+      },
     ].filter((insight): insight is NonNullable<typeof insight> => insight !== null);
   }
 

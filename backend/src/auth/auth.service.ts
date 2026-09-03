@@ -151,6 +151,21 @@ export class AuthService {
     return { avatarData };
   }
 
+  async exportUserData(userId: string) {
+    const user = await this.prisma.user.findUnique({
+      where: { id: userId },
+      select: { id: true, name: true, email: true, phone: true, createdAt: true },
+    });
+    const checkIns = await this.prisma.withUserContext(userId, (tx) =>
+      tx.checkIn.findMany({ orderBy: { createdAt: 'asc' } }),
+    );
+    return { user, checkIns };
+  }
+
+  async deleteAccount(userId: string) {
+    await this.prisma.user.delete({ where: { id: userId } });
+  }
+
   setSessionCookie(reply: FastifyReply, sessionToken: string) {
     reply.setCookie('nova_session', sessionToken, {
       httpOnly: true,
