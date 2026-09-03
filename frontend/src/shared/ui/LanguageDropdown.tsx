@@ -40,15 +40,13 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
     setIsOpen(false);
     if (code === currentLocale) return;
 
-    let newPath = '';
-    if (pathname.startsWith(`/${currentLocale}`)) {
-      newPath = pathname.replace(`/${currentLocale}`, `/${code}`);
-    } else {
-      newPath = `/${code}${pathname === '/' ? '' : pathname}`;
-    }
+    const pathWithoutLocale = pathname.replace(/^\/(en|pt)(?=\/|$)/, '') || '/';
+    const localizedPath = code === 'en'
+      ? pathWithoutLocale
+      : `/${code}${pathWithoutLocale === '/' ? '' : pathWithoutLocale}`;
 
     startTransition(() => {
-      router.replace(newPath, { scroll: false });
+      router.replace(localizedPath, { scroll: false });
     });
   };
 

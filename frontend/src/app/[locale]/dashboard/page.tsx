@@ -54,7 +54,12 @@ export default function DashboardPage() {
   if (!isReady || !isLoggedIn) return null;
 
   if (dashboardError) {
-    return <main style={{ padding: 140, color: "#fff", textAlign: "center" }}>{dashboardError}</main>;
+    return (
+      <main style={{ padding: 140, color: "#fff", textAlign: "center" }}>
+        <p>{dashboardError}</p>
+        <button type="button" onClick={() => window.location.reload()}>Tentar novamente</button>
+      </main>
+    );
   }
 
   if (!dashboard) {

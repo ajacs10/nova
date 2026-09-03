@@ -17,6 +17,12 @@ let dashboardCache: DashboardData | null = null;
 let dashboardCacheAt = 0;
 let dashboardRequest: Promise<DashboardData> | null = null;
 
+export function clearDashboardCache() {
+  dashboardCache = null;
+  dashboardCacheAt = 0;
+  dashboardRequest = null;
+}
+
 export class ApiError extends Error {
   constructor(
     message: string,
@@ -82,6 +88,7 @@ async function fetcher<T>(
 
 export function login(email: string, password: string)
 {
+  clearDashboardCache();
   return fetcher<{ user: { id: string; name: string; email: string; role: string } }>("/auth/login", {
     method: "POST",
     body: JSON.stringify({ email, password }),
@@ -106,7 +113,7 @@ export function verifyEmailCode(code: string) {
 
 export function logout()
 {
-  return fetcher<{ message: string }>("/auth/logout", { method: "POST" });
+  return fetcher<{ message: string }>("/auth/logout", { method: "POST" }).finally(clearDashboardCache);
 }
 
 export function getCurrentUser()
@@ -172,7 +179,12 @@ export function getDashboard()
   const now = Date.now();
   if (dashboardCache && now - dashboardCacheAt < 30_000) return Promise.resolve(dashboardCache);
   if (dashboardRequest) return dashboardRequest;
-  dashboardRequest = fetcher<DashboardData>("/insights/dashboard").then((data) => {
+  dashboardRequest = fetcher<DashboardData>("/insights/dashboard").catch((error: unknown) => {
+    if (error instanceof ApiError && (error.status === 502 || error.status === 503)) {
+      return fetcher<DashboardData>("/insights/dashboard");
+    }
+    throw error;
+  }).then((data) => {
     dashboardCache = data;
     dashboardCacheAt = Date.now();
     return data;
