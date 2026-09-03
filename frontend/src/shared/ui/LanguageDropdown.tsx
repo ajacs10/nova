@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useTransition } from 'react';
 import { useRouter, useParams, usePathname } from 'next/navigation';
 import { Languages, Check } from 'lucide-react';
 
@@ -11,6 +11,7 @@ interface LanguageDropdownProps {
 
 export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const params = useParams();
@@ -46,7 +47,9 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
       newPath = `/${code}${pathname === '/' ? '' : pathname}`;
     }
 
-    router.push(newPath);
+    startTransition(() => {
+      router.replace(newPath, { scroll: false });
+    });
   };
 
   return (
@@ -106,6 +109,7 @@ export function LanguageDropdown({ buttonStyle, inline = false }: LanguageDropdo
                 key={lang.code}
                 type="button"
                 onClick={() => handleSelect(lang.code)}
+                disabled={isPending}
                 style={{
                   display: 'flex',
                   alignItems: 'center',

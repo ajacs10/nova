@@ -10,7 +10,7 @@ import Clock from "@/components/ui/clock";
 import { Battery } from "@/components/ui/battery-indicator";
 import FolderInteraction from "@/components/ui/folder-interaction";
 import { useAuth } from "@/shared/lib/AuthContext";
-import { checkIn, getUserFriendlyError } from "@/shared/lib/api";
+import { checkIn, getCheckIns, getUserFriendlyError } from "@/shared/lib/api";
 import { DashboardSidebar } from "@/components/ui/dashboard-sidebar";
 
 export default function CheckInPage() {
@@ -19,6 +19,7 @@ export default function CheckInPage() {
   const [crisisMessage, setCrisisMessage] = React.useState<string | null>(null);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [alreadyCheckedIn, setAlreadyCheckedIn] = React.useState(false);
   const params = useParams();
   const router = useRouter();
   const locale = (params?.locale as string) || "pt";
@@ -34,6 +35,14 @@ export default function CheckInPage() {
       router.replace(`/${locale}/auth/login`);
     }
   }, [isReady, isLoggedIn, locale, router]);
+
+  React.useEffect(() => {
+    if (!isReady || !isLoggedIn) return;
+    getCheckIns().then((entries) => {
+      const today = new Date().toLocaleDateString("en-CA");
+      setAlreadyCheckedIn(entries.some((entry) => new Date(entry.createdAt).toLocaleDateString("en-CA") === today));
+    }).catch(() => undefined);
+  }, [isReady, isLoggedIn]);
   const [formData, setFormData] = React.useState({
     mood: null as 1 | 2 | 3 | 4 | 5 | null,
     sleepStart: "23:00",
@@ -50,6 +59,11 @@ export default function CheckInPage() {
 
     if (!isLoggedIn) {
       setSubmitted(true);
+      return;
+    }
+
+    if (alreadyCheckedIn) {
+      setSubmitError(locale === "pt" ? "Já completaste o check-in de hoje. O próximo abre à meia-noite." : "You already completed today's check-in. The next one opens at midnight.");
       return;
     }
 
@@ -621,7 +635,7 @@ export default function CheckInPage() {
                   ) : (
                     <button
                       type="submit"
-                      disabled={!isCurrentStepComplete || isSubmitting}
+                      disabled={!isCurrentStepComplete || isSubmitting || alreadyCheckedIn}
                       style={{
                         minWidth: 180,
                         padding: "14px 32px",
@@ -635,7 +649,7 @@ export default function CheckInPage() {
                         textAlign: "center",
                       }}
                     >
-                      {isSubmitting ? "A guardar..." : "Concluir & Guardar"}
+                      {alreadyCheckedIn ? "Check-in concluído hoje" : isSubmitting ? "A guardar..." : "Concluir & Guardar"}
                     </button>
                   )}
                 </div>

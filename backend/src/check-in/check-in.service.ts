@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ConflictException, Injectable } from '@nestjs/common';
 import { PrismaService } from '../database/prisma.service.js';
 import { CreateCheckInDto } from './dto/create-check-in.dto.js';
 
@@ -14,9 +14,15 @@ export class CheckInService {
       });
     }
 
-    return this.prisma.withUserContext(userId, (tx) =>
-      tx.checkIn.create({ data: { ...createCheckInDto, userId } }),
-    );
+    return this.prisma.withUserContext(userId, async (tx) => {
+      const { start, end } = this.getTodayBounds();
+      const existing = await tx.checkIn.findFirst({
+        where: { userId, createdAt: { gte: start, lt: end } },
+        select: { id: true },
+      });
+      if (existing) throw new ConflictException('Daily check-in already completed');
+      return tx.checkIn.create({ data: { ...createCheckInDto, userId } });
+    });
   }
 
   private isCrisisMessage(note?: string) {
@@ -31,5 +37,17 @@ export class CheckInService {
         orderBy: { createdAt: 'desc' },
       }),
     );
+  }
+
+  private getTodayBounds() {
+    const timeZone = process.env.APP_TIMEZONE ?? 'Africa/Luanda';
+    const date = new Intl.DateTimeFormat('en-CA', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).format(new Date());
+    const start = new Date(`${date}T00:00:00+01:00`);
+    return { start, end: new Date(start.getTime() + 24 * 60 * 60 * 1000) };
   }
 }

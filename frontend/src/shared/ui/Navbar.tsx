@@ -26,7 +26,8 @@ export function Navbar() {
     pathname?.includes("/profile") ||
     pathname?.includes("/settings") ||
     pathname?.includes("/check-in") ||
-    pathname?.includes("/insights")
+    pathname?.includes("/insights") ||
+    pathname?.includes("/diary")
   );
 
   React.useEffect(() => {
