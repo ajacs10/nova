@@ -16,6 +16,12 @@ export function PatternDetective({ isPt, onComplete }: GameProps) {
   const [score, setScore] = React.useState(0);
   const [choice, setChoice] = React.useState<number | null>(null);
   const [finished, setFinished] = React.useState(false);
+  const [elapsed, setElapsed] = React.useState(0);
+  React.useEffect(() => {
+    if (finished) return;
+    const timer = window.setInterval(() => setElapsed((value) => value + 1), 1000);
+    return () => window.clearInterval(timer);
+  }, [finished]);
   const dataset = DATASETS[round % DATASETS.length];
   const correct = dataset.correct;
 
@@ -32,7 +38,7 @@ export function PatternDetective({ isPt, onComplete }: GameProps) {
 
   if (finished) return <Result title={isPt ? "Padrão encontrado" : "Pattern found"} text={isPt ? "Completaste as 5 rondas." : "You completed all 5 rounds."} score={score} isPt={isPt} onAgain={() => { setRound(0); setScore(0); setChoice(null); setFinished(false); }} />;
   return <div className="nova-game-play">
-    <div className="nova-game-play-head"><span>{isPt ? `Ronda ${round + 1} de 5` : `Round ${round + 1} of 5`}</span><strong>{score} pts</strong></div>
+    <div className="nova-game-play-head"><span>{isPt ? `Ronda ${round + 1} de 5` : `Round ${round + 1} of 5`}</span><strong>{elapsed}s · {score} pts</strong></div>
     <h2>{isPt ? "Que padrão encontras?" : "What pattern do you see?"}</h2>
     <div className="pattern-table" role="table"><div className="pattern-row pattern-head">{["DAY", "SLEEP", "LOAD", "ENERGY"].map((cell) => <span key={cell}>{cell}</span>)}</div>{dataset.rows.map((row) => <div className="pattern-row" role="row" key={row[0]}>{row.map((cell) => <span key={cell}>{cell}</span>)}</div>)}</div>
     <div className="pattern-answers">{dataset.answers.map((text, index) => <button key={text} type="button" className={choice === index ? (index === correct ? "game-answer correct" : "game-answer wrong") : "game-answer"} onClick={() => answer(index)}>{text}</button>)}</div>
