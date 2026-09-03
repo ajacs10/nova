@@ -11,6 +11,23 @@ const DATASETS = [
   { rows: [["Mon", "5", "7", "4"], ["Tue", "6", "6", "5"], ["Wed", "7", "5", "7"], ["Thu", "8", "4", "8"]], correct: 1, answers: ["Energy fell as sleep increased", "Longer sleep coincided with higher energy", "Workload increased with sleep"] },
 ];
 
+const PORTUGUESE_ANSWERS: Record<string, string> = {
+  "More sleep coincided with higher energy": "Mais sono coincidiu com mais energia",
+  "Workload always improved energy": "A carga melhorou sempre a energia",
+  "The days had identical moods": "Os dias tiveram humores iguais",
+  "Higher workload coincided with lower energy": "Mais carga coincidiu com menos energia",
+  "Less sleep coincided with higher energy": "Menos sono coincidiu com mais energia",
+  "Energy stayed exactly the same": "A energia ficou exatamente igual",
+  "Workload doubled each day": "A carga duplicou todos os dias",
+  "Longer sleep coincided with higher energy": "Mais horas de sono coincidiram com mais energia",
+  "Mood was always lower after sleep": "O humor foi sempre mais baixo depois do sono",
+  "Sleep never changed": "O sono nunca mudou",
+  "Higher workload coincided with higher energy": "Mais carga coincidiu com mais energia",
+  "Lower workload coincided with higher energy": "Menos carga coincidiu com mais energia",
+  "Energy fell as sleep increased": "A energia caiu quando o sono aumentou",
+  "Workload increased with sleep": "A carga aumentou com o sono",
+};
+
 export function PatternDetective({ isPt, onComplete }: GameProps) {
   const [round, setRound] = React.useState(0);
   const [score, setScore] = React.useState(0);
@@ -24,6 +41,7 @@ export function PatternDetective({ isPt, onComplete }: GameProps) {
   }, [finished]);
   const dataset = DATASETS[round % DATASETS.length];
   const correct = dataset.correct;
+  const answers = dataset.answers.map((text) => isPt ? PORTUGUESE_ANSWERS[text] : text);
 
   const answer = (index: number) => {
     if (choice !== null) return;
@@ -40,8 +58,8 @@ export function PatternDetective({ isPt, onComplete }: GameProps) {
   return <div className="nova-game-play">
     <div className="nova-game-play-head"><span>{isPt ? `Ronda ${round + 1} de 5` : `Round ${round + 1} of 5`}</span><strong>{elapsed}s · {score} pts</strong></div>
     <h2>{isPt ? "Que padrão encontras?" : "What pattern do you see?"}</h2>
-    <div className="pattern-table" role="table"><div className="pattern-row pattern-head">{["DAY", "SLEEP", "LOAD", "ENERGY"].map((cell) => <span key={cell}>{cell}</span>)}</div>{dataset.rows.map((row) => <div className="pattern-row" role="row" key={row[0]}>{row.map((cell) => <span key={cell}>{cell}</span>)}</div>)}</div>
-    <div className="pattern-answers">{dataset.answers.map((text, index) => <button key={text} type="button" className={choice === index ? (index === correct ? "game-answer correct" : "game-answer wrong") : "game-answer"} onClick={() => answer(index)}>{text}</button>)}</div>
+    <div className="pattern-table" role="table"><div className="pattern-row pattern-head">{(isPt ? ["DIA", "SONO", "CARGA", "ENERGIA"] : ["DAY", "SLEEP", "LOAD", "ENERGY"]).map((cell) => <span key={cell}>{cell}</span>)}</div>{dataset.rows.map((row) => <div className="pattern-row" role="row" key={row[0]}>{row.map((cell) => <span key={cell}>{cell}</span>)}</div>)}</div>
+    <div className="pattern-answers">{answers.map((text, index) => <button key={text} type="button" className={choice === index ? (index === correct ? "game-answer correct" : "game-answer wrong") : "game-answer"} onClick={() => answer(index)}>{text}</button>)}</div>
     {choice !== null && <p className="game-feedback">{choice === correct ? (isPt ? "Padrão encontrado." : "Pattern found.") : (isPt ? "Observa novamente os dados." : "Take another look at the data.")}</p>}
   </div>;
 }
