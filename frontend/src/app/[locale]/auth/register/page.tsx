@@ -39,6 +39,7 @@ export default function RegisterPage() {
   const [phoneNum, setPhoneNum] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -182,6 +183,9 @@ export default function RegisterPage() {
       confirmPassword: true,
     });
 
+    if (!acceptedTerms) {
+      newErrors.terms = isPt ? 'Aceita os termos da plataforma para criar a conta.' : 'Accept the platform terms to create your account.';
+    }
     return !Object.values(newErrors).some((err) => err !== '');
   };
 
@@ -206,7 +210,7 @@ export default function RegisterPage() {
     setIsLoading(true);
     const fullName = `${firstName} ${lastName}`.trim();
     try {
-      await register(fullName, email, password, `${countryCode}${phoneNum.replace(/\D/g, '')}`);
+      await register(fullName, email, password, `${countryCode}${phoneNum.replace(/\D/g, '')}`, acceptedTerms);
       setIsLoading(false);
       router.push(`/${locale}/auth/verify-email?email=${encodeURIComponent(email)}`);
     } catch (requestError) {
@@ -585,6 +589,25 @@ export default function RegisterPage() {
                 ? 'Mínimo 8 caracteres (maiúscula, minúscula, número e símbolo).'
                 : 'Min 8 chars with uppercase, lowercase, digit & special symbol.'}
             </div>
+
+            <label style={{ display: 'flex', alignItems: 'flex-start', gap: 10, marginTop: 14, color: 'rgba(255,255,255,0.72)', fontSize: '0.78rem', lineHeight: 1.5, cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={acceptedTerms}
+                onChange={(event) => {
+                  setAcceptedTerms(event.target.checked);
+                  if (event.target.checked) setErrors((previous) => ({ ...previous, terms: '' }));
+                }}
+                style={{ marginTop: 3, accentColor: '#00d2b5' }}
+              />
+              <span>
+                {isPt ? 'Li e aceito os ' : 'I have read and accept the '}
+                <Link href={`/${locale}/terms`} target="_blank" style={{ color: '#00d2b5', textDecoration: 'underline' }}>
+                  {isPt ? 'Termos da plataforma' : 'Platform Terms'}
+                </Link>.
+              </span>
+            </label>
+            {errors.terms && <span style={{ color: '#f87171', fontSize: '0.72rem', display: 'block', marginTop: 5 }}>{errors.terms}</span>}
 
             {/* Botão Principal Branco com Texto Preto */}
             <button

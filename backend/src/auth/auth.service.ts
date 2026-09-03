@@ -18,6 +18,9 @@ export class AuthService {
   constructor(private readonly prisma: PrismaService) {}
 
   async register(registerDto: RegisterDto, request: FastifyRequest) {
+    if (!registerDto.acceptedTerms) {
+      throw new UnauthorizedException('Terms must be accepted');
+    }
     const email = registerDto.email.trim().toLowerCase();
     const exists = await this.prisma.user.findUnique({ where: { email } });
     if (exists) throw new ConflictException('Email already registered');
