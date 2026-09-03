@@ -131,7 +131,7 @@ export function changePassword(data: { currentPassword: string; newPassword: str
 
 export function checkIn(data: CheckInFormData)
 {
-  return fetcher<WellbeingEntry>("/check-in", {
+  return fetcher<WellbeingEntry | { crisis: true; message: string }>("/check-in", {
     method: "POST",
     body: JSON.stringify(data),
   });

@@ -23,6 +23,6 @@ export class CreateCheckInDto {
 
   @IsOptional()
   @IsString()
-  @MaxLength(280)
+  @MaxLength(2000)
   note?: string;
 }

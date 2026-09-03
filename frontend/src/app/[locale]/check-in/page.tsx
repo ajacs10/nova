@@ -16,6 +16,7 @@ import { DashboardSidebar } from "@/components/ui/dashboard-sidebar";
 export default function CheckInPage() {
   const [step, setStep] = React.useState(0);
   const [submitted, setSubmitted] = React.useState(false);
+  const [crisisMessage, setCrisisMessage] = React.useState<string | null>(null);
   const [submitError, setSubmitError] = React.useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = React.useState(false);
   const params = useParams();
@@ -55,13 +56,17 @@ export default function CheckInPage() {
     setIsSubmitting(true);
     setSubmitError(null);
     try {
-      await checkIn({
+      const result = await checkIn({
         mood: formData.mood,
         sleep: formData.sleep,
         energy: formData.energy,
         workload: formData.workload,
         note: formData.note.trim() || undefined,
       });
+      if ("crisis" in result) {
+        setCrisisMessage(result.message);
+        return;
+      }
       setSubmitted(true);
     } catch (error) {
       setSubmitError(getUserFriendlyError(error, locale === "pt"));
@@ -80,6 +85,18 @@ export default function CheckInPage() {
       : true;
 
   if (!isReady || !isLoggedIn) return null;
+
+  if (crisisMessage) {
+    return (
+      <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 24, background: "#060810", color: "#ffffff", textAlign: "center" }}>
+        <section style={{ maxWidth: 560, padding: 32, border: "1px solid #f87171", borderRadius: 8, background: "rgba(127,29,29,0.18)" }}>
+          <h1 style={{ marginBottom: 16, color: "#fecaca" }}>Precisas de ajuda agora</h1>
+          <p style={{ lineHeight: 1.7, marginBottom: 24 }}>{crisisMessage}</p>
+          <p style={{ lineHeight: 1.7, fontWeight: 700 }}>Não fiques sozinho. Liga agora para alguém de confiança e pede-lhe para ficar contigo.</p>
+        </section>
+      </main>
+    );
+  }
 
   return (
     <div
