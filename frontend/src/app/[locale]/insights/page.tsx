@@ -14,38 +14,38 @@ interface InsightCardData {
   type: string;
   description: string;
   action: string;
-  confidence: number;
+  sampleSize: number;
   period: string[];
 }
 
 const INSIGHT_VARIANTS_PT: Omit<InsightCardData, "id" | "period">[] = [
-  { title: "Sono regular", type: "Recuperação", description: "Horários de sono consistentes ajudam o corpo a antecipar o descanso e a recuperação.", action: "Mantém uma hora de deitar semelhante durante esta semana.", confidence: 82 },
-  { title: "Luz e energia", type: "Ritmo diário", description: "A exposição à luz natural no início do dia ajuda a reforçar o ritmo circadiano.", action: "Passa alguns minutos junto a uma janela ou no exterior pela manhã.", confidence: 76 },
-  { title: "Pausa de foco", type: "Carga sustentável", description: "Pausas breves e regulares ajudam a reduzir a acumulação de fadiga durante tarefas exigentes.", action: "Experimenta uma pausa sem ecrã entre dois blocos de trabalho.", confidence: 79 },
-  { title: "Transição para a noite", type: "Desaceleração", description: "Um ritual calmo antes de dormir pode facilitar a passagem da atividade para o repouso.", action: "Repete uma rotina simples de cinco minutos ao terminar o dia.", confidence: 74 },
-  { title: "Movimento leve", type: "Bem-estar", description: "Movimento moderado ao longo do dia pode apoiar energia e humor sem exigir uma sessão longa.", action: "Faz uma caminhada curta ou alongamentos entre tarefas.", confidence: 73 },
-  { title: "Carga percebida", type: "Autorregulação", description: "Observar a carga antes de começar uma tarefa torna mais fácil ajustar o ritmo.", action: "Divide a próxima tarefa exigente em duas etapas menores.", confidence: 77 },
-  { title: "Recuperação real", type: "Descanso", description: "Descansar envolve afastar a atenção da tarefa, não apenas trocar de janela.", action: "Escolhe uma pausa sem notificações nem multitarefa.", confidence: 81 },
-  { title: "Rotina de manhã", type: "Consistência", description: "Uma sequência curta e repetível pode reduzir decisões desnecessárias no início do dia.", action: "Define uma primeira ação simples para começar a manhã.", confidence: 72 },
-  { title: "Limites digitais", type: "Higiene do sono", description: "Reduzir estímulos digitais perto da hora de dormir pode proteger o período de desaceleração.", action: "Ativa um período sem notificações antes do descanso.", confidence: 78 },
-  { title: "Respiração e pausa", type: "Regulação", description: "Uma pausa com respiração lenta pode ajudar a reconhecer tensão antes de retomar.", action: "Faz três respirações lentas antes da próxima decisão.", confidence: 70 },
-  { title: "Planeamento gentil", type: "Prevenção", description: "Planos realistas preservam energia e tornam mais provável manter uma rotina.", action: "Escolhe apenas uma prioridade principal para o próximo bloco.", confidence: 75 },
-  { title: "Check-in consistente", type: "Autoconhecimento", description: "Registos regulares tornam mais fácil comparar energia, sono e carga ao longo do tempo.", action: "Faz o próximo check-in no mesmo momento do dia, se possível.", confidence: 80 },
+  { title: "Sono regular", type: "Padrão nos dados", description: "As tuas entradas mostram como os horários de sono se relacionam com o teu dia.", action: "Observa se este padrão continua nos próximos registos.", sampleSize: 0 },
+  { title: "Luz e energia", type: "Padrão nos dados", description: "Compara as tuas entradas de energia em diferentes momentos do dia.", action: "Observa o que aparece nas tuas próprias entradas.", sampleSize: 0 },
+  { title: "Pausa de foco", type: "Padrão nos dados", description: "As tuas entradas podem mostrar diferenças entre períodos de atividade e pausa.", action: "Regista o que observas sem assumir uma causa.", sampleSize: 0 },
+  { title: "Transição para a noite", type: "Padrão nos dados", description: "As tuas entradas ajudam a comparar atividade e repouso.", action: "Observa o que aparece nos teus registos.", sampleSize: 0 },
+  { title: "Movimento leve", type: "Padrão nos dados", description: "Compara as tuas entradas depois de atividade leve.", action: "Regista as mudanças que observares.", sampleSize: 0 },
+  { title: "Carga percebida", type: "Padrão nos dados", description: "As entradas de carga ajudam a observar o teu ritmo diário.", action: "Divide tarefas e compara os teus registos.", sampleSize: 0 },
+  { title: "Recuperação real", type: "Padrão nos dados", description: "As tuas entradas podem mostrar como descreves os períodos de descanso.", action: "Observa os teus registos sem assumir causalidade.", sampleSize: 0 },
+  { title: "Rotina de manhã", type: "Padrão nos dados", description: "As entradas regulares tornam comparações pessoais mais claras.", action: "Continua a registar a tua rotina.", sampleSize: 0 },
+  { title: "Limites digitais", type: "Padrão nos dados", description: "Compara entradas em dias com diferentes níveis de uso de ecrã.", action: "Observa as diferenças nos teus próprios registos.", sampleSize: 0 },
+  { title: "Respiração e pausa", type: "Padrão nos dados", description: "Regista como descreves o teu estado antes e depois de uma pausa.", action: "Compara as tuas próprias entradas.", sampleSize: 0 },
+  { title: "Planeamento gentil", type: "Padrão nos dados", description: "As tuas entradas ajudam a observar carga e energia ao longo do tempo.", action: "Experimenta registar uma prioridade de cada vez.", sampleSize: 0 },
+  { title: "Check-in consistente", type: "Padrão nos dados", description: "Registos regulares tornam mais fácil comparar as tuas entradas.", action: "Faz o próximo registo quando for conveniente.", sampleSize: 0 },
 ];
 
 const INSIGHT_VARIANTS_EN: Omit<InsightCardData, "id" | "period">[] = [
-  { title: "Regular sleep", type: "Recovery", description: "Consistent sleep timing helps the body anticipate rest and recovery.", action: "Keep a similar bedtime throughout this week.", confidence: 82 },
-  { title: "Light and energy", type: "Daily rhythm", description: "Morning daylight exposure can help reinforce the body’s circadian rhythm.", action: "Spend a few minutes by a window or outside in the morning.", confidence: 76 },
-  { title: "Focus pause", type: "Sustainable load", description: "Short, regular breaks can reduce fatigue during demanding tasks.", action: "Try a screen-free pause between two work blocks.", confidence: 79 },
-  { title: "Evening transition", type: "Wind-down", description: "A calm pre-sleep ritual can make it easier to move from activity to rest.", action: "Repeat a simple five-minute routine when the day ends.", confidence: 74 },
-  { title: "Light movement", type: "Well-being", description: "Moderate movement during the day can support energy and mood without a long session.", action: "Take a short walk or stretch between tasks.", confidence: 73 },
-  { title: "Perceived load", type: "Self-regulation", description: "Noticing your workload before starting makes it easier to adjust your pace.", action: "Break the next demanding task into two smaller steps.", confidence: 77 },
-  { title: "Real recovery", type: "Rest", description: "Recovery means moving attention away from the task, not only switching windows.", action: "Choose a break without notifications or multitasking.", confidence: 81 },
-  { title: "Morning routine", type: "Consistency", description: "A short repeatable sequence can reduce unnecessary decisions at the start of the day.", action: "Choose one simple first action for your morning.", confidence: 72 },
-  { title: "Digital boundaries", type: "Sleep hygiene", description: "Reducing digital stimulation near bedtime can protect the wind-down period.", action: "Enable a notification-free period before rest.", confidence: 78 },
-  { title: "Breathing pause", type: "Regulation", description: "A pause with slow breathing can help you notice tension before resuming.", action: "Take three slow breaths before your next decision.", confidence: 70 },
-  { title: "Gentle planning", type: "Prevention", description: "Realistic plans preserve energy and make routines easier to maintain.", action: "Choose one main priority for the next block.", confidence: 75 },
-  { title: "Consistent check-in", type: "Self-awareness", description: "Regular entries make it easier to compare energy, sleep, and workload over time.", action: "Complete your next check-in at a similar time if possible.", confidence: 80 },
+  { title: "Regular sleep", type: "Data pattern", description: "Your entries show how sleep timing relates to your day.", action: "Observe whether this pattern continues in future entries.", sampleSize: 0 },
+  { title: "Light and energy", type: "Data pattern", description: "Compare your energy entries at different times of day.", action: "Observe what appears in your own entries.", sampleSize: 0 },
+  { title: "Focus pause", type: "Data pattern", description: "Your entries may show differences between activity and pause periods.", action: "Record what you observe without assuming a cause.", sampleSize: 0 },
+  { title: "Evening transition", type: "Data pattern", description: "Your entries can help compare activity and rest.", action: "Observe what appears in your entries.", sampleSize: 0 },
+  { title: "Light movement", type: "Data pattern", description: "Compare your entries after light activity.", action: "Record the changes you observe.", sampleSize: 0 },
+  { title: "Perceived load", type: "Data pattern", description: "Workload entries help you observe your daily pace.", action: "Break tasks down and compare your entries.", sampleSize: 0 },
+  { title: "Real recovery", type: "Data pattern", description: "Your entries can show how you describe periods of rest.", action: "Observe your entries without assuming causality.", sampleSize: 0 },
+  { title: "Morning routine", type: "Data pattern", description: "Regular entries make personal comparisons clearer.", action: "Keep recording your routine.", sampleSize: 0 },
+  { title: "Digital boundaries", type: "Data pattern", description: "Compare entries on days with different screen-use patterns.", action: "Observe differences in your own entries.", sampleSize: 0 },
+  { title: "Breathing pause", type: "Data pattern", description: "Record how you describe your state before and after a pause.", action: "Compare your own entries.", sampleSize: 0 },
+  { title: "Gentle planning", type: "Data pattern", description: "Your entries help you observe workload and energy over time.", action: "Try recording one priority at a time.", sampleSize: 0 },
+  { title: "Consistent check-in", type: "Data pattern", description: "Regular entries make your own comparisons easier.", action: "Complete the next entry when convenient.", sampleSize: 0 },
 ];
 
 export function getDailyInsights(locale: string): InsightCardData[] {
@@ -105,7 +105,7 @@ export default function InsightsPage() {
         type: item.type,
         description: item.description,
         action: item.suggestion ?? (isPt ? "Continua a observar os teus dados." : "Keep observing your data."),
-        confidence: item.confidence,
+        sampleSize: item.sampleSize,
         period: ["manha", "tarde", "noite"],
       }))))
       .catch((error: unknown) => setInsightsError(getUserFriendlyError(error, isPt)));
@@ -162,7 +162,7 @@ export default function InsightsPage() {
     polarToCartesian(cx, cy, radarR, i, sides)
   );
   const dataPoints = insightsList.map((ins, i) =>
-    polarToCartesian(cx, cy, radarR * (ins.confidence / 100), i, sides)
+    polarToCartesian(cx, cy, radarR * Math.min(1, ins.sampleSize / 30), i, sides)
   );
   const radarPointsStr = radarPoints.map((p) => `${p.x},${p.y}`).join(" ");
   const dataPointsStr = dataPoints.map((p) => `${p.x},${p.y}`).join(" ");

@@ -29,25 +29,23 @@ export class InsightsService {
     const lowerWorkload = checkIns.filter((item) => item.workload < workloadThreshold);
     const higherWorkloadEnergy = higherWorkload.length ? higherWorkload.reduce((sum, item) => sum + item.energy, 0) / higherWorkload.length : 0;
     const lowerWorkloadEnergy = lowerWorkload.length ? lowerWorkload.reduce((sum, item) => sum + item.energy, 0) / lowerWorkload.length : 0;
-    const signal = (difference: number) => Math.max(0, Math.min(100, Math.round(50 + Math.abs(difference) * 12)));
-
     return [
       higherSleepEnergy - lowerSleepEnergy >= 0.5 ? {
         id: 'sleep-energy', type: 'sono-energia', title: 'Sono & Energia',
         description: `Nos teus ${checkIns.length} registos, a energia média foi ${higherSleepEnergy.toFixed(1)}/10 em dias com mais sono e ${lowerSleepEnergy.toFixed(1)}/10 nos restantes.`,
-        action: 'Observa se este padrão continua nos próximos check-ins.', confidence: signal(higherSleepEnergy - lowerSleepEnergy),
+        action: 'Observa se este padrão continua nos próximos check-ins.', sampleSize: checkIns.length,
         period: ['manha', 'noite'], observedAt: new Date().toISOString(),
       } : null,
       lowerWorkloadEnergy - higherWorkloadEnergy >= 0.5 ? {
         id: 'workload-energy', type: 'carga-energia', title: 'Carga & Energia',
         description: `A energia média foi ${lowerWorkloadEnergy.toFixed(1)}/10 em dias de menor carga e ${higherWorkloadEnergy.toFixed(1)}/10 nos dias de maior carga.`,
-        action: 'Experimenta observar pausas e ritmo nos dias de maior carga.', confidence: signal(lowerWorkloadEnergy - higherWorkloadEnergy),
+        action: 'Experimenta observar pausas e ritmo nos dias de maior carga.', sampleSize: checkIns.length,
         period: ['tarde'], observedAt: new Date().toISOString(),
       } : null,
       {
         id: 'overview', type: 'visao-geral', title: 'Resumo dos teus dados',
         description: `A média recente é ${averageSleep.toFixed(1)} horas de sono, ${averageEnergy.toFixed(1)}/10 de energia e ${averageWorkload.toFixed(1)}/10 de carga.`,
-        action: 'Continua a registar para tornar as comparações mais significativas.', confidence: checkIns.length >= 14 ? 75 : 55,
+        action: 'Continua a registar para tornar as comparações mais significativas.', sampleSize: checkIns.length,
         period: ['manha', 'tarde', 'noite'], observedAt: new Date().toISOString(),
       },
     ].filter((insight): insight is NonNullable<typeof insight> => insight !== null);

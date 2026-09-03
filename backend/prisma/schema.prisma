@@ -24,6 +24,10 @@ model User {
   updatedAt    DateTime  @updatedAt @map("updated_at")
   sessions     Session[]
   checkIns     CheckIn[]
+  recoveryEntries RecoveryEntry[]
+  activityEntries ActivityEntry[]
+  returnToLearn ReturnToLearn?
+  returnToActivity ReturnToActivity?
 
   @@map("users")
 }
@@ -57,6 +61,80 @@ model CheckIn {
 
   @@index([userId, createdAt])
   @@map("check_ins")
+}
+
+model RecoveryEntry {
+  id                   String   @id @default(uuid()) @db.Uuid
+  userId               String   @map("user_id") @db.Uuid
+  headache             Int      @default(0)
+  dizziness            Int      @default(0)
+  fatigue              Int      @default(0)
+  nausea               Int      @default(0)
+  lightSensitivity     Int      @default(0) @map("light_sensitivity")
+  noiseSensitivity     Int      @default(0) @map("noise_sensitivity")
+  concentration        Int      @default(0)
+  memory               Int      @default(0)
+  balance              Int      @default(0)
+  sleepDifficulty      Int      @default(0) @map("sleep_difficulty")
+  sleepHours           Decimal? @map("sleep_hours") @db.Decimal(4, 1)
+  note                 String?  @db.Text
+  createdAt            DateTime @default(now()) @map("created_at")
+  user                 User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("recovery_entries")
+}
+
+model ActivityEntry {
+  id             String   @id @default(uuid()) @db.Uuid
+  userId         String   @map("user_id") @db.Uuid
+  activity       String
+  durationMinutes Int     @map("duration_minutes")
+  headacheBefore Int      @default(0) @map("headache_before")
+  fatigueBefore  Int      @default(0) @map("fatigue_before")
+  dizzinessBefore Int     @default(0) @map("dizziness_before")
+  headacheAfter  Int      @default(0) @map("headache_after")
+  fatigueAfter   Int      @default(0) @map("fatigue_after")
+  dizzinessAfter Int      @default(0) @map("dizziness_after")
+  note           String?  @db.Text
+  createdAt      DateTime @default(now()) @map("created_at")
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("activity_entries")
+}
+
+model ReturnToLearn {
+  id                 String   @id @default(uuid()) @db.Uuid
+  userId             String   @unique @map("user_id") @db.Uuid
+  currentStage       Int      @default(1) @map("current_stage")
+  schoolHours       Decimal? @map("school_hours") @db.Decimal(4, 1)
+  breaks             String?
+  screenTimeMinutes  Int?     @map("screen_time_minutes")
+  cognitiveActivity  String?  @map("cognitive_activity")
+  accommodations     String?
+  symptoms           String?
+  notes              String?  @db.Text
+  updatedAt          DateTime @updatedAt @map("updated_at")
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("return_to_learn")
+}
+
+model ReturnToActivity {
+  id              String   @id @default(uuid()) @db.Uuid
+  userId          String   @unique @map("user_id") @db.Uuid
+  currentStage    Int      @default(1) @map("current_stage")
+  activityType    String?  @map("activity_type")
+  durationMinutes Int?     @map("duration_minutes")
+  intensity       String?
+  symptomsBefore  String?  @map("symptoms_before")
+  symptomsAfter   String?  @map("symptoms_after")
+  notes           String?  @db.Text
+  updatedAt       DateTime @updatedAt @map("updated_at")
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("return_to_activity")
 }
 
 enum UserRole {

@@ -193,3 +193,73 @@ export function getDashboard()
   });
   return dashboardRequest;
 }
+
+export type RecoveryEntry = {
+  id: string;
+  headache: number;
+  dizziness: number;
+  fatigue: number;
+  nausea: number;
+  lightSensitivity: number;
+  noiseSensitivity: number;
+  concentration: number;
+  memory: number;
+  balance: number;
+  sleepDifficulty: number;
+  sleepHours?: number | string | null;
+  note?: string | null;
+  createdAt: string;
+};
+
+export type ActivityEntry = {
+  id: string;
+  activity: string;
+  durationMinutes: number;
+  headacheBefore: number;
+  fatigueBefore: number;
+  dizzinessBefore: number;
+  headacheAfter: number;
+  fatigueAfter: number;
+  dizzinessAfter: number;
+  note?: string | null;
+  createdAt: string;
+};
+
+export function createRecoveryEntry(data: Omit<RecoveryEntry, "id" | "createdAt">) {
+  return fetcher<RecoveryEntry>("/recovery/entries", { method: "POST", body: JSON.stringify(data) });
+}
+
+export function getRecoveryEntries() {
+  return fetcher<RecoveryEntry[]>("/recovery/entries");
+}
+
+export function createActivityEntry(data: Omit<ActivityEntry, "id" | "createdAt">) {
+  return fetcher<ActivityEntry>("/recovery/activities", { method: "POST", body: JSON.stringify(data) });
+}
+
+export function getActivityEntries() {
+  return fetcher<ActivityEntry[]>("/recovery/activities");
+}
+
+export function updateRecoveryEntry(id: string, data: Partial<Omit<RecoveryEntry, "id" | "createdAt">>) {
+  return fetcher<RecoveryEntry>(`/recovery/entries/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+}
+
+export function deleteRecoveryEntry(id: string) {
+  return fetcher<void>(`/recovery/entries/${id}`, { method: "DELETE" });
+}
+
+export function updateActivityEntry(id: string, data: Partial<Omit<ActivityEntry, "id" | "createdAt">>) {
+  return fetcher<ActivityEntry>(`/recovery/activities/${id}`, { method: "PATCH", body: JSON.stringify(data) });
+}
+
+export function deleteActivityEntry(id: string) {
+  return fetcher<void>(`/recovery/activities/${id}`, { method: "DELETE" });
+}
+
+export type ReturnToLearnPlan = { currentStage: number; schoolHours?: number | string | null; breaks?: string | null; screenTimeMinutes?: number | null; cognitiveActivity?: string | null; accommodations?: string | null; symptoms?: string | null; notes?: string | null };
+export type ReturnToActivityPlan = { currentStage: number; activityType?: string | null; durationMinutes?: number | null; intensity?: string | null; symptomsBefore?: string | null; symptomsAfter?: string | null; notes?: string | null };
+export function getReturnToLearn() { return fetcher<ReturnToLearnPlan | null>("/recovery/return-to-learn"); }
+export function saveReturnToLearn(data: ReturnToLearnPlan) { return fetcher<ReturnToLearnPlan>("/recovery/return-to-learn", { method: "PATCH", body: JSON.stringify(data) }); }
+export function getReturnToActivity() { return fetcher<ReturnToActivityPlan | null>("/recovery/return-to-activity"); }
+export function saveReturnToActivity(data: ReturnToActivityPlan) { return fetcher<ReturnToActivityPlan>("/recovery/return-to-activity", { method: "PATCH", body: JSON.stringify(data) }); }

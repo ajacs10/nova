@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import * as React from "react";
-import { LayoutGrid, CheckSquare, LineChart, BookOpen, Gamepad2, Settings, LogOut, Menu, X } from "lucide-react";
+import { LayoutGrid, CheckSquare, LineChart, BookOpen, Gamepad2, Settings, LogOut, Menu, X, Activity, ShieldCheck, FileText } from "lucide-react";
 import { usePreferredLocale } from "@/shared/lib/locale";
 
 interface DashboardSidebarProps {
@@ -23,6 +23,10 @@ export function DashboardSidebar({
 
   const mainNav = [
     { href: "/dashboard", label: "Dashboard", icon: LayoutGrid },
+    { href: "/recovery", label: isPt ? "NOVA Recovery" : "NOVA Recovery", icon: Activity },
+    { href: "/recovery-history", label: isPt ? "Histórico de recuperação" : "Recovery history", icon: FileText },
+    { href: "/return-to-learn", label: isPt ? "Regresso à aprendizagem" : "Return to Learn", icon: BookOpen },
+    { href: "/return-to-activity", label: isPt ? "Regresso à atividade" : "Return to Activity", icon: Activity },
     { href: "/check-in", label: "Check-in", icon: CheckSquare },
     { href: "/insights", label: "Insights", icon: LineChart },
     { href: "/diary", label: isPt ? "Meu Diário" : "My Diary", icon: BookOpen },
@@ -31,6 +35,9 @@ export function DashboardSidebar({
 
   const accountNav = [
     { href: "/settings", label: isPt ? "Configurações" : "Settings", icon: Settings },
+    { href: "/safety", label: isPt ? "Segurança e limites" : "Safety & limits", icon: ShieldCheck },
+    { href: "/evidence", label: isPt ? "Evidência e fontes" : "Evidence & sources", icon: BookOpen },
+    { href: "/summary", label: isPt ? "Resumo de recuperação" : "Recovery summary", icon: FileText },
   ];
 
   return (

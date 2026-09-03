@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module.js';
 import { CheckInModule } from './check-in/check-in.module.js';
 import { InsightsModule } from './insights/insights.module.js';
 import { DatabaseModule } from './database/database.module.js';
+import { RecoveryModule } from './recovery/recovery.module.js';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { DatabaseModule } from './database/database.module.js';
     AuthModule,
     CheckInModule,
     InsightsModule,
+    RecoveryModule,
   ],
   controllers: [AppController],
   providers: [AppService],

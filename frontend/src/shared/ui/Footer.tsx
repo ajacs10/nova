@@ -40,6 +40,10 @@ export function Footer() {
               <Link href={`/${locale}/privacy`} className="footer-link">{isPt ? "Privacidade" : "Privacy"}</Link>
               <Link href={`/${locale}/security`} className="footer-link">{isPt ? "Segurança" : "Security"}</Link>
               <Link href={`/${locale}/terms`} className="footer-link">{isPt ? "Termos de utilização" : "Terms of use"}</Link>
+              <Link href="/recovery" className="footer-link">{isPt ? "Recovery" : "Recovery"}</Link>
+              <Link href="/summary" className="footer-link">{isPt ? "Resumo" : "Summary"}</Link>
+              <Link href="/safety" className="footer-link">{isPt ? "Segurança" : "Safety"}</Link>
+              <Link href="/evidence" className="footer-link">{isPt ? "Evidência" : "Evidence"}</Link>
             </div>
           </div>
 

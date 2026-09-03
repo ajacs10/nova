@@ -6,7 +6,7 @@ const intlMiddleware = createMiddleware(bazinga);
 
 function getLocaleCookie(pathname: string) {
   if (pathname.startsWith("/auth")) return null;
-  return pathname.startsWith("/dashboard") || pathname.startsWith("/check-in") || pathname.startsWith("/insights") || pathname.startsWith("/diary") || pathname.startsWith("/novagame") || pathname.startsWith("/settings") || pathname.startsWith("/profile") || pathname.startsWith("/security")
+  return pathname.startsWith("/dashboard") || pathname.startsWith("/recovery") || pathname.startsWith("/recovery-history") || pathname.startsWith("/return-to-learn") || pathname.startsWith("/return-to-activity") || pathname.startsWith("/summary") || pathname.startsWith("/safety") || pathname.startsWith("/evidence") || pathname.startsWith("/check-in") || pathname.startsWith("/insights") || pathname.startsWith("/diary") || pathname.startsWith("/novagame") || pathname.startsWith("/settings") || pathname.startsWith("/profile") || pathname.startsWith("/security")
     ? "nova-private-locale"
     : "nova-landing-locale";
 }

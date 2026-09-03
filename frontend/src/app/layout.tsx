@@ -25,7 +25,7 @@ export const metadata: Metadata = {
     shortcut: "/icons/nova-icon-32.svg",
   },
   description:
-    "NOVA helps you track emotional well-being, sleep, energy, and workload with private, AI-powered insights designed for everyday mental health awareness.",
+    "NOVA Recovery helps you track self-reported symptoms, activities, sleep, and daily functioning for conversations with healthcare professionals.",
   keywords: [
     "mental wellness",
     "well-being",
@@ -49,7 +49,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "NOVA — Mental Wellness Companion",
     description:
-      "Track sleep, energy, workload and emotional patterns with a privacy-first, AI-assisted wellness companion.",
+      "Track self-reported symptoms, activities, sleep, and daily functioning with a privacy-first recovery companion.",
     type: "website",
     locale: "en_US",
     url: "/",

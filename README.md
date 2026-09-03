@@ -1,6 +1,10 @@
-# NOVA
+# NOVA Recovery
 
-> Status: protótipo funcional em preparação para produção. As funcionalidades disponíveis e as limitações reais estão descritas abaixo.
+> Status: protótipo funcional de apoio à recuperação, em preparação para produção. As funcionalidades disponíveis e as limitações reais estão descritas abaixo.
+
+NOVA Recovery is an evidence-informed recovery companion that organizes self-reported symptoms, activities, sleep, and daily functioning over time for conversations with healthcare professionals.
+
+It does not diagnose concussion, confirm recovery, measure brain function, determine readiness, provide medical clearance, prescribe treatment, or replace professional care. See [docs/clinical-foundation.md](docs/clinical-foundation.md) for the evidence sources and product boundaries.
 
 Para instalação, validação, segurança e deploy, consulte `docs/`.
 
@@ -13,7 +17,7 @@ The current codebase passes frontend lint and production build, as well as backe
 </p>
 
 <p align="center">
-  <strong>A privacy-first mental wellness platform built around responsible AI.</strong>
+       <strong>A privacy-first recovery companion built around self-reported information and evidence-informed safety.</strong>
 </p>
 
 <p align="center">
@@ -82,7 +86,7 @@ The main flow of the platform is:
        Pattern Analysis
               │
               ▼
-       AI-assisted Insight
+       Observed Data Pattern
               │
               ▼
       Routine Suggestion
@@ -285,18 +289,9 @@ Because the application can contain sensitive well-being information, database a
 
 ---
 
-### AI Layer
+### Evidence and Pattern Layer
 
-The AI layer is responsible for tasks such as:
-
-* analysing permitted information;
-* identifying patterns;
-* generating understandable insights;
-* suggesting general routine changes.
-
-The AI layer does **not** own the user's data and does not control the rest of the application.
-
-The application decides what information can be sent for AI processing and how the generated result is handled.
+The current implementation has no AI or ML provider. Its pattern output is deterministic and based on comparisons within the user's own entries. It reports observations and sample size; it does not claim clinical confidence, prediction, causality, or diagnosis.
 
 ---
 
@@ -325,17 +320,19 @@ A typical check-in can follow this process:
 │    Layer     │
 └────┬─────────┘
      │
-     ├───────────────┐
-     ▼               ▼
-┌──────────┐   ┌──────────┐
-│ Database │   │    AI    │
-└────┬─────┘   └────┬─────┘
-     │              │
-     └───────┬──────┘
-             ▼
-        ┌─────────┐
-        │ Insight │
-        └────┬────┘
+       ▼
+┌──────────┐
+│ Database │
+└────┬─────┘
+       ▼
+┌──────────────┐
+│ Deterministic│
+│ comparisons  │
+└────┬─────────┘
+       ▼
+┌─────────┐
+│ Pattern │
+└────┬────┘
              │
              ▼
            User
@@ -347,23 +344,13 @@ This structure helps prevent the AI component from becoming an unrestricted entr
 
 # Responsible AI
 
-Responsible AI is one of the main design principles of NOVA.
+Responsible handling of health-related information is a main design principle of NOVA.
 
-Mental wellness is a sensitive area, so the AI cannot simply be treated as another chatbot.
-
-The system needs clear boundaries around what it can and cannot do.
-
-### NOVA uses AI to:
-
-* identify patterns;
-* help interpret user-provided information;
-* generate supportive insights;
-* suggest general routine changes;
-* support self-reflection.
+The current system does not use an AI model. It uses deterministic comparisons of user-provided information.
 
 ### NOVA does not use AI to:
 
-* diagnose mental health conditions;
+* diagnose concussion or mental health conditions;
 * determine that a user has a specific disorder;
 * prescribe medication;
 * provide medical treatment;
@@ -380,9 +367,9 @@ Medical diagnosis
 
 ---
 
-# AI Safety Policies
+# Safety Policies
 
-The AI layer is designed around explicit safety boundaries.
+The product is designed around explicit safety boundaries.
 
 ### No diagnosis
 

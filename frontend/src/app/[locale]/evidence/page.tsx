@@ -1,0 +1,15 @@
+"use client";
+
+import { useParams } from "next/navigation";
+import { ExternalLink, BookOpen } from "lucide-react";
+import { PrivateShell } from "@/components/templates/private-shell";
+import { usePreferredLocale } from "@/shared/lib/locale";
+
+const sources = [{ title: "Amsterdam International Consensus Statement", detail: "6th International Conference on Concussion in Sport", href: "https://bjsm.bmj.com/content/57/11/695" }, { title: "Living Concussion Guidelines", detail: "Ontario Neurotrauma Foundation", href: "https://concussionsontario.org/" }, { title: "PedsConcussion Living Guideline", detail: "Pediatric concussion guidance", href: "https://pedsconcussion.com/" }];
+
+export default function EvidencePage() {
+  const params = useParams();
+  const locale = usePreferredLocale("private", (params?.locale as string) || "en");
+  const isPt = locale === "pt";
+  return <PrivateShell><main className="evidence-page"><span className="evidence-kicker">NOVA RECOVERY</span><h1>{isPt ? "Evidência e fontes" : "Evidence & sources"}</h1><p>{isPt ? "As fontes abaixo orientam a educação e o desenho de acompanhamento. Não substituem aconselhamento individual." : "The sources below inform education and tracking design. They do not replace individual advice."}</p><div className="evidence-list">{sources.map((source) => <article key={source.href}><BookOpen size={22}/><div><h2>{source.title}</h2><p>{source.detail}</p><a href={source.href} target="_blank" rel="noreferrer">{isPt ? "Abrir fonte" : "Open source"} <ExternalLink size={14}/></a></div></article>)}</div><section className="rationale"><h2>{isPt ? "Rationale" : "Why this exists"}</h2><p>{isPt ? "O acompanhamento de sintomas e a progressão gradual de atividades ajudam a organizar observações para discussão com um profissional. A NOVA apenas mostra os registos e diferenças descritas pelo utilizador." : "Tracking symptoms and gradually recording activities helps organize observations for discussion with a professional. NOVA only shows user-entered records and descriptive differences."}</p></section></main><style jsx>{`.evidence-page{max-width:900px;margin:0 auto;padding:12px 20px 48px}.evidence-kicker{color:#00d2b5;font-size:.7rem;font-weight:800;letter-spacing:.14em}.evidence-page h1{margin:8px 0}.evidence-page>p{color:rgba(255,255,255,.65);margin-bottom:24px}.evidence-list{display:grid;gap:12px}.evidence-list article,.rationale{display:flex;gap:16px;padding:20px;border:1px solid rgba(255,255,255,.1);border-radius:12px;background:#0a0e1a}.evidence-list svg{color:#00d2b5;flex:0 0 auto}.evidence-list h2,.rationale h2{font-size:1rem;margin:0 0 7px}.evidence-list p,.rationale p{color:rgba(255,255,255,.65);line-height:1.6;margin:0}.evidence-list a{display:inline-flex;align-items:center;gap:6px;margin-top:12px;color:#00d2b5;font-weight:700;text-decoration:none}.rationale{display:block;margin-top:18px}`}</style></PrivateShell>;
+}

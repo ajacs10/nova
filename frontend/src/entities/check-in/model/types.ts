@@ -24,7 +24,7 @@ export interface InsightPattern {
   id: string;
   type: string;
   description: string;
-  confidence: number;
+  sampleSize: number;
   suggestion?: string;
   observedAt: string;
 }

@@ -261,8 +261,8 @@ function HowItWorks() {
     {
       num: "03",
       icon: <IconSpark />,
-      title: "AI-assisted Insight",
-      desc: "Responsible AI translates patterns into understandable, honest observations.",
+      title: "Observed Data Pattern",
+      desc: "Deterministic comparisons turn your entries into understandable, honest observations.",
     },
     {
       num: "04",
@@ -328,7 +328,7 @@ function Features() {
       icon: <IconBrain />,
       title: "Personalised Insights",
       desc: "Plain-language observations from your own data — periods of lower energy, sleep relationships, consistency patterns.",
-      items: ["Plain language output", "Confidence-aware insights", "No false certainty"],
+      items: ["Plain-language output", "Observed data patterns", "No medical certainty"],
     },
     {
       icon: <IconSpark />,
