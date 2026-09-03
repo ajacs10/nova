@@ -18,6 +18,14 @@ export function MemoryNova({ isPt, onComplete }: GameProps) {
     const timer = window.setInterval(() => setElapsed((value) => value + 1), 1000);
     return () => window.clearInterval(timer);
   }, [done]);
+  React.useEffect(() => {
+    if (elapsed < 90 || done) return;
+    const timeout = window.setTimeout(() => {
+      setDone(true);
+      onComplete(score);
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [elapsed, done, onComplete, score]);
   const clickCard = (id: number) => {
     if (selected.length === 2 || cards[id].open || cards[id].matched) return;
     const next = [...selected, id]; setCards((items) => items.map((card) => card.id === id ? { ...card, open: true } : card)); setSelected(next);
@@ -31,8 +39,8 @@ export function MemoryNova({ isPt, onComplete }: GameProps) {
       if (match && cards.filter((card) => card.matched).length === 14) { setDone(true); onComplete(score + 100); }
     }, match ? 250 : 700);
   };
-  if (done) return <div className="nova-game-result"><div className="result-mark">✓</div><h2>{isPt ? "Encontraste todos" : "You found them all"}</h2><p>{isPt ? "Uma pausa concluída, ao teu ritmo." : "A pause completed at your own pace."}</p><div className="result-grid"><span><strong>{moves}</strong>{isPt ? "jogadas" : "moves"}</span><span><strong>{score}</strong>{isPt ? "pontos" : "score"}</span></div><button type="button" className="game-primary" onClick={() => { setCards(createCards()); setSelected([]); setMoves(0); setScore(0); setDone(false); }}>{isPt ? "Jogar novamente" : "Play again"}</button></div>;
-  return <div className="nova-game-play"><div className="nova-game-play-head"><span>{isPt ? "8 pares" : "8 pairs"}</span><strong>{Math.max(0, 60 - elapsed)}s · {moves} {isPt ? "jogadas" : "moves"}</strong></div><h2>{isPt ? "Encontra todos os pares" : "Find every pair"}</h2><div className="memory-grid">{cards.map((card) => <button type="button" key={card.id} aria-label={card.open || card.matched ? card.symbol : (isPt ? "Carta fechada" : "Face down card")} className={card.open || card.matched ? "memory-card is-open" : "memory-card"} onClick={() => clickCard(card.id)}>{card.open || card.matched ? card.symbol : "?"}</button>)}</div></div>;
+  if (done) return <div className="nova-game-result"><div className="result-mark">✓</div><h2>{isPt ? "Encontraste todos" : "You found them all"}</h2><p>{isPt ? "Uma pausa concluída, ao teu ritmo." : "A pause completed at your own pace."}</p><div className="result-grid"><span><strong>{moves}</strong>{isPt ? "jogadas" : "moves"}</span><span><strong>{score}</strong>{isPt ? "pontos" : "score"}</span></div><button type="button" className="game-primary" onClick={() => { setCards(createCards()); setSelected([]); setMoves(0); setScore(0); setElapsed(0); setDone(false); }}>{isPt ? "Jogar novamente" : "Play again"}</button></div>;
+  return <div className="nova-game-play"><div className="nova-game-play-head"><span>{isPt ? "8 pares" : "8 pairs"}</span><strong>{Math.max(0, 90 - elapsed)}s · {moves} {isPt ? "jogadas" : "moves"}</strong></div><h2>{isPt ? "Encontra todos os pares" : "Find every pair"}</h2><div className="memory-grid">{cards.map((card) => <button type="button" key={card.id} aria-label={card.open || card.matched ? card.symbol : (isPt ? "Carta fechada" : "Face down card")} className={card.open || card.matched ? "memory-card is-open" : "memory-card"} onClick={() => clickCard(card.id)}>{card.open || card.matched ? card.symbol : "?"}</button>)}</div></div>;
 }
 
 function createCards(): Card[] { return [...SYMBOLS, ...SYMBOLS].sort(() => Math.random() - 0.5).map((symbol, id) => ({ id, symbol, open: false, matched: false })); }

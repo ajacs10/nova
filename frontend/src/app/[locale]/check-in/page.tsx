@@ -26,6 +26,16 @@ export default function CheckInPage() {
   const routeLocale = (params?.locale as string) || "en";
   const locale = usePreferredLocale("private", routeLocale);
   const { isLoggedIn, isReady, logoutUser } = useAuth();
+  const isPt = locale === "pt";
+  const text = {
+    step: (current: number) => isPt ? `Passo ${current} de 4` : `Step ${current} of 4`,
+    next: isPt ? "Seguinte" : "Next",
+    previous: isPt ? "Anterior" : "Back",
+    moodTitle: isPt ? "Como te sentes hoje?" : "How are you feeling today?",
+    sleepTitle: isPt ? "Recuperação e Sono" : "Recovery and Sleep",
+    energyTitle: isPt ? "Nível de Energia e Carga de Trabalho" : "Energy Level and Workload",
+    noteTitle: isPt ? "Nota ou Reflexão Diária" : "Daily Note or Reflection",
+  };
 
   const handleSidebarLogout = async () => {
     await logoutUser();
@@ -106,9 +116,9 @@ export default function CheckInPage() {
     return (
       <main style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: 24, background: "#060810", color: "#ffffff", textAlign: "center" }}>
         <section style={{ maxWidth: 560, padding: 32, border: "1px solid #f87171", borderRadius: 8, background: "rgba(127,29,29,0.18)" }}>
-          <h1 style={{ marginBottom: 16, color: "#fecaca" }}>Precisas de ajuda agora</h1>
+            <h1 style={{ marginBottom: 16, color: "#fecaca" }}>{isPt ? "Precisas de ajuda agora" : "You need help now"}</h1>
           <p style={{ lineHeight: 1.7, marginBottom: 24 }}>{crisisMessage}</p>
-          <p style={{ lineHeight: 1.7, fontWeight: 700 }}>Não fiques sozinho. Liga agora para alguém de confiança e pede-lhe para ficar contigo.</p>
+          <p style={{ lineHeight: 1.7, fontWeight: 700 }}>{isPt ? "Não fiques sozinho. Liga agora para alguém de confiança e pede-lhe para ficar contigo." : "Do not stay alone. Call someone you trust now and ask them to stay with you."}</p>
         </section>
       </main>
     );
@@ -122,12 +132,12 @@ export default function CheckInPage() {
         <main className="checkin-private-content" style={{ minHeight: "100vh", display: "grid", placeItems: "center", padding: "140px 24px 80px", textAlign: "center" }}>
           <section style={{ maxWidth: 560 }}>
             <div style={{ fontSize: "3rem", marginBottom: 20 }}>✓</div>
-            <h1 style={{ marginBottom: 16 }}>{locale === "pt" ? "Já fizeste o check-in de hoje" : "You already checked in today"}</h1>
+            <h1 style={{ marginBottom: 16 }}>{isPt ? "Já fizeste o check-in de hoje" : "You already checked in today"}</h1>
             <p style={{ color: "rgba(255,255,255,0.7)", lineHeight: 1.7, marginBottom: 28 }}>
-              {locale === "pt" ? "O próximo check-in ficará disponível amanhã, a partir da meia-noite." : "Your next check-in will be available tomorrow at midnight."}
+              {isPt ? "O próximo check-in ficará disponível amanhã, a partir da meia-noite." : "Your next check-in will be available tomorrow at midnight."}
             </p>
             <Link href={`/${locale}/dashboard`} style={{ display: "inline-block", padding: "12px 22px", borderRadius: 999, background: "#00d2b5", color: "#060810", fontWeight: 700, textDecoration: "none" }}>
-              {locale === "pt" ? "Ver o meu painel" : "View my dashboard"}
+              {isPt ? "Ver o meu painel" : "View my dashboard"}
             </Link>
           </section>
         </main>
@@ -199,7 +209,7 @@ export default function CheckInPage() {
                     fontWeight: 700,
                   }}
                 >
-                  Passo 1 de 4
+                  {text.step(1)}
                 </span>
                 <h2
                   className="checkin-mood-title"
@@ -210,7 +220,7 @@ export default function CheckInPage() {
                     marginTop: 16,
                   }}
                 >
-                  Como se sente hoje?
+                  {text.moodTitle}
                 </h2>
               </div>
 
@@ -254,7 +264,7 @@ export default function CheckInPage() {
                     transition: "all 0.2s ease",
                   }}
                 >
-                  Seguinte
+                  {text.next}
                 </button>
               </div>
             </div>
@@ -275,7 +285,7 @@ export default function CheckInPage() {
                     fontWeight: 700,
                   }}
                 >
-                  Passo {step + 1} de 4
+                  {text.step(step + 1)}
                 </span>
                 <h2
                   className="checkin-step-title"
@@ -286,9 +296,9 @@ export default function CheckInPage() {
                     marginTop: 16,
                   }}
                 >
-                  {step === 1 && "Restabelecimento & Sono"}
-                  {step === 2 && "Nível de Energia & Carga de Trabalho"}
-                  {step === 3 && "Nota ou Reflexão Diária"}
+                  {step === 1 && text.sleepTitle}
+                  {step === 2 && text.energyTitle}
+                  {step === 3 && text.noteTitle}
                 </h2>
                 {step === 2 && (
                   <div
@@ -300,7 +310,7 @@ export default function CheckInPage() {
                       letterSpacing: "0.02em",
                     }}
                   >
-                    Arrasta as linhas para ajustar a tua energia e a carga de trabalho.
+                    {isPt ? "Arrasta as linhas para ajustar a tua energia e a carga de trabalho." : "Drag the sliders to adjust your energy and workload."}
                   </div>
                 )}
               </div>
@@ -349,7 +359,7 @@ export default function CheckInPage() {
                             marginBottom: 24,
                           }}
                         >
-                          PREENCHER HORAS DE SONO
+                          {isPt ? "PREENCHER HORAS DE SONO" : "ENTER SLEEP HOURS"}
                         </div>
 
                         <div
@@ -380,7 +390,7 @@ export default function CheckInPage() {
                               color: "rgba(255, 255, 255, 0.7)",
                             }}
                           >
-                            horas dormidas
+                            {isPt ? "horas dormidas" : "hours slept"}
                           </span>
                         </div>
 
@@ -393,7 +403,7 @@ export default function CheckInPage() {
                             letterSpacing: "0.02em",
                           }}
                         >
-                          Arrasta a linha para ajustar as horas de sono.
+                          {isPt ? "Arrasta a linha para ajustar as horas de sono." : "Drag the slider to adjust your sleep hours."}
                         </div>
 
                         <div style={{ position: "relative", marginBottom: 28 }}>
@@ -450,10 +460,10 @@ export default function CheckInPage() {
                                 : "#ef4444",
                           }}
                         >
-                          {formData.sleep >= 8 && "Descanso excelente e reparador"}
-                          {formData.sleep === 7 && "Sono adequado para recuperar energia"}
-                          {formData.sleep >= 5 && formData.sleep < 7 && "Sono moderado, atenção ao cansaço"}
-                          {formData.sleep < 5 && "Sono insuficiente, priorize o descanso"}
+                          {formData.sleep >= 8 && (isPt ? "Descanso excelente e reparador" : "Excellent, restorative sleep")}
+                          {formData.sleep === 7 && (isPt ? "Sono adequado para recuperar energia" : "Enough sleep to restore energy")}
+                          {formData.sleep >= 5 && formData.sleep < 7 && (isPt ? "Sono moderado, atenção ao cansaço" : "Moderate sleep, watch for fatigue")}
+                          {formData.sleep < 5 && (isPt ? "Sono insuficiente, prioriza o descanso" : "Not enough sleep, prioritise rest")}
                         </span>
                       </div>
                     </div>
@@ -475,7 +485,7 @@ export default function CheckInPage() {
                     <div className="energy-column" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                       <div className="energy-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <span className="energy-title" style={{ fontSize: "1.3rem", fontWeight: 700, color: "#ffffff" }}>
-                          Energia
+                          {isPt ? "Energia" : "Energy"}
                         </span>
                         <div
                           className="energy-value-badge"
@@ -507,8 +517,8 @@ export default function CheckInPage() {
                         style={{ width: "100%", accentColor: "#00d2b5", height: 10, borderRadius: 6, cursor: "pointer", outline: "none" }}
                       />
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "rgba(255,255,255,0.45)", fontWeight: 500 }}>
-                        <span>Exausto</span>
-                        <span>Cheio de energia</span>
+                        <span>{isPt ? "Exausto" : "Exhausted"}</span>
+                        <span>{isPt ? "Cheio de energia" : "Full of energy"}</span>
                       </div>
 
                       <div className="battery-visual" style={{ display: "flex", justifyContent: "center", paddingTop: 8 }}>
@@ -528,7 +538,7 @@ export default function CheckInPage() {
                     <div className="workload-column" style={{ display: "flex", flexDirection: "column", gap: 24 }}>
                       <div className="workload-row" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                         <span className="workload-title" style={{ fontSize: "1.3rem", fontWeight: 700, color: "#ffffff" }}>
-                          Carga de Trabalho
+                          {isPt ? "Carga de Trabalho" : "Workload"}
                         </span>
                         <div
                           className="workload-value-badge"
@@ -560,13 +570,13 @@ export default function CheckInPage() {
                         style={{ width: "100%", accentColor: "#3b82f6", height: 10, borderRadius: 6, cursor: "pointer", outline: "none" }}
                       />
                       <div style={{ display: "flex", justifyContent: "space-between", fontSize: "0.8rem", color: "rgba(255,255,255,0.45)", fontWeight: 500 }}>
-                        <span>Leve</span>
-                        <span>Sobrecarga total</span>
+                        <span>{isPt ? "Leve" : "Light"}</span>
+                        <span>{isPt ? "Sobrecarga total" : "Fully overloaded"}</span>
                       </div>
 
                       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 10, paddingTop: 12 }}>
                         <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.08em", fontWeight: 600 }}>
-                          Clique para abrir os seus projetos
+                          {isPt ? "Clique para abrir os seus projetos" : "Click to open your projects"}
                         </div>
                         <FolderInteraction forceOpen={formData.workload >= 6} />
                       </div>
@@ -578,12 +588,12 @@ export default function CheckInPage() {
                 {step === 3 && (
                   <div style={{ marginBottom: 36 }}>
                     <label style={{ display: "block", fontSize: "1rem", color: "rgba(255,255,255,0.9)", marginBottom: 12, fontWeight: 500 }}>
-                      Nota pessoal ou observação sobre o seu dia:
+                      {isPt ? "Nota pessoal ou observação sobre o teu dia:" : "Personal note or observation about your day:"}
                     </label>
                     <textarea
                       rows={4}
                       maxLength={1000}
-                      placeholder="Escreva como correu o seu dia ou pensamentos principais..."
+                      placeholder={isPt ? "Escreve como correu o teu dia ou os teus pensamentos principais..." : "Write about your day or your main thoughts..."}
                       value={formData.note}
                       onChange={(e) => setFormData({ ...formData, note: e.target.value })}
                       style={{
@@ -632,7 +642,7 @@ export default function CheckInPage() {
                       textAlign: "center",
                     }}
                   >
-                    Anterior
+                    {text.previous}
                   </button>
 
                   {step < 3 ? (
@@ -653,7 +663,7 @@ export default function CheckInPage() {
                         textAlign: "center",
                       }}
                     >
-                      Seguinte
+                      {text.next}
                     </button>
                   ) : (
                     <button
@@ -672,7 +682,7 @@ export default function CheckInPage() {
                         textAlign: "center",
                       }}
                     >
-                      {alreadyCheckedIn ? "Check-in concluído hoje" : isSubmitting ? "A guardar..." : "Concluir & Guardar"}
+                      {alreadyCheckedIn ? (isPt ? "Check-in concluído hoje" : "Check-in completed today") : isSubmitting ? (isPt ? "A guardar..." : "Saving...") : (isPt ? "Concluir e guardar" : "Complete and save")}
                     </button>
                   )}
                 </div>
@@ -724,7 +734,7 @@ export default function CheckInPage() {
                     </svg>
                   </div>
                   <h2 style={{ fontSize: "2rem", fontWeight: 700, color: "#ffffff", marginBottom: 12 }}>
-                    O teu cuidado diário foi registado.
+                    {isPt ? "O teu cuidado diário foi registado." : "Your daily care has been recorded."}
                   </h2>
                   <p
                     style={{
@@ -734,7 +744,7 @@ export default function CheckInPage() {
                       marginBottom: 36,
                     }}
                   >
-                    Cada check-in ajuda a perceber melhor como o teu sono, a tua energia e a carga de trabalho influenciam o teu bem-estar. Este registo fica privado e vai permitir detectar padrões úteis para te ajudares a cuidar melhor de ti.
+                    {isPt ? "Cada check-in ajuda a perceber melhor como o teu sono, a tua energia e a carga de trabalho influenciam o teu bem-estar. Este registo fica privado e vai permitir detetar padrões úteis para te ajudares a cuidar melhor de ti." : "Each check-in helps you understand how sleep, energy and workload affect your well-being. This record stays private and helps identify useful patterns for taking better care of yourself."}
                   </p>
                   <Link
                     href={`/${locale}/dashboard`}
@@ -748,13 +758,13 @@ export default function CheckInPage() {
                       textDecoration: "none",
                     }}
                   >
-                    Ver o meu painel
+                    {isPt ? "Ver o meu painel" : "View my dashboard"}
                   </Link>
                 </>
               ) : (
                 <>
                   <h2 style={{ fontSize: "2rem", fontWeight: 700, color: "#ffffff", marginBottom: 12 }}>
-                    Guarda o teu progresso e continua a acompanhar o teu bem-estar.
+                    {isPt ? "Guarda o teu progresso e continua a acompanhar o teu bem-estar." : "Save your progress and keep tracking your well-being."}
                   </h2>
                   <p
                     style={{
@@ -764,7 +774,7 @@ export default function CheckInPage() {
                       marginBottom: 36,
                     }}
                   >
-                    O teu check-in foi preenchido, mas ainda não foi guardado porque a tua sessão não está ativa. Ao criar a conta, podes guardar o teu histórico e acompanhar os teus padrões de sono, energia, rotina e equilíbrio emocional.
+                    {isPt ? "O teu check-in foi preenchido, mas ainda não foi guardado porque a tua sessão não está ativa. Ao criar a conta, podes guardar o teu histórico e acompanhar os teus padrões de sono, energia, rotina e equilíbrio emocional." : "Your check-in is complete, but it was not saved because your session is not active. Create an account to save your history and track your sleep, energy, routine and emotional balance patterns."}
                   </p>
                   <div style={{ display: "flex", justifyContent: "center", gap: 16, flexWrap: "wrap" }}>
                     <Link
@@ -779,7 +789,7 @@ export default function CheckInPage() {
                         textDecoration: "none",
                       }}
                     >
-                      Criar conta
+                      {isPt ? "Criar conta" : "Create account"}
                     </Link>
                     <Link
                       href={`/${locale}/auth/login`}
@@ -794,7 +804,7 @@ export default function CheckInPage() {
                         textDecoration: "none",
                       }}
                     >
-                      Entrar na conta
+                      {isPt ? "Entrar na conta" : "Sign in"}
                     </Link>
                   </div>
                 </>

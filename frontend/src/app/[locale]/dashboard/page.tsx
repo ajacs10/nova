@@ -139,7 +139,7 @@ export default function DashboardPage() {
                 textDecoration: "none"
               }}
             >
-              Fazer Check-in Agora
+              {isPt ? "Fazer Check-in Agora" : "Start Check-in Now"}
             </Link>
           </div>
 

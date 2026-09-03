@@ -44,9 +44,9 @@ export default function NovaGamePage() {
   const selectGame = (game: "sequence" | "focus" | "breathing") => { setActiveGame(game); setSequenceStep(0); setBreathingStep(0); };
 
   const arcadeGames = [
-    { id: "pattern" as const, icon: "🧠", title: isPt ? "Detetive de Padrões" : "Pattern Detective", text: isPt ? "Encontra a pista. Descobre o padrão." : "Find the clue. Discover the pattern.", meta: isPt ? "5 rondas" : "5 rounds", accent: "#a78bfa" },
-    { id: "focus" as const, icon: "⚡", title: "Focus Rush", text: isPt ? "Segue a regra. Supera a pontuação." : "Follow the rule. Beat your score.", meta: isPt ? "3 rondas" : "3 rounds", accent: "#f59e0b" },
-    { id: "memory" as const, icon: "🧩", title: "Memory NOVA", text: isPt ? "Encontra todos os pares." : "Find every pair.", meta: isPt ? "8 pares" : "8 pairs", accent: "#38bdf8" },
+    { id: "pattern" as const, icon: "🧠", title: isPt ? "Detetive de Padrões" : "Pattern Detective", text: isPt ? "Encontra a pista. Descobre o padrão." : "Find the clue. Discover the pattern.", meta: isPt ? "20 rondas" : "20 rounds", accent: "#a78bfa" },
+    { id: "focus" as const, icon: "⚡", title: "Focus Rush", text: isPt ? "Segue a regra. Supera a pontuação." : "Follow the rule. Beat your score.", meta: isPt ? "Desafio contínuo" : "Endless challenge", accent: "#f59e0b" },
+    { id: "memory" as const, icon: "🧩", title: "Memory NOVA", text: isPt ? "Encontra todos os pares antes do tempo acabar." : "Find every pair before time runs out.", meta: isPt ? "Desafio de 90 s" : "90-second challenge", accent: "#38bdf8" },
     { id: "day" as const, icon: "🌎", title: isPt ? "NOVA: O Dia" : "NOVA: The Day", text: isPt ? "As tuas escolhas. Uma história fictícia." : "Your choices. A fictional story.", meta: isPt ? "7 cenas" : "7 scenes", accent: "#fb7185" },
   ];
   const completeGame = (score: number) => setArcadeStats((value) => { const xp = value.xp + 10; const next = { ...value, completed: value.completed + 1, points: value.points + score, best: Math.max(value.best, score), level: Math.floor(xp / 100) + 1, xp }; localStorage.setItem("nova-games-progress", JSON.stringify(next)); return next; });

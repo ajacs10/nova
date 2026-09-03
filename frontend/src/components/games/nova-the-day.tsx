@@ -21,15 +21,29 @@ export function NovaTheDay({ isPt, onComplete }: GameProps) {
   const [stats, setStats] = React.useState({ energy: 70, focus: 70, mood: 70 });
   const [history, setHistory] = React.useState<string[]>([]);
   const [finished, setFinished] = React.useState(false);
+  const [elapsed, setElapsed] = React.useState(0);
   const current = SCENES[scene];
+  React.useEffect(() => {
+    if (finished) return;
+    const timer = window.setInterval(() => setElapsed((value) => value + 1), 1000);
+    return () => window.clearInterval(timer);
+  }, [finished]);
+  React.useEffect(() => {
+    if (elapsed < 120 || finished) return;
+    const timeout = window.setTimeout(() => {
+      setFinished(true);
+      onComplete(stats.energy + stats.focus + stats.mood);
+    }, 0);
+    return () => window.clearTimeout(timeout);
+  }, [elapsed, finished, onComplete, stats]);
   const choose = (choice: typeof current.choices[number]) => {
     const nextStats = { energy: clamp(stats.energy + choice[2]), focus: clamp(stats.focus + choice[3]), mood: clamp(stats.mood + choice[4]) };
     setStats(nextStats); setHistory((items) => [...items, isPt ? choice[0] : choice[1]]);
     if (scene === SCENES.length - 1) { setFinished(true); onComplete(nextStats.energy + nextStats.focus + nextStats.mood); }
     else setScene((value) => value + 1);
   };
-  if (finished) return <div className="nova-game-result"><div className="result-mark">✓</div><h2>{isPt ? "O teu dia" : "Your day"}</h2><p>{isPt ? "Diferentes escolhas moldaram este dia fictício." : "Different choices shaped this fictional day."}</p><div className="result-grid"><span><strong>{stats.energy}</strong>{isPt ? "Energia" : "Energy"}</span><span><strong>{stats.focus}</strong>{isPt ? "Foco" : "Focus"}</span><span><strong>{stats.mood}</strong>{isPt ? "Humor" : "Mood"}</span></div><button type="button" className="game-primary" onClick={() => { setScene(0); setStats({ energy: 70, focus: 70, mood: 70 }); setHistory([]); setFinished(false); }}>{isPt ? "Jogar novamente" : "Play again"}</button></div>;
-  return <div className="nova-game-play nova-story"><div className="nova-game-play-head"><span>{current.time}</span><strong>{scene + 1} / 7</strong></div><div className="story-sky"><span className="story-orbit" aria-hidden="true">◒</span><h2>{current.title[isPt ? 0 : 1]}</h2></div><div className="story-choices">{current.choices.map((choice) => <button type="button" key={choice[0]} className="game-answer" onClick={() => choose(choice)}>{choice[isPt ? 0 : 1]}</button>)}</div><div className="story-stats"><span>{isPt ? "Energia" : "Energy"} <b>{stats.energy}</b></span><span>{isPt ? "Foco" : "Focus"} <b>{stats.focus}</b></span><span>{isPt ? "Humor" : "Mood"} <b>{stats.mood}</b></span></div>{history.length > 0 && <small>{isPt ? "As escolhas moldam este dia fictício." : "Your choices shape this fictional day."}</small>}</div>;
+  if (finished) return <div className="nova-game-result"><div className="result-mark">✓</div><h2>{isPt ? "O teu dia" : "Your day"}</h2><p>{isPt ? "Diferentes escolhas moldaram este dia fictício." : "Different choices shaped this fictional day."}</p><div className="result-grid"><span><strong>{stats.energy}</strong>{isPt ? "Energia" : "Energy"}</span><span><strong>{stats.focus}</strong>{isPt ? "Foco" : "Focus"}</span><span><strong>{stats.mood}</strong>{isPt ? "Humor" : "Mood"}</span></div><button type="button" className="game-primary" onClick={() => { setScene(0); setStats({ energy: 70, focus: 70, mood: 70 }); setHistory([]); setElapsed(0); setFinished(false); }}>{isPt ? "Jogar novamente" : "Play again"}</button></div>;
+  return <div className="nova-game-play nova-story"><div className="nova-game-play-head"><span>{current.time}</span><strong>{scene + 1} / 7 · {Math.max(0, 120 - elapsed)}s</strong></div><div className="story-sky"><span className="story-orbit" aria-hidden="true">◒</span><h2>{current.title[isPt ? 0 : 1]}</h2></div><div className="story-choices">{current.choices.map((choice) => <button type="button" key={choice[0]} className="game-answer" onClick={() => choose(choice)}>{choice[isPt ? 0 : 1]}</button>)}</div><div className="story-stats"><span>{isPt ? "Energia" : "Energy"} <b>{stats.energy}</b></span><span>{isPt ? "Foco" : "Focus"} <b>{stats.focus}</b></span><span>{isPt ? "Humor" : "Mood"} <b>{stats.mood}</b></span></div>{history.length > 0 && <small>{isPt ? "As escolhas moldam este dia fictício." : "Your choices shape this fictional day."}</small>}</div>;
 }
 
 function clamp(value: number) { return Math.max(0, Math.min(100, value)); }
